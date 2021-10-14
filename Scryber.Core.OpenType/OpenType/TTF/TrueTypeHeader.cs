@@ -23,23 +23,8 @@ using Scryber.OpenType.TTF;
 
 namespace Scryber.OpenType
 {
-    public class TrueTypeHeader
+    public class TrueTypeHeader : TypefaceHeader
     {
-
-        private TypefaceVersionReader _vers;
-        public TypefaceVersionReader Version
-        {
-            get { return _vers; }
-            set { this._vers = value; }
-        }
-
-        private int _numtables;
-
-        public int NumberOfTables
-        {
-            get { return _numtables; }
-            set { _numtables = value; }
-        }
 
         private int _searchrange;
 
@@ -65,6 +50,11 @@ namespace Scryber.OpenType
             set { _rangeShift = value; }
         }
 
+        public TrueTypeHeader(TrueTypeVersionReader version, int numTables)
+            : base(version, numTables)
+        {
+
+        }
 
         internal static bool TryReadHeader(BigEndianReader reader, out TrueTypeHeader header)
         {
@@ -111,9 +101,7 @@ namespace Scryber.OpenType
 
             }
 
-            header = new TrueTypeHeader();
-            header.Version = version;
-            header.NumberOfTables = numtables;
+            header = new TrueTypeHeader(version, numtables);
             header.SearchRange = search;
             header.EntrySelector = entry;
             header.RangeShift = range;

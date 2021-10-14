@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using Scryber.OpenType.SubTables;
@@ -33,7 +34,13 @@ namespace Scryber.OpenType
 
         public DataFormat DataFormat { get; private set; }
 
-        
+        public static readonly byte[] TrueTypeHeaderBytes = new byte[] { (byte)'t', (byte)'r', (byte)'u', (byte)'e' };
+        public static readonly byte[] OpenTypeHeaderBytes = new byte[] { (byte)'O', (byte)'T', (byte)'T', (byte)'O' };
+        public static readonly byte[] Type1HeaderBytes = new byte[] { (byte)'t', (byte)'y', (byte)'p', (byte)'1' };
+        public static readonly byte[] TrueTypeCollectionHeaderBytes = new byte[] { (byte)'t', (byte)'t', (byte)'c', (byte)'f' };
+        public static readonly byte[] WoffHeaderBytes = new byte[] { (byte)'t', (byte)'r', (byte)'u', (byte)'e' };
+        public static readonly byte[] Woff2HeaderBytes = new byte[] { (byte)'t', (byte)'r', (byte)'u', (byte)'e' };
+
 
         protected TypefaceVersionReader(byte[] header, DataFormat format)
         {
@@ -48,6 +55,42 @@ namespace Scryber.OpenType
 
         public abstract override string ToString();
 
+
+        protected byte[] CopyStreamData(Stream fromStream, long fromOffset)
+        {
+            if (fromOffset == 0 && fromStream is MemoryStream msOrig)
+                return msOrig.ToArray();
+            else
+            {
+                byte[] data = null;
+
+                var endOffset = fromStream.Position;
+                int capacity = (int)(endOffset - fromOffset);
+                fromStream.Position = fromOffset;
+
+                using (var ms = new MemoryStream(capacity))
+                {
+                    ExtractData(fromStream, ms);
+                    ms.Position = 0;
+                    data = ms.ToArray();
+                }
+
+                //Set the stream position back to where we were before returning
+                fromStream.Position = endOffset;
+                return data;
+            }
+        }
+
+        private void ExtractData(Stream stream, MemoryStream into)
+        {
+            //Copy the stream to a private data array
+            byte[] buffer = new byte[4096];
+            int count;
+            while ((count = stream.Read(buffer, 0, 4096)) > 0)
+            {
+                into.Write(buffer, 0, count);
+            }
+        }
 
         /// <summary>
         /// Gets a version reader for a typeface from the reader at the current position
@@ -76,7 +119,7 @@ namespace Scryber.OpenType
                 vers = new TTC.TTCollectionVersionReader(new string(chars), data);
 
             else if (chars[0] == 'w' && chars[1] == 'O' && chars[2] == 'F' && chars[3] == 'F')   //wOFF
-                vers = new Woff.WoffVersion(new string(chars), data);
+                vers = new Woff.WoffVersionReader(new string(chars), data);
 
             else if (chars[0] == 'w' && chars[1] == 'O' && chars[2] == 'F' && chars[3] == '2')   //wOF2
                 vers = new Woff2.Woff2Version(new string(chars), data);

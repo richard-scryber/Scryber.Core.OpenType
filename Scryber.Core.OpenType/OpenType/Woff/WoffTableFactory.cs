@@ -20,8 +20,16 @@ namespace Scryber.OpenType.Woff
             var table = list[tag] as WoffTableEntry;
 
             if (table.CompressedLength == table.Length)
-                return ReadTable(tag, length, list, reader);
+            {
+                //just copy the data
+                var pos = reader.Position;
+                var data = reader.Read((int)length);
+                table.SetDecompressedData(data);
+                //and return to the original
+                reader.Position = pos;
 
+                return base.ReadTable(tag, length, list, reader);
+            }
             if (table.DecompressedData == null)
             {
                 using (var ms = new System.IO.MemoryStream())

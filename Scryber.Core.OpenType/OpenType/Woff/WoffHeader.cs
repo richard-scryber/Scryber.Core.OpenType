@@ -3,15 +3,13 @@
 
 namespace Scryber.OpenType.Woff
 {
-    public class WoffHeader
+    public class WoffHeader : TypefaceHeader
     {
-        public WoffVersion Version { get; private set; }
+        public WoffVersionReader WoffVersion { get; private set; }
 
         public uint Flavour { get; set; }
 
         public uint Length { get; set; }
-
-        public uint NumberOfTables { get; set; }
 
         public uint TotalFontSize { get; set; }
 
@@ -27,24 +25,28 @@ namespace Scryber.OpenType.Woff
 
         public uint PrivateDataLength { get; set; }
 
-        public WoffHeader(WoffVersion version)
+        public WoffHeader(WoffVersionReader version, int numTables)
+            : base(version, numTables)
         {
-            this.Version = version;
         }
 
 
-        public static WoffHeader ReadHeader(WoffVersion version, BigEndianReader reader)
+        public static WoffHeader ReadHeader(WoffVersionReader version, BigEndianReader reader)
         {
-            WoffHeader header = new WoffHeader(version);
-            header.Flavour = reader.ReadUInt32();
-            header.Length = reader.ReadUInt32();
-            header.NumberOfTables = reader.ReadUInt16();
+            uint flavour = reader.ReadUInt32();
+            uint length = reader.ReadUInt32();
+            ushort numTables = reader.ReadUInt16();
             var reserved = reader.ReadUInt16();
-            header.TotalFontSize = reader.ReadUInt32();
-
+            var totalFontSize = reader.ReadUInt32();
             var major = reader.ReadUInt16();
             var minor = reader.ReadUInt16();
 
+            WoffHeader header = new WoffHeader(version, numTables);
+
+
+            header.Flavour = flavour;
+            header.Length = length;
+            header.TotalFontSize = totalFontSize;
             header.WoffInnerVersion = new Version(major, minor);
 
             header.MetaDataOffset = reader.ReadUInt32();

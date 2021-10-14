@@ -39,8 +39,8 @@ namespace Scryber.OpenType.TTF
             set { _path = value; }
         }
 
-        private TrueTypeHeader _head;
-        public TrueTypeHeader Head
+        private TypefaceHeader _head;
+        public TypefaceHeader Head
         {
             get { return _head; }
         }
@@ -95,7 +95,7 @@ namespace Scryber.OpenType.TTF
             this.Read(data, headOffset);
         }
 
-        public TrueTypeFile(TrueTypeHeader header, TrueTypeTableEntryList entries)
+        public TrueTypeFile(TypefaceHeader header, TrueTypeTableEntryList entries)
         {
             this._head = header ?? throw new ArgumentNullException(nameof(header));
             this._dirs = entries ?? throw new ArgumentNullException(nameof(entries));
@@ -110,7 +110,7 @@ namespace Scryber.OpenType.TTF
             return GetMetrics(CMapEncoding.WindowsUnicode);
         }
 
-        public ITypefaceMetrics GetMetrics(CMapEncoding? encoding)
+        public virtual ITypefaceMetrics GetMetrics(CMapEncoding? encoding)
         {
             if (!encoding.HasValue)
                 encoding = CMapEncoding.WindowsUnicode;
@@ -118,14 +118,14 @@ namespace Scryber.OpenType.TTF
             return TTFStringMeasurer.Create(this, encoding.Value);
         }
 
-        public byte[] GetFileData(DataFormat format)
+        public virtual byte[] GetFileData(DataFormat format)
         {
             if (format != this.Head.Version.DataFormat)
                 throw new InvalidOperationException("Cannot convert the current data from " + this.Head.Version.DataFormat + " to " + format);
             return this.FileData;
         }
 
-        public void SetFileData(byte[] data, DataFormat format)
+        public virtual void SetFileData(byte[] data, DataFormat format)
         {
             if(format != this.Head.Version.DataFormat)
                 throw new TypefaceReadException("The data is not in the correct format");

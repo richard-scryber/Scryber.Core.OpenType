@@ -68,5 +68,23 @@ namespace Scryber.Core.OpenType.Tests
         {
             this.Dispose(false);
         }
+
+        internal void SaveToLocal(string folder, string fileName, byte[] data)
+        {
+            if (!string.Equals(".ttf", System.IO.Path.GetExtension(fileName)))
+                throw new ArgumentOutOfRangeException("Can only save files with the ttf extension");
+
+            var dir = System.IO.Path.Combine(this.LocalDirectory, folder); 
+            if (!System.IO.Directory.Exists(dir))
+                System.IO.Directory.CreateDirectory(dir);
+
+            var file = System.IO.Path.Combine(dir, fileName);
+
+            if (System.IO.File.Exists(file))
+                System.IO.File.Delete(file);
+
+            System.IO.File.WriteAllBytes(file, data);
+
+        }
     }
 }

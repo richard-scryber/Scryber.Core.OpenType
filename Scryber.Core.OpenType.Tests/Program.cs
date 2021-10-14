@@ -23,9 +23,9 @@ namespace Scryber.Core.OpenType.Tests
                 new { Name = "Pragati Narrow",      Include = false, LocalPath = "./fonts/PragatiNarrow.ttf", RemotePath = "https://fonts.gstatic.com/s/pragatinarrow/v8/vm8vdRf0T0bS1ffgsPB7WZ-mD17_.ttf"},   
                 new { Name = "Helvetica",           Include = false, LocalPath = "./fonts/Helvetica.ttf", RemotePath = "https://raw.githubusercontent.com/richard-scryber/scryber.core/svgParsing/Scryber.Drawing/Text/_FontResources/Helvetica/Helvetica.ttf"},
                 new { Name = "Gill Sans ttc",       Include = false, LocalPath = "./fonts/GillSans.ttc", RemotePath = "https://raw.githubusercontent.com/richard-scryber/scryber.core.opentype/master/Scryber.Core.OpenType.Tests/fonts/GillSans.ttc"},
-                new { Name = "Open Sans Black Wof", Include = true, LocalPath = "./fonts/OpenSansBlack.woff", RemotePath = "https://fonts.gstatic.com/s/opensans/v26/memQYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWq8tWZ0Pw86hd0Rk0ZjWVAexoMUdjFXmQ.woff"},
+                new { Name = "Open Sans Black Wof", Include = false, LocalPath = "./fonts/OpenSansBlack.woff", RemotePath = "https://fonts.gstatic.com/s/opensans/v26/memQYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWq8tWZ0Pw86hd0Rk0ZjWVAexoMUdjFXmQ.woff"},
                 new { Name = "Noto TC",             Include = true,  LocalPath = "./fonts/NotoTC.otf", RemotePath = "https://fonts.gstatic.com/s/notosanstc/v20/-nF7OG829Oofr2wohFbTp9iFOQ.otf"},
-                new { Name = "Festive",             Include = false, LocalPath = "", RemotePath = "https://fonts.gstatic.com/s/festive/v1/cY9Ffj6KX1xcoDWhJt_qyvPQgah_Lw.woff2"}
+                new { Name = "Festive",             Include = false, LocalPath = "./fonts/Festive.woff2", RemotePath = "https://fonts.gstatic.com/s/festive/v1/cY9Ffj6KX1xcoDWhJt_qyvPQgah_Lw.woff2"}
             };
 
             var path = AppContext.BaseDirectory;
@@ -206,6 +206,19 @@ namespace Scryber.Core.OpenType.Tests
                         Console.WriteLine("TrueType font data was extracted at " + ttfData.Length + " bytes from the original data of " + data.Length);
                     }
 
+                    var name = typeface.Reference.FamilyName;
+                    if (typeface.Reference.FontWeight != WeightClass.Normal)
+                    {
+                        if (name.IndexOf(typeface.Reference.FontWeight.ToString()) < 0)
+                            name += " " + typeface.Reference.FontWeight.ToString();
+                    }
+                    if((typeface.Reference.Selections & FontSelection.Italic) > 0)
+                    {
+                        if (name.IndexOf("Italic") < 0)
+                            name += " Italic";
+                    }
+
+                    loader.SaveToLocal("Output", name + ".ttf", ttfData);
 
                     
                 }
