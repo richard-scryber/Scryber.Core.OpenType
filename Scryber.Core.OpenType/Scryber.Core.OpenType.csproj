@@ -1,0 +1,69 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net6.0;net5.0;netcoreapp3.1;netstandard2.1;netstandard2.0;net48</TargetFrameworks>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
+    <RootNamespace>Scryber</RootNamespace>
+    <PackageVersion>5.0.3</PackageVersion>
+    <Authors>richard@scryber.co.uk</Authors>
+    <Description>The Open Type font file package needed to read otf, ttf and ttc files.</Description>
+    <Copyright>Scryber Collective Ltd 2020</Copyright>
+    <Owners>Scryber</Owners>
+    <PackageProjectUrl>https://www.scryber.co.uk</PackageProjectUrl>
+    <PackageReleaseNotes>Release for the 5.0.3 of the core engine.
+
+Fix for reading the font files when the header and OS/2 tables are after the hmtx table
+
+Inline with standards - version 5 now targets version 5 of the .Net frameworks
+
+This is the base type for reading OpenType, TTF and TTC font files used in scryber, but is indenpendent from any PDF creation requirements.</PackageReleaseNotes>
+    <Summary>The OpenType font reading (and writing) library used by Scryber.</Summary>
+    <PackageTags>Scryber; PDF</PackageTags>
+    <Title>Scryber.Core.OpenType</Title>
+    <PackageId>Scryber.Core.OpenType</PackageId>
+    <PackageLicenseUrl>https://opensource.org/licenses/LGPL-3.0</PackageLicenseUrl>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NuGet.Build.Packaging" Version="0.2.5-dev.8">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="OpenType\Woff2\" />
+    <None Remove="OpenType\TTF\" />
+    <None Remove="OpenType\Woff\" />
+    <None Remove="OpenType\Utiltity\" />
+    <None Remove="OpenType\TTC\" />
+    <None Remove="OpenType\OTTO\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="OpenType\Woff2\" />
+    <Folder Include="OpenType\TTF\" />
+    <Folder Include="OpenType\Woff\" />
+    <Folder Include="OpenType\Utility\" />
+    <Folder Include="OpenType\TTC\" />
+    <Folder Include="OpenType\OTTO\" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+    <PackageReference Include="SharpZipLib" Version="1.3.3" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
+    <PackageReference Include="SharpZipLib" Version="1.3.3" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+    <PackageReference Include="SharpZipLib" Version="1.3.3" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+    <PackageReference Include="SharpZipLib" Version="1.3.3" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="SharpZipLib" Version="1.3.3" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
+    <PackageReference Include="SharpZipLib" Version="1.3.3" />
+  </ItemGroup>
+</Project>

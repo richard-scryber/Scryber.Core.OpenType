@@ -1,0 +1,39 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scryber.Core.OpenType", "Scryber.Core.OpenType\Scryber.Core.OpenType.csproj", "{31A1A1E8-5181-4367-8B4B-523E6B56D462}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scryber.Core.OpenType.Tests", "Scryber.Core.OpenType.Tests\Scryber.Core.OpenType.Tests.csproj", "{E701BEDF-2EF0-4E62-8AF1-4400C4079E05}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Typography_Ref", "Typography_Ref", "{57F3300B-D4D0-4758-A964-8CB073C6B630}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Typography.OpenFont", "..\Typography\Typography.OpenFont\Typography.OpenFont.csproj", "{242326C4-1E93-4FB8-8782-57B0A20C5289}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{31A1A1E8-5181-4367-8B4B-523E6B56D462}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31A1A1E8-5181-4367-8B4B-523E6B56D462}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31A1A1E8-5181-4367-8B4B-523E6B56D462}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31A1A1E8-5181-4367-8B4B-523E6B56D462}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E701BEDF-2EF0-4E62-8AF1-4400C4079E05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E701BEDF-2EF0-4E62-8AF1-4400C4079E05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E701BEDF-2EF0-4E62-8AF1-4400C4079E05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E701BEDF-2EF0-4E62-8AF1-4400C4079E05}.Release|Any CPU.Build.0 = Release|Any CPU
+		{242326C4-1E93-4FB8-8782-57B0A20C5289}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{242326C4-1E93-4FB8-8782-57B0A20C5289}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{242326C4-1E93-4FB8-8782-57B0A20C5289}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{242326C4-1E93-4FB8-8782-57B0A20C5289}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		Policies = $0
+		$0.StandardHeader = $1
+		$0.VersionControlPolicy = $2
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{242326C4-1E93-4FB8-8782-57B0A20C5289} = {57F3300B-D4D0-4758-A964-8CB073C6B630}
+	EndGlobalSection
+EndGlobal
