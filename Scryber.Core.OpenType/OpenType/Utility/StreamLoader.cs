@@ -502,7 +502,7 @@ namespace Scryber.OpenType.Utility
 
             Uri full;
             if (!IsRootedUri(path, out full))
-                CombineUri(this._baseUri, path);
+                full = CombineUri(this._baseUri, path);
 
             return GetStream(full, ensureSeekable);
             
@@ -574,7 +574,7 @@ namespace Scryber.OpenType.Utility
 
             FileInfo full;
             if (!IsRootedFile(path, out full))
-                CombinePath(this._baseDirectory, path);
+                full = CombinePath(this._baseDirectory, path);
 
             return GetStream(full, ensureSeekable);
 

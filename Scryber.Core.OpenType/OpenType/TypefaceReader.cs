@@ -21,6 +21,9 @@ namespace Scryber.OpenType
     /// </summary>
     public class TypefaceReader : IDisposable
     {
+
+        #region public Utility.StreamLoader Loader {get;}
+
         private StreamLoader _loader;
 
         /// <summary>
@@ -31,11 +34,13 @@ namespace Scryber.OpenType
             get { return _loader; }
         }
 
+        #endregion
+
         //
         // .ctor
         //
 
-#region public TypefaceReader()
+        #region public TypefaceReader()
 
         /// <summary>
         /// Creates a new default Typeface reader
@@ -45,9 +50,9 @@ namespace Scryber.OpenType
         {
         }
 
-#endregion
+        #endregion
 
-#region public TypefaceReader(Uri baseUri)
+        #region public TypefaceReader(Uri baseUri)
 
         /// <summary>
         /// Initializes a new TypefaceReader with a specific url as the root any Uri requests can be made from.
@@ -59,11 +64,11 @@ namespace Scryber.OpenType
             
         }
 
-#endregion
+        #endregion
 
 #if NET48
 
-#region public TypefaceReader(WebClient client)
+        #region public TypefaceReader(WebClient client)
 
         /// <summary>
         /// Initializes a new TypefaceReader without a root url, but with a WebClient that will be used for requests.
@@ -75,9 +80,9 @@ namespace Scryber.OpenType
 
         }
 
-#endregion
+        #endregion
 
-#region public TypefaceReader(Uri baseUri, WebClient client)
+        #region public TypefaceReader(Uri baseUri, WebClient client)
 
         /// <summary>
         /// Initializes a new TypefaceReader with a specific url as the root
@@ -90,10 +95,10 @@ namespace Scryber.OpenType
         {
         }
 
-#endregion
+        #endregion
 #else
 
-#region public TypefaceReader(HttpClient client)
+        #region public TypefaceReader(HttpClient client)
 
         /// <summary>
         /// Initializes a new TypefaceReader without a root url, but with an HttpClient that will be used for requests.
@@ -104,9 +109,9 @@ namespace Scryber.OpenType
         {
         }
 
-#endregion
+        #endregion
 
-#region public TypefaceReader(Uri baseUri, HttpClient client)
+        #region public TypefaceReader(Uri baseUri, HttpClient client)
 
         /// <summary>
         /// Initializes a new TypefaceReader with a specific url as the root
@@ -119,10 +124,11 @@ namespace Scryber.OpenType
         {
         }
 
-#endregion
+        #endregion
 
 #endif
-#region public TypefaceReader(DirectoryInfo baseDirectory)
+
+        #region public TypefaceReader(DirectoryInfo baseDirectory)
 
         /// <summary>
         /// Initializes a new TypefaceReader with a specific Directory as the root any file requests to be made from.
@@ -134,9 +140,9 @@ namespace Scryber.OpenType
             
         }
 
-#endregion
+        #endregion
 
-#region public TypefaceReader(StreamLoader streamloader)
+        #region public TypefaceReader(StreamLoader streamloader)
 
         /// <summary>
         /// A TypefaceReader with a specific stream loader, that can offer it's own methods of loading typefaces.
@@ -147,13 +153,16 @@ namespace Scryber.OpenType
             this._loader = streamloader ?? throw new ArgumentNullException(nameof(streamloader));
         }
 
-#endregion
+        #endregion
+
+
+
 
         //
         // Directory loading
         //
 
-#region public ITypefaceInfo[] GetAllTypefaceInformation(System.IO.DirectoryInfo directory ...)
+        #region public ITypefaceInfo[] GetAllTypefaceInformation(System.IO.DirectoryInfo directory ...)
 
         /// <summary>
         /// Reads a summary of all the typeface files in the specified directory.
@@ -161,8 +170,8 @@ namespace Scryber.OpenType
         /// <param name="directory">The directory to scan for typeface files (children will not be scanned unless the includeSubdirectories is true)</param>
         /// <param name="matchExtension">An optional file match pattern to look for files with e.g. *.ttf|*.otf. Default is empty / null so all files will be checked</param>
         /// <param name="includeSubdirectories">An optional flag to also look for files in a subdirectory. Default is false</param>
-        /// <param name="registerErrors">An optional flag include in the results any read errors for matched files. Default is false</param>
-        /// <returns></returns>
+        /// <param name="registerErrors">An optional flag to include in the results any read errors for matched files. Default is false</param>
+        /// <returns>An array of all the Typefaces found in the files with References to their inner font variation(s)</returns>
         public ITypefaceInfo[] GetAllTypefaceInformation(System.IO.DirectoryInfo directory, string matchExtension = null, bool includeSubdirectories = false, bool registerErrors = false)
         {
             if (!directory.Exists)
@@ -172,13 +181,13 @@ namespace Scryber.OpenType
 
             Utility.PathHelper.MatchFiles(files, directory, matchExtension, includeSubdirectories);
 
-            return this.GetAllTypefaceInformation(files.ToArray(), registerErrors);
+            return this.GetAllTypefaceInformation(files, registerErrors);
             
         }
 
-#endregion
+        #endregion
 
-#region public ITypefaceInfo[] GetAllTypefaceInformation(IEnumerable<FileInfo> files.. 
+        #region public ITypefaceInfo[] GetAllTypefaceInformation(IEnumerable<FileInfo> files.. 
 
 
         /// <summary>
@@ -209,19 +218,62 @@ namespace Scryber.OpenType
                         else
                             found.Add(new Utility.UnknownTypefaceInfo(file.FullName, "The file is not a known font format"));
                     }
+                    else
+                        throw new TypefaceReadException("Could not load the typeface from file " + file.ToString());
                 }
             }
 
             return found.ToArray();
         }
 
-#endregion
+        #endregion
 
+        #region public ITypefaceInfo[] GetAllTypefaceInformation(IEnumerable<Uri> files.. 
+
+        /// <summary>
+        /// Reads the summary information for all the requested urls.
+        /// </summary>
+        /// <param name="absoluteUrls">An enumerable collection of full uri's that can be enumerated over inturn.</param>
+        /// <param name="registerErrors">An optional flag that if true will add any read errors to the returned information array</param>
+        /// <returns>An array of all the Typefaces found in the files with References to their inner font variation(s)</returns>
+        public ITypefaceInfo[] GetAllTypefaceInformation(IEnumerable<Uri> absoluteUrls, bool registerErrors = false)
+        {
+            if (null == absoluteUrls)
+                throw new ArgumentNullException(nameof(absoluteUrls));
+
+            List<ITypefaceInfo> found = new List<ITypefaceInfo>();
+
+            foreach (var url in absoluteUrls)
+            {
+                ITypefaceInfo foundOne;
+
+                using (var fs = _loader.GetStream(url, true))
+                {
+                    if (this.TryGetTypefaceInformation(fs, url.ToString(), out foundOne))
+                        found.Add(foundOne);
+                    else if (registerErrors)
+                    {
+                        if (null != foundOne)
+                            found.Add(foundOne);
+                        else
+                            found.Add(new Utility.UnknownTypefaceInfo(url.ToString(), "The file is not a known font format"));
+                    }
+                    else
+                        throw new TypefaceReadException("Could not load the typeface from uri " + url.ToString());
+                }
+            }
+
+            return found.ToArray();
+        }
+
+        #endregion
+
+        
         //
         // Async Directory loading
         //
 
-#region public virtual ITypefaceInfo[] GetAllTypefaceInformationAsync(System.IO.DirectoryInfo directory ...)
+        #region public virtual ITypefaceInfo[] GetAllTypefaceInformationAsync(System.IO.DirectoryInfo directory ...)
 
         /// <summary>
         /// Reads a summary of all the typeface files in the specified directory.
@@ -242,15 +294,15 @@ namespace Scryber.OpenType
             {
                 Utility.PathHelper.MatchFiles(files, directory, matchExtension, includeSubdirectories);
 
-                return this.GetAllTypefaceInformationAsync(files.ToArray(), registerErrors);
+                return this.GetAllTypefaceInformation(files.ToArray(), registerErrors);
             });
 
             return info;
         }
 
-#endregion
+        #endregion
 
-#region public virtual async Task<ITypefaceInfo[]> GetAllTypefaceInformationAsync(IEnumerable<FileInfo> files ...)
+        #region public virtual async Task<ITypefaceInfo[]> GetAllTypefaceInformationAsync(IEnumerable<FileInfo> files ...)
 
         /// <summary>
         /// Reads the summary information for all the requested files.
@@ -271,25 +323,73 @@ namespace Scryber.OpenType
                 {
                     ITypefaceInfo foundOne;
 
-                    if (this.TryGetTypefaceInformation(file, out foundOne))
-                        found.Add(foundOne);
-
-                    else if (registerErrors)
+                    using (var fs = this.Loader.GetStream(file, true))
                     {
-                        if (null != foundOne)
+                        if (this.TryGetTypefaceInformation(fs, file.FullName, out foundOne))
                             found.Add(foundOne);
-                        else
-                            found.Add(new Utility.UnknownTypefaceInfo(file.FullName, "The file is not a known font format"));
-                    }
 
+                        else if (registerErrors)
+                        {
+                            if (null != foundOne)
+                                found.Add(foundOne);
+                            else
+                                found.Add(new Utility.UnknownTypefaceInfo(file.FullName, "The file is not a known font format"));
+                        }
+                        else
+                            throw new TypefaceReadException("Could not load the typeface from file " + file.ToString());
+                    }
                 }
             });
 
             return found.ToArray();
         }
-        
 
-#endregion
+
+        #endregion
+
+        #region public ITypefaceInfo[] GetAllTypefaceInformationAsync(IEnumerable<FileInfo> files.. 
+
+        /// <summary>
+        /// Reads the summary information for all the requested files asyncronously.
+        /// </summary>
+        /// <param name="files">An enumerable collection of Files that can be scanned and information returned on.</param>
+        /// <param name="registerErrors">An optional flag that if true will add any read errors to the returned information array</param>
+        /// <returns>An array of all the Typefaces found in the files with References to their inner font variation(s)</returns>
+        public virtual async Task<ITypefaceInfo[]> GetAllTypefaceInformationAsync(IEnumerable<Uri> absoluteUrls, bool registerErrors = false)
+        {
+            if (null == absoluteUrls)
+                throw new ArgumentNullException(nameof(absoluteUrls));
+
+            List<ITypefaceInfo> found = new List<ITypefaceInfo>();
+
+            await Task.Run(() =>
+            {
+                foreach (var url in absoluteUrls)
+                {
+                    ITypefaceInfo foundOne;
+
+                    using (var fs = _loader.GetStream(url, true))
+                    {
+                        if (this.TryGetTypefaceInformation(fs, url.ToString(), out foundOne))
+                            found.Add(foundOne);
+                        else if (registerErrors)
+                        {
+                            if (null != foundOne)
+                                found.Add(foundOne);
+                            else
+                                found.Add(new Utility.UnknownTypefaceInfo(url.ToString(), "The file is not a known font format"));
+                        }
+                        else
+                            throw new TypefaceReadException("Could not load the typeface from uri " + url.ToString());
+                    }
+                }
+            });
+
+            return found.ToArray();
+        }
+
+        #endregion
+
 
 
         //Uri Loading
@@ -298,31 +398,30 @@ namespace Scryber.OpenType
 
 
         //string loading
-        
 
-        /// <summary>
-        /// Trys to get the specific typeface Information from a file, returning true if successful.
-        /// </summary>
-        /// <param name="file">The file system file to read the Typeface information from.</param>
-        /// <param name="info">Set to the typeface information with References to specific font faces within if successful</param>
-        /// <returns>true if the file could be read.</returns>
-        public bool TryGetTypefaceInformation(FileInfo file, out ITypefaceInfo info)
+        public ITypefaceInfo GetTypefaceInformation(string path)
         {
-            using (var fs = _loader.GetStream(file, true))
+            using (var stream = _loader.GetStream(path, true))
             {
-                return DoTryGetTypefaceInformation(fs, file.FullName, out info);
+                return DoGetTypefaceInformation(stream, path);
             }
+            
         }
+
+
+        
 
         public bool TryGetTypefaceInformation(Stream seekableStream, string source, out ITypefaceInfo info)
         {
             info = null;
             if (null == seekableStream)
+            {
+                info = new Utility.UnknownTypefaceInfo(source, " The provided stream was null. Ensure there is a valid stream to read from");
                 return false;
-
+            }
             if (seekableStream.CanSeek == false)
             {
-                info = new Utility.UnknownTypefaceInfo(source, "A stream must be seekable to read font information, and this one is not");
+                info = new Utility.UnknownTypefaceInfo(source, "A stream must be seekable to read font information so the position can be set, for example a FileStream or MemoryStream, and this one is not seekable.");
                 return false;
             }
 
@@ -330,6 +429,26 @@ namespace Scryber.OpenType
         }
 
         
+        
+
+
+        //
+        // GetTypefaceInformation
+        //
+
+        public ITypefaceInfo GetTypefaceInformation(Stream seekableStream, string source)
+        {
+            if (null == seekableStream)
+                throw new ArgumentNullException(nameof(seekableStream));
+
+            if (seekableStream.CanSeek == false)
+            {
+                throw new ArgumentOutOfRangeException(nameof(seekableStream), "The provided stream cannot be positioned, use a FileStream or a MemoryStream if needed to create a seekable stream");
+            }
+
+            return DoGetTypefaceInformation(seekableStream, source);
+        }
+
         /// <summary>
         /// Trys to get the specific typeface Information from the provided stream, which must be seekable (supports the Postion setting)
         /// </summary>
@@ -357,7 +476,7 @@ namespace Scryber.OpenType
                         info = version.ReadTypefaceInfoAfterVersion(reader, source);
                         success = true;
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         info = new Utility.UnknownTypefaceInfo(source, "The typeface information could not be read : " + ex.Message);
                         success = false;
@@ -367,26 +486,23 @@ namespace Scryber.OpenType
             }
         }
 
-        public virtual ITypefaceInfo GetTypefaceInformation(Stream seekableStream, string source)
+        protected virtual ITypefaceInfo DoGetTypefaceInformation(Stream seekableStream, string source)
         {
-            if (null == seekableStream)
-                throw new ArgumentNullException(nameof(seekableStream));
-
-            if (seekableStream.CanSeek == false)
-            {
-                throw new ArgumentOutOfRangeException(nameof(seekableStream), "The provided stream cannot be positioned, use a FileStream or a MemoryStream if needed to create a seekable stream");
-            }
-
             using (var reader = new BigEndianReader(seekableStream))
             {
                 TypefaceVersionReader version;
                 if (!TypefaceVersionReader.TryGetVersion(reader, out version))
-
-                    return new Utility.UnknownTypefaceInfo(source, "Could not identify the version of the font source");
+                    throw new TypefaceReadException("Could not identify the version of the font the source " + (source ?? ""));
 
                 else
                 {
                     var info = version.ReadTypefaceInfoAfterVersion(reader, source);
+                    if (null == info)
+                        throw new TypefaceReadException("Could not extract the information for the font source " + (source ?? ""));
+
+                    else if (!string.IsNullOrEmpty(info.ErrorMessage))
+                        throw new TypefaceReadException("Could not extract the information for the font source " + (source ?? "") + ": " + info.ErrorMessage);
+
                     return info;
                 }
             }
