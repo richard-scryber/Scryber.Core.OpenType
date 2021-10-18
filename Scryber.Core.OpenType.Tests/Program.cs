@@ -142,7 +142,7 @@ namespace Scryber.Core.OpenType.Tests
 
             using (var ms = new System.IO.MemoryStream(data))
             {
-                info = tfreader.GetInfo(ms, path);
+                info = tfreader.GetTypefaceInformation(ms, path);
                 if(null == info)
                 {
                     ExitClean("Could not read the info from the font file");

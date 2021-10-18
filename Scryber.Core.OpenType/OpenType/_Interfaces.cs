@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using Scryber.OpenType.OTTO;
 
 namespace Scryber.OpenType
 {
@@ -40,7 +41,9 @@ namespace Scryber.OpenType
         byte[] GetFileData(DataFormat format);
 
         ITypefaceMetrics GetMetrics();
+
     }
+
 
 
     public interface ITypefaceMetrics
