@@ -126,15 +126,39 @@ namespace Scryber.OpenType.UnitTests
         [TestMethod("7. Get the  Roboto typeface from a file")]
         public void ValidGetTypefacesRobotoFile()
         {
+            var path = new DirectoryInfo(System.Environment.CurrentDirectory);
 
+            using (var reader = new TypefaceReader(path))
+            {
+                var file = new FileInfo(ValidateRoboto.UrlPath);
 
-            Assert.Inconclusive("Not implemented for Roboto");
+                var faces = reader.GetTypefaces(file);
+                Assert.IsNotNull(faces);
+
+                var all = faces.ToArray();
+                Assert.AreEqual(1, all.Length);
+
+                ValidateRoboto.AssertTypeface(all[0]);
+            }
         }
 
-        [TestMethod("8. Get the  Roboto typeface from a file")]
+        [TestMethod("8. Get the Open Sans Black woff from a file")]
         public void ValidGetTypefacesOpenSansFile()
         {
-            Assert.Inconclusive("Not implemented for OpenSans");
+            var path = new DirectoryInfo(System.Environment.CurrentDirectory);
+
+            using (var reader = new TypefaceReader(path))
+            {
+                var file = new FileInfo(ValidateOpenSans.UrlPath);
+
+                var faces = reader.GetTypefaces(file);
+                Assert.IsNotNull(faces);
+
+                var all = faces.ToArray();
+                Assert.AreEqual(1, all.Length);
+
+                ValidateOpenSans.AssertTypeface(all[0]);
+            }
         }
 
         [TestMethod("9. Get the  Festive Woff2 typeface from a file")]

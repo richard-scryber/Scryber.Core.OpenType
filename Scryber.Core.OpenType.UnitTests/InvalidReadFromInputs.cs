@@ -111,12 +111,19 @@ namespace Scryber.OpenType.UnitTests
             using (var reader = new TypefaceReader())
             {
                 path = path + FailingUrlPath;
+#if NET48
 
-                Assert.ThrowsException<AggregateException>(() =>
+                Assert.ThrowsException<System.Net.WebException>(() =>
                 {
                     var info = reader.GetTypefaceInformation(path);
                 });
 
+#else 
+                Assert.ThrowsException<AggregateException>(() =>
+                {
+                    var info = reader.GetTypefaceInformation(path);
+                });
+#endif
 
             }
 
@@ -132,11 +139,19 @@ namespace Scryber.OpenType.UnitTests
             using (reader = new TypefaceReader(new Uri(path)))
             {
                 path = FailingUrlPath;
-                Assert.ThrowsException<AggregateException>(() =>
+#if NET48
+
+                Assert.ThrowsException<System.Net.WebException>(() =>
                 {
                     var info = reader.GetTypefaceInformation(path);
                 });
 
+#else 
+                Assert.ThrowsException<AggregateException>(() =>
+                {
+                    var info = reader.GetTypefaceInformation(path);
+                });
+#endif
                 loader = reader.Loader;
             }
             //check clean up
