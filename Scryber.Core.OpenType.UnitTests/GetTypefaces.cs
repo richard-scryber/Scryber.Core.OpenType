@@ -84,5 +84,63 @@ namespace Scryber.OpenType.UnitTests
                 ValidateGillSans.AssertTypefaces(all);
             }
         }
+
+        [TestMethod("5. Get the  Hachi Maru Pop typeface from a file")]
+        public void ValidGetTypefacesHachiFile()
+        {
+            var path = new DirectoryInfo(System.Environment.CurrentDirectory);
+
+            using (var reader = new TypefaceReader(path))
+            {
+                var file = new FileInfo(ValidateHachi.UrlPath);
+
+                var faces = reader.GetTypefaces(file);
+                Assert.IsNotNull(faces);
+
+                var all = faces.ToArray();
+                Assert.AreEqual(1, all.Length);
+
+                ValidateHachi.AssertTypeface(all[0]);
+            }
+        }
+
+        [TestMethod("6. Get the  Noto TC open type from a file")]
+        public void ValidGetTypefacesNotoFile()
+        {
+            var path = new DirectoryInfo(System.Environment.CurrentDirectory);
+
+            using (var reader = new TypefaceReader(path))
+            {
+                var file = new FileInfo(ValidateNoto.UrlPath);
+
+                var faces = reader.GetTypefaces(file);
+                Assert.IsNotNull(faces);
+
+                var all = faces.ToArray();
+                Assert.AreEqual(1, all.Length);
+
+                ValidateNoto.AssertTypeface(all[0]);
+            }
+        }
+
+        [TestMethod("7. Get the  Roboto typeface from a file")]
+        public void ValidGetTypefacesRobotoFile()
+        {
+
+
+            Assert.Inconclusive("Not implemented for Roboto");
+        }
+
+        [TestMethod("8. Get the  Roboto typeface from a file")]
+        public void ValidGetTypefacesOpenSansFile()
+        {
+            Assert.Inconclusive("Not implemented for OpenSans");
+        }
+
+        [TestMethod("9. Get the  Festive Woff2 typeface from a file")]
+        public void ValidGetTypefacesFestiveFile()
+        {
+            Assert.Inconclusive("Not implemented for Festive");
+        }
     }
 }
