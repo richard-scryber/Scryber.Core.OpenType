@@ -2,6 +2,8 @@
 using System.IO;
 
 using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
+using System.Security.Cryptography;
 
 #if NET48
 
@@ -137,6 +139,59 @@ namespace Scryber.OpenType.Utility
 
         #endregion
 
+        #region public bool TryGetStream(FileInfo path, bool ensureSeekable, out Stream stream, out string message)
+
+        /// <summary>
+        /// Syncronously attempts to load a stream from a file, setting the stream and returning true if successful.
+        /// </summary>
+        /// <param name="path">The file to load</param>
+        /// <param name="ensureSeekable">If true, then, if the captured stream is not seekable, it will be converted to a seekable stream before returning</param>
+        /// <param name="stream">Set to the opened stream if successful, otherwise null</param>
+        /// <param name="message">Set to any errors</param>
+        /// <returns>True if the stream to the file could be opened</returns>
+        public bool TryGetStream(FileInfo path, bool ensureSeekable, out Stream stream, out string message)
+        {
+            bool result = false;
+            stream = null;
+            FileInfo absolute;
+
+            if (null == path)
+            {
+                stream = null;
+                message = "The file info is null";
+            }
+            else if (!TryEnsureAbsolute(path, out absolute))
+            {
+                stream = null;
+                message = "The provided file path '" + path.FullName + "' could not be resolved to a file";
+            }
+            else if(!absolute.Exists)
+            {
+                stream = null;
+                message = "The file at the provided path '" + path.FullName + "' does not exist";
+            }
+            else
+            {
+                try
+                {
+                    stream = GetStream(absolute, ensureSeekable);
+                    message = (null == stream) ? "No errors, but the returned stream was null" : null;
+                    result = (null != stream);
+                }
+                catch (Exception ex)
+                {
+                    if (stream != null)
+                        stream.Dispose();
+                    stream = null;
+                    message = "Could not open the stream : " + ex.Message;
+                    result = false;
+                }
+            }
+            return result;
+        }
+
+        #endregion
+
         #region protected virtual FileInfo EnsureAbsolute(FileInfo file)
 
         /// <summary>
@@ -155,6 +210,24 @@ namespace Scryber.OpenType.Utility
 
         #endregion
 
+        #region protected virtual bool TryEnsureAbsolute(FileInfo file, out FileInfo absolute)
+
+        /// <summary>
+        /// Checks to make sure the stream is absolute. Inheritors can override the implementation
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="absolute"></param>
+        /// <returns></returns>
+        protected virtual bool TryEnsureAbsolute(FileInfo file, out FileInfo absolute)
+        {
+            if (!IsRootedFile(file.FullName, out absolute))
+                return false;
+            else
+                return true;
+        }
+
+        #endregion
+
         //
         // Uri Implementation methods
         //
@@ -162,7 +235,7 @@ namespace Scryber.OpenType.Utility
         #region public virtual Stream GetStream(Uri file, bool ensureSeekable)
 
         /// <summary>
-        /// Syncronously loads a stream from an Absolute Url, optionally making sure it is a seekable stream
+        /// Syncronously loads a stream from an absolute Url, or a relative url for rooted base urls, optionally making sure it is a seekable stream
         /// </summary>
         /// <param name="uri">The uri to load - cannot be null and must be absolute and exist</param>
         /// <param name="ensureSeekable">If true then the returning stream will alwasy been seekable (can set position)</param>
@@ -192,6 +265,55 @@ namespace Scryber.OpenType.Utility
             return stream;
         }
 
+
+        #endregion
+
+        #region public bool TryGetStream(Uri forUrl, bool ensureSeekable, out Stream stream, out string message)
+
+        /// <summary>
+        /// Syncronously attempts to load a stream from a relative (from the loaders base url) or absolute url, setting the stream and returning true if successful.
+        /// </summary>
+        /// <param name="forUrl">The absolute url, or a url relative to the base url</param>
+        /// <param name="ensureSeekable">If true, then, if the captured stream is not seekable, it will be converted to a seekable stream before returning</param>
+        /// <param name="stream">Set to the opened stream if successful, otherwise null</param>
+        /// <param name="message">Set to any errors</param>
+        /// <returns>True if the stream to the url could be opened</returns>
+        public bool TryGetStream(Uri forUrl, bool ensureSeekable, out Stream stream, out string message)
+        {
+            bool result = false;
+            Uri resolved;
+
+            stream = null;
+
+            if(null == forUrl)
+            {
+                stream = null;
+                message = "The url is null";
+            }
+            else if(!TryEnsureAbsolute(forUrl, out resolved))
+            {
+                stream = null;
+                message = "The provided relative url '" + forUrl.ToString() + "' could not be resolved to an absolute url";
+            }
+            else
+            {
+                try
+                {
+                    stream = GetStream(resolved, ensureSeekable);
+                    message = (null == stream) ? "No errors, but the returned stream was null" : null;
+                    result = (null != stream);
+                }
+                catch(Exception ex)
+                {
+                    if (stream != null)
+                        stream.Dispose();
+                    stream = null;
+                    message = "Could not open the stream : " + ex.Message;
+                    result = false;
+                }
+            }
+            return result;
+        }
 
         #endregion
 
@@ -244,6 +366,30 @@ namespace Scryber.OpenType.Utility
                 throw new InvalidOperationException("The file '" + uri.ToString() + "' is not a rooted path");
 
             return uri;
+        }
+
+        #endregion
+
+        #region protected virtual bool TryEnsureAbsolute(Uri uri, out Uri absolute)
+
+        /// <summary>
+        /// Checks to make sure the stream is absolute. Inheritors can override the implementation
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <param name="absolute"></param>
+        /// <returns></returns>
+        protected virtual bool TryEnsureAbsolute(Uri uri, out Uri absolute)
+        {
+            if (!IsRootedUri(uri.ToString(), out uri))
+            {
+                absolute = null;
+                return false;
+            }
+            else
+            {
+                absolute = uri;
+                return true;
+            }
         }
 
         #endregion
@@ -542,6 +688,15 @@ namespace Scryber.OpenType.Utility
             return base.EnsureAbsolute(uri);
         }
 
+        protected override bool TryEnsureAbsolute(Uri uri, out Uri absolute)
+        {
+            if (!uri.IsAbsoluteUri)
+                uri = CombineUri(this.BaseUri, uri.ToString());
+
+            return base.TryEnsureAbsolute(uri, out absolute);
+        }
+
+
     }
 
 
@@ -608,6 +763,14 @@ namespace Scryber.OpenType.Utility
                 file = CombinePath(this._baseDirectory, file.FullName);
 
             return base.EnsureAbsolute(file);
+        }
+
+        protected override bool TryEnsureAbsolute(FileInfo file, out FileInfo absolute)
+        {
+            if (!IsRootedFile(file.FullName, out absolute))
+                file = CombinePath(this._baseDirectory, file.FullName);
+
+            return base.TryEnsureAbsolute(file, out absolute);
         }
 
     }

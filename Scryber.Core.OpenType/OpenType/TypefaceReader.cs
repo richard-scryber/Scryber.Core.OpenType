@@ -159,7 +159,7 @@ namespace Scryber.OpenType
 
 
         //
-        // Directory loading
+        // GetAll TypefaceInformationAsync
         //
 
         #region public ITypefaceInfo[] GetAllTypefaceInformation(System.IO.DirectoryInfo directory ...)
@@ -270,7 +270,7 @@ namespace Scryber.OpenType
 
         
         //
-        // Async Directory loading
+        // GetAll TypefaceInformationAsync
         //
 
         #region public virtual ITypefaceInfo[] GetAllTypefaceInformationAsync(System.IO.DirectoryInfo directory ...)
@@ -390,27 +390,104 @@ namespace Scryber.OpenType
 
         #endregion
 
+        //
+        // TryGet TypefaceInformation
+        //
 
+        #region public bool TryGetTypefaceInformation(FileInfo fromFile, out ITypefaceInfo info)
 
-        //Uri Loading
-
-        //Async Uri loading
-
-
-        //string loading
-
-        public ITypefaceInfo GetTypefaceInformation(string path)
+        /// <summary>
+        /// Attempts to read the typeface information from a file
+        /// </summary>
+        /// <param name="fromFile">The file to read the info from</param>
+        /// <param name="info">Set to the info for the typeface if successful, or an error message</param>
+        /// <returns>True if successfully read the information from file, otherwise false</returns>
+        public bool TryGetTypefaceInformation(FileInfo fromFile, out ITypefaceInfo info)
         {
-            using (var stream = _loader.GetStream(path, true))
+            Stream stream;
+            string message;
+            bool result = false;
+
+            if (null == fromFile)
             {
-                return DoGetTypefaceInformation(stream, path);
+                info = new Utility.UnknownTypefaceInfo("", "The File Info was null");
+                result = false;
             }
-            
+            else if (!_loader.TryGetStream(fromFile, true, out stream, out message))
+            {
+                info = new Utility.UnknownTypefaceInfo(fromFile.FullName, message);
+                result = false;
+            }
+            else if (null == stream)
+            {
+                info = new Utility.UnknownTypefaceInfo(fromFile.FullName, "No stream was returned for the requested file");
+                result = false;
+            }
+            else
+            {
+                result = this.TryGetTypefaceInformation(stream, fromFile.FullName, out info);
+
+                if (null != stream)
+                    stream.Dispose();
+
+            }
+
+            return result;
         }
 
+        #endregion
 
-        
+        #region public bool TryGetTypefaceInformation(Uri fromUrl, out ITypefaceInfo info)
 
+        /// <summary>
+        /// Attempts to read the typeface information from a url
+        /// </summary>
+        /// <param name="fromUrl">The url to read the info from</param>
+        /// <param name="info">Set to the info for the typeface if successful, or an error message</param>
+        /// <returns>True if successfully read the information from the url, otherwise false</returns>
+        public bool TryGetTypefaceInformation(Uri fromUrl, out ITypefaceInfo info)
+        {
+            Stream stream;
+            string message;
+            bool result = false;
+
+            if (null == fromUrl)
+            {
+                info = new Utility.UnknownTypefaceInfo("", "The Url was null");
+                result = false;
+            }
+            else if (!_loader.TryGetStream(fromUrl, true, out stream, out message))
+            {
+                info = new Utility.UnknownTypefaceInfo(fromUrl.ToString(), message);
+                result = false;
+            }
+            else if (null == stream)
+            {
+                info = new Utility.UnknownTypefaceInfo(fromUrl.ToString(), "No stream was returned for the requested file");
+                result = false;
+            }
+            else
+            {
+                result = this.TryGetTypefaceInformation(stream, fromUrl.ToString(), out info);
+
+                if (null != stream)
+                    stream.Dispose();
+            }
+
+            return result;
+        }
+
+        #endregion
+
+        #region public bool TryGetTypefaceInformation(Stream seekableStream, string source, out ITypefaceInfo info)
+
+        /// <summary>
+        /// Attempts to read the typeface information from a seekable stream
+        /// </summary>
+        /// <param name="seekableStream">The stream to read the info from</param>
+        /// <param name="source">The name or path for the information</param>
+        /// <param name="info">Set to the info for the typeface if successful, or an error message</param>
+        /// <returns>True if successfully read the information from the url, otherwise false</returns>
         public bool TryGetTypefaceInformation(Stream seekableStream, string source, out ITypefaceInfo info)
         {
             info = null;
@@ -428,14 +505,77 @@ namespace Scryber.OpenType
             return DoTryGetTypefaceInformation(seekableStream, source, out info);
         }
 
-        
-        
+        #endregion
 
 
         //
-        // GetTypefaceInformation
+        // Get TypefaceInformation
         //
 
+        #region public ITypefaceInfo GetTypefaceInformation(string path)
+
+        /// <summary>
+        /// Reads the available typeface information from the requested path.
+        /// This can either be an absolute Url or File path, or relative if a base path was provided in the constructor.
+        /// If the base was a Url and the path is relative, it is assumed to be a relative url (not a relative file path).
+        /// </summary>
+        /// <param name="path">The absolute or relative path</param>
+        /// <returns></returns>
+        public ITypefaceInfo GetTypefaceInformation(string path)
+        {
+            using (var stream = _loader.GetStream(path, true))
+            {
+                return DoGetTypefaceInformation(stream, path);
+            }
+
+        }
+
+        #endregion
+
+        #region public ITypefaceInfo GetTypefaceInformation(Uri path)
+
+        /// <summary>
+        /// Reads the available typeface information from the requested path. This can either be an absolute Url, or relative if a base path was provided in the constructor
+        /// </summary>
+        /// <param name="path">The absolute or relative url</param>
+        /// <returns></returns>
+        public ITypefaceInfo GetTypefaceInformation(Uri path)
+        {
+            using (var stream = _loader.GetStream(path, true))
+            {
+                return DoGetTypefaceInformation(stream, path.ToString());
+            }
+
+        }
+
+        #endregion
+
+        #region public ITypefaceInfo GetTypefaceInformation(FileInfo path)
+
+        /// <summary>
+        /// Reads the available typeface information from the requested path. This can either be an absolute File path, or relative if a base path was provided in the constructor
+        /// </summary>
+        /// <param name="path">The absolute or relative file path</param>
+        /// <returns></returns>
+        public ITypefaceInfo GetTypefaceInformation(FileInfo path)
+        {
+            using (var stream = _loader.GetStream(path, true))
+            {
+                return DoGetTypefaceInformation(stream, path.ToString());
+            }
+
+        }
+
+        #endregion
+
+        #region public ITypefaceInfo GetTypefaceInformation(Stream seekableStream, string source)
+
+        /// <summary>
+        /// Reads the available typeface information from the requested SEEKABLE stream with the specified source name
+        /// </summary>
+        /// <param name="seekableStream">The seekable stream to read the info from</param>
+        /// <param name="source">Can be any name or path to identify the returned info with</param>
+        /// <returns>The information read from the typeface stream</returns>
         public ITypefaceInfo GetTypefaceInformation(Stream seekableStream, string source)
         {
             if (null == seekableStream)
@@ -448,6 +588,76 @@ namespace Scryber.OpenType
 
             return DoGetTypefaceInformation(seekableStream, source);
         }
+
+
+        #endregion
+
+        //
+        // Get TypefaceInformation Async
+        //
+
+        #region public async Task<ITypefaceInfo> GetTypefaceInformationAsync(string path)
+
+        /// <summary>
+        /// Asyncronously reads the available typeface information from the requested path.
+        /// This can either be an absolute Url or File path, or relative if a base path was provided in the constructor.
+        /// If the base was a Url and the path is relative, it is assumed to be a relative url (not a relative file path).
+        /// </summary>
+        /// <param name="path">The absolute or relative path</param>
+        /// <returns></returns>
+        public async Task<ITypefaceInfo> GetTypefaceInformationAsync(string path)
+        {
+            using (var stream = await _loader.GetStreamAsync(path, true))
+            {
+                return DoGetTypefaceInformation(stream, path);
+            }
+        }
+
+        #endregion
+
+        #region public async Task<ITypefaceInfo> GetTypefaceInformationAsync(Uri path)
+
+        /// <summary>
+        /// Asyncronously reads the available typeface information from the requested path.
+        /// This can either be an absolute Url or File path, or relative if a base path was provided in the constructor.
+        /// If the base was a Url and the path is relative, it is assumed to be a relative url (not a relative file path).
+        /// </summary>
+        /// <param name="path">The absolute or relative path</param>
+        /// <returns></returns>
+        public async Task<ITypefaceInfo> GetTypefaceInformationAsync(Uri path)
+        {
+            using (var stream = await _loader.GetStreamAsync(path, true))
+            {
+                return DoGetTypefaceInformation(stream, path.ToString());
+            }
+        }
+
+        #endregion
+
+        #region public async Task<ITypefaceInfo> GetTypefaceInformationAsync(FileInfo path)
+
+        /// <summary>
+        /// Asyncronously reads the available typeface information from the requested path.
+        /// This can either be an absolute Url or File path, or relative if a base path was provided in the constructor.
+        /// If the base was a Url and the path is relative, it is assumed to be a relative url (not a relative file path).
+        /// </summary>
+        /// <param name="path">The absolute or relative path</param>
+        /// <returns></returns>
+        public async Task<ITypefaceInfo> GetTypefaceInformationAsync(FileInfo path)
+        {
+            using (var stream = await _loader.GetStreamAsync(path, true))
+            {
+                return DoGetTypefaceInformation(stream, path.FullName);
+            }
+        }
+
+        #endregion
+
+        //
+        // DoTry and DoGet TypefaceInformation
+        //
+
+        #region protected virtual bool DoTryGetTypefaceInformation(Stream seekableStream, string source, out ITypefaceInfo info)
 
         /// <summary>
         /// Trys to get the specific typeface Information from the provided stream, which must be seekable (supports the Postion setting)
@@ -486,6 +696,16 @@ namespace Scryber.OpenType
             }
         }
 
+        #endregion
+
+        #region protected virtual ITypefaceInfo DoGetTypefaceInformation(Stream seekableStream, string source)
+
+        /// <summary>
+        /// Gets the specific typeface Information from the provided stream, which must be seekable (supports the Postion setting)
+        /// </summary>
+        /// <param name="seekableStream">The Seekable stream to load the font information from</param>
+        /// <param name="source">The original source for the stream (for reference identification only)</param>
+        /// <returns>The typeface information for the stream</returns>
         protected virtual ITypefaceInfo DoGetTypefaceInformation(Stream seekableStream, string source)
         {
             using (var reader = new BigEndianReader(seekableStream))
@@ -508,6 +728,7 @@ namespace Scryber.OpenType
             }
         }
 
+        #endregion
 
         // ITypeface returns
 
@@ -664,7 +885,7 @@ namespace Scryber.OpenType
         // IDisposeable Implementation
         //
 
-#region protected virtual void Dispose(bool disposing)
+        #region protected virtual void Dispose(bool disposing)
 
         /// <summary>
         /// Dispose method that inheritors can override to add their own implelmentation, but should call the base method.
@@ -680,9 +901,9 @@ namespace Scryber.OpenType
             _loader = null;
         }
 
-#endregion
+        #endregion
 
-#region public void Dispose()
+        #region public void Dispose()
 
         /// <summary>
         /// Disposes of this reader, and any owned resources.
@@ -692,9 +913,9 @@ namespace Scryber.OpenType
             this.Dispose(true);
         }
 
-#endregion
+        #endregion
 
-#region ~TypefaceReader()
+        #region ~TypefaceReader()
 
         /// <summary>
         /// Finalizer method (calls dispose false)
@@ -704,7 +925,7 @@ namespace Scryber.OpenType
             this.Dispose(false);
         }
 
-#endregion
+        #endregion
 
     }
 

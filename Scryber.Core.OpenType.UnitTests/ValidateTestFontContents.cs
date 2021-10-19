@@ -16,15 +16,12 @@ namespace Scryber.OpenType.UnitTests
             Assert.IsNotNull(info);
             Assert.IsTrue(string.IsNullOrEmpty(info.ErrorMessage));
 
-            if (string.IsNullOrEmpty(source))
-            {
-                Assert.IsNull(info.Path, "Helvetica info Path was not null for test " + testIndex);
-            }
-            else
+            if (!string.IsNullOrEmpty(source))
             {
                 Assert.IsNotNull(info.Path, "Helvetica info Path was null for test " + testIndex);
                 Assert.AreEqual(source, info.Path, "Helvetica info Path was not equal to " + source + " for test " + testIndex);
             }
+
             Assert.IsNotNull(info.References, "Helvetica references was null for " + testIndex);
             Assert.AreEqual(1, info.References.Length, "Helvetica references was not 1 for " + testIndex);
 
