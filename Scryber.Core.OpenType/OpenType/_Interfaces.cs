@@ -30,13 +30,11 @@ namespace Scryber.OpenType
         string ErrorMessage { get; }
     }
 
-    public interface ITypeface
+    public interface ITypeface : ITypefaceReference
     {
         bool IsValid { get; }
 
         DataFormat SourceFormat { get; }
-
-        ITypefaceReference Reference { get; }
 
         byte[] GetFileData(DataFormat format);
 

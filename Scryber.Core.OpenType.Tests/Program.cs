@@ -181,7 +181,7 @@ namespace Scryber.Core.OpenType.Tests
                         return;
                     }
                     else
-                        Console.WriteLine("Loaded font reference " + typeface.Reference.ToString());
+                        Console.WriteLine("Loaded font reference " + typeface.ToString());
 
                     var metrics = typeface.GetMetrics();
 
@@ -192,27 +192,27 @@ namespace Scryber.Core.OpenType.Tests
                     }
                     else
                     {
-                        ExitClean("No metrics were returned for the font " + typeface.Reference.ToString());
+                        ExitClean("No metrics were returned for the font " + typeface.ToString());
                         return;
                     }
 
                     var ttfData = typeface.GetFileData(DataFormat.TTF);
                     if(null == ttfData)
                     {
-                        ExitClean("No data was returned in TTF format for the font " + typeface.Reference.ToString());
+                        ExitClean("No data was returned in TTF format for the font " + typeface.ToString());
                     }
                     else
                     {
                         Console.WriteLine("TrueType font data was extracted at " + ttfData.Length + " bytes from the original data of " + data.Length);
                     }
 
-                    var name = typeface.Reference.FamilyName;
-                    if (typeface.Reference.FontWeight != WeightClass.Normal)
+                    var name = typeface.FamilyName;
+                    if (typeface.FontWeight != WeightClass.Normal)
                     {
-                        if (name.IndexOf(typeface.Reference.FontWeight.ToString()) < 0)
-                            name += " " + typeface.Reference.FontWeight.ToString();
+                        if (name.IndexOf(typeface.FontWeight.ToString()) < 0)
+                            name += " " + typeface.FontWeight.ToString();
                     }
-                    if((typeface.Reference.Selections & FontSelection.Italic) > 0)
+                    if((typeface.Selections & FontSelection.Italic) > 0)
                     {
                         if (name.IndexOf("Italic") < 0)
                             name += " Italic";

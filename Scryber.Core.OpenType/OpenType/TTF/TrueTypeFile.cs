@@ -84,6 +84,16 @@ namespace Scryber.OpenType.TTF
         }
 
 
+        public string FamilyName { get { return _ref?.FamilyName; } }
+
+        public WeightClass FontWeight { get { return _ref == null ? ((WeightClass)(0)) : _ref.FontWeight; } }
+
+        public WidthClass FontWidth { get { return _ref == null ? ((WidthClass)(0)) : _ref.FontWidth; } }
+
+        public FontRestrictions Restrictions { get { return _ref == null ? ((FontRestrictions)(0)) : _ref.Restrictions; } }
+
+        public FontSelection Selections { get { return _ref == null ? ((FontSelection)(0)) : _ref.Selections; } }
+
         //
         // ctors
         //
@@ -408,6 +418,11 @@ namespace Scryber.OpenType.TTF
             len = len * emsize;
             double h = ((double)(os2.TypoAscender - os2.TypoDescender + os2.TypoLineGap) / (double)head.UnitsPerEm) * emsize;
             return new LineSize((float)len, (float)h, charsfitted, isboundary);
+        }
+
+        public override string ToString()
+        {
+            return "Typeface " + this.FamilyName + " (weight: " + this.FontWeight.ToString() + ", selection: " + this.Selections.ToString() + ", width: " + this.FontWidth.ToString() + ")";
         }
 
         public static bool CanRead(string path)
