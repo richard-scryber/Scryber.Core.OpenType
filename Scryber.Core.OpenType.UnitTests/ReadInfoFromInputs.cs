@@ -13,11 +13,13 @@ namespace Scryber.OpenType.UnitTests
     [TestClass()]
     public class ReadInfoFromInputs
     {
-        public const string RootUrl = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.Drawing/Text/";
+        public const string RootUrl = ValidateHelvetica.RootUrl;
 
-        public const string UrlPath = "_FontResources/Helvetica/Helvetica.ttf";
+        public const string UrlPath = ValidateHelvetica.UrlPath;
+        public const string FailingUrlPath = "/NOT_HERE/" + UrlPath;
 
-        public static readonly string PartialFilePath = "fonts/Helvetica.ttf";
+        public static readonly string PartialFilePath = UrlPath;
+        public static readonly string FailingPartialFilePath = FailingUrlPath;
 
         /// <summary>
         /// A download of a text (csproj) file that can make sure an http client is still alive

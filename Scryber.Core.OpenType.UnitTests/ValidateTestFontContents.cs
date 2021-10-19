@@ -11,6 +11,10 @@ namespace Scryber.OpenType.UnitTests
         public const FontRestrictions Restrictions = 0;
         public const FontSelection Selections = 0;
 
+        public const string RootUrl = "https://raw.githubusercontent.com/richard-scryber/Scryber.Core.OpenType/main/Scryber.Core.OpenType.UnitTests/";
+        public const string UrlPath = "fonts/Helvetica.ttf";
+
+
         public static void AssertInfo(ITypefaceInfo info, string source, int testIndex)
         {
             Assert.IsNotNull(info);
