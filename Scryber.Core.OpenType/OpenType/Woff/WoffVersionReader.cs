@@ -60,7 +60,7 @@ namespace Scryber.OpenType.Woff
             return new WoffTableFactory();
         }
 
-        public override ITypeface ReadTypefaceAfterVersion(BigEndianReader reader, ITypefaceReference forReference, string source)
+        public override ITypefaceFont ReadTypefaceAfterVersion(BigEndianReader reader, IFontInfo forReference, string source)
         {
             long startOffset = reader.Position - VersionByteSize;
 

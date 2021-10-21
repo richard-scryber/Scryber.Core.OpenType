@@ -3,18 +3,18 @@ namespace Scryber.OpenType.Utility
 {
     public class CollectionTypefaceInfo : ITypefaceInfo
     {
-        public CollectionTypefaceInfo(string path, DataFormat format, ITypefaceReference[] references)
+        public CollectionTypefaceInfo(string path, DataFormat format, IFontInfo[] references)
         {
-            this.References = references;
+            this.Fonts = references ?? new IFontInfo[] { };
             this.SourceFormat = format;
             this.Source = path;
         }
 
         public string Source { get; private set; }
 
-        public int TypefaceCount { get { return this.References.Length; } }
+        public int FontCount { get { return this.Fonts.Length; } }
 
-        public ITypefaceReference[] References { get; private set; }
+        public IFontInfo[] Fonts { get; private set; }
 
         public DataFormat SourceFormat { get; private set; }
 

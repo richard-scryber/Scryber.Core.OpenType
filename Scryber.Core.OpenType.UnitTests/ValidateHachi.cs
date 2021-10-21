@@ -29,10 +29,10 @@ namespace Scryber.OpenType.UnitTests
                 Assert.AreEqual(source, info.Source, "Hachi Maru Pop info Path was not equal to " + source + " for test " + testIndex);
             }
 
-            Assert.IsNotNull(info.References, "Hachi Maru Pop references was null for " + testIndex);
-            Assert.AreEqual(1, info.References.Length, "Hachi Maru Pop references was not 1 for " + testIndex);
+            Assert.IsNotNull(info.Fonts, "Hachi Maru Pop font references was null for " + testIndex);
+            Assert.AreEqual(1, info.Fonts.Length, "Hachi Maru Pop font references was not 1 for " + testIndex);
 
-            var fref = info.References[0];
+            var fref = info.Fonts[0];
 
             Assert.IsNotNull(fref, "Font reference[0] was null for test " + testIndex);
             Assert.AreEqual(FamilyName, fref.FamilyName, "The font names did not match for test " + testIndex);
@@ -42,7 +42,7 @@ namespace Scryber.OpenType.UnitTests
             Assert.AreEqual(Selections, fref.Selections, "The font selctions did not match for test " + testIndex);
         }
 
-        public static void AssertTypeface(ITypeface typeface)
+        public static void AssertTypeface(ITypefaceFont typeface)
         {
             Assert.IsNotNull(typeface);
             Assert.AreEqual(FamilyName, typeface.FamilyName, "The font names did not match for the typeface " + typeface);

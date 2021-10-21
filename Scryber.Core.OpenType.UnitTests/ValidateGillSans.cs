@@ -51,14 +51,14 @@ namespace Scryber.OpenType.UnitTests
                 Assert.AreEqual(source, info.Source, "Gill Sans info Path was not equal to " + source + " for test " + testIndex);
             }
 
-            Assert.IsNotNull(info.References, "Gill Sans references was null for " + testIndex);
-            Assert.AreEqual(FontTypefaces.Length, info.References.Length, "Gill Sans references was not " + FontTypefaces.Length + " for " + testIndex);
+            Assert.IsNotNull(info.Fonts, "Gill Sans references was null for " + testIndex);
+            Assert.AreEqual(FontTypefaces.Length, info.Fonts.Length, "Gill Sans references was not " + FontTypefaces.Length + " for " + testIndex);
             Assert.AreEqual(DataFormat.TTC, info.SourceFormat, "The source format for the font was not TTC for " + testIndex);
 
             //First should be normal
             var matches = new List<FontFace>(FontTypefaces);
 
-            foreach (var typeface in info.References)
+            foreach (var typeface in info.Fonts)
             {
                 Assert.IsNotNull(typeface);
                 Assert.AreEqual(FamilyName, typeface.FamilyName, "The font names did not match for the typeface " + typeface);
@@ -84,7 +84,7 @@ namespace Scryber.OpenType.UnitTests
         }
 
 
-        public static void AssertTypefaces(ITypeface[] typefaces)
+        public static void AssertTypefaces(ITypefaceFont[] typefaces)
         {
             var matches = new List<FontFace>(FontTypefaces);
 

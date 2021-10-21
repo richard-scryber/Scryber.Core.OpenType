@@ -21,7 +21,7 @@ namespace Scryber.OpenType.TTC
             this.VersionIdentifier = type;
         }
 
-        public override ITypeface ReadTypefaceAfterVersion(BigEndianReader reader, ITypefaceReference forReference, string source)
+        public override ITypefaceFont ReadTypefaceAfterVersion(BigEndianReader reader, IFontInfo forReference, string source)
         {
             this.EnsureSeekable(reader);
             Utility.SingleTypefaceInfo found = null;
@@ -75,10 +75,10 @@ namespace Scryber.OpenType.TTC
             return new Utility.CollectionTypefaceInfo(source, DataFormat.TTC, found.ToArray());
         }
 
-        protected virtual List<ITypefaceReference> ReadCollection(BigEndianReader reader, string source)
+        protected virtual List<IFontInfo> ReadCollection(BigEndianReader reader, string source)
         {
             var header = TTCHeader.ReadHeader(reader, this);
-            List<ITypefaceReference> found = new List<ITypefaceReference>();
+            List<IFontInfo> found = new List<IFontInfo>();
             
             for (int f = 0; f < header.NumFonts; f++)
             {
@@ -91,8 +91,8 @@ namespace Scryber.OpenType.TTC
                     if (info is Utility.SingleTypefaceInfo sti)
                         sti.OffsetInFile = header.FontOffsets[f];
 
-                    if (null != info && info.TypefaceCount == 1)
-                        found.Add(info.References[0]);
+                    if (null != info && info.FontCount == 1)
+                        found.Add(info.Fonts[0]);
                 }
             }
 

@@ -3,13 +3,13 @@ namespace Scryber.OpenType.Utility
 {
     public sealed class UnknownTypefaceInfo : ITypefaceInfo
     {
-        private static readonly ITypefaceReference[] _EMPTY = new ITypefaceReference[] { };
+        private static readonly IFontInfo[] _EMPTY = new IFontInfo[] { };
 
         public string Source { get; private set; }
 
-        public int TypefaceCount { get { return 0; } }
+        public int FontCount { get { return 0; } }
 
-        public ITypefaceReference[] References { get { return _EMPTY; } }
+        public IFontInfo[] Fonts { get { return _EMPTY; } }
 
         public DataFormat SourceFormat { get { return DataFormat.Other; } }
 

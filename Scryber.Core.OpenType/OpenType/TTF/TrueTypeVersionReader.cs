@@ -124,7 +124,7 @@ namespace Scryber.OpenType.TTF
             return new Utility.SingleTypefaceInfo(source, DataFormat.TTF, familyname, restrictions, weight, width, selection, 0);
         }
 
-        public override ITypeface ReadTypefaceAfterVersion(BigEndianReader reader, ITypefaceReference forReference, string source)
+        public override ITypefaceFont ReadTypefaceAfterVersion(BigEndianReader reader, IFontInfo forReference, string source)
         {
             long startOffset = reader.BaseStream.Position - 4;
 
@@ -151,7 +151,7 @@ namespace Scryber.OpenType.TTF
             catch (Exception ex) { throw new TypefaceReadException("Could not read the TTF File", ex); }
         }
 
-        protected virtual ITypeface ReadFile(TrueTypeHeader header, IEnumerable<TrueTypeTableEntry> dirs, BigEndianReader reader, long startOffset, ITypefaceReference reference)
+        protected virtual ITypefaceFont ReadFile(TrueTypeHeader header, IEnumerable<TrueTypeTableEntry> dirs, BigEndianReader reader, long startOffset, IFontInfo reference)
         {
             var entries = new TrueTypeTableEntryList(dirs);
 

@@ -24,7 +24,7 @@ using Scryber.OpenType.SubTables;
 
 namespace Scryber.OpenType.TTF
 {
-    public class TrueTypeFile : ITypeface
+    public class TrueTypeFile : ITypefaceFont
     {
         public DataFormat SourceFormat
         {
@@ -76,9 +76,9 @@ namespace Scryber.OpenType.TTF
             get { return this.Tables != null; }
         }
 
-        private ITypefaceReference _ref;
+        private IFontInfo _ref;
 
-        public ITypefaceReference Reference
+        public IFontInfo Reference
         {
             get { return _ref; }
         }
@@ -115,12 +115,12 @@ namespace Scryber.OpenType.TTF
         // methods
         //
 
-        public ITypefaceMetrics GetMetrics()
+        public IFontMetrics GetMetrics()
         {
             return GetMetrics(CMapEncoding.WindowsUnicode);
         }
 
-        public virtual ITypefaceMetrics GetMetrics(CMapEncoding? encoding)
+        public virtual IFontMetrics GetMetrics(CMapEncoding? encoding)
         {
             if (!encoding.HasValue)
                 encoding = CMapEncoding.WindowsUnicode;
@@ -135,6 +135,11 @@ namespace Scryber.OpenType.TTF
             return this.FileData;
         }
 
+        public virtual bool CanGetFileData(DataFormat format)
+        {
+            return ((format == this.Head.Version.DataFormat) && (null != this.FileData));
+        }
+
         public virtual void SetFileData(byte[] data, DataFormat format)
         {
             if(format != this.Head.Version.DataFormat)
@@ -143,7 +148,7 @@ namespace Scryber.OpenType.TTF
             this.FileData = data;
         }
 
-        public void EnsureReferenceMatched(ITypefaceReference reference)
+        public void EnsureReferenceMatched(IFontInfo reference)
         {
             this._ref = reference;
 

@@ -5,18 +5,18 @@ namespace Scryber.OpenType.Utility
     /// <summary>
     /// Implements the ITypefaceInfo and ITypefaceReference for a sinlge font file with a signle typeface
     /// </summary>
-    public class SingleTypefaceInfo : ITypefaceInfo, ITypefaceReference
+    public class SingleTypefaceInfo : ITypefaceInfo, IFontInfo
     {
-        private ITypefaceReference[] _thisRef;
+        private IFontInfo[] _thisRef;
 
         public string Source { get; set; }
 
-        public int TypefaceCount
+        public int FontCount
         {
             get { return 1; }
         }
 
-        public ITypefaceReference[] References { get { return _thisRef; } }
+        public IFontInfo[] Fonts { get { return _thisRef; } }
 
         public DataFormat SourceFormat { get; private set; }
 
@@ -47,7 +47,7 @@ namespace Scryber.OpenType.Utility
             this.FontWidth = width;
             this.Selections = selection;
             this.OffsetInFile = offset;
-            _thisRef = new ITypefaceReference[] { this };
+            _thisRef = new IFontInfo[] { this };
         }
 
         
@@ -58,7 +58,7 @@ namespace Scryber.OpenType.Utility
         }
 
 
-        internal static bool AreEqual(ITypefaceReference forReference, ITypefaceReference reference)
+        internal static bool AreEqual(IFontInfo forReference, IFontInfo reference)
         {
             return forReference.FamilyName == reference.FamilyName
                 && forReference.FontWeight == reference.FontWeight

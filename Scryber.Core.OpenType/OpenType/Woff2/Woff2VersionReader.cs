@@ -39,7 +39,7 @@ namespace Scryber.OpenType.Woff2
         }
 
 
-        public override ITypeface ReadTypefaceAfterVersion(BigEndianReader reader, ITypefaceReference forReference, string source)
+        public override ITypefaceFont ReadTypefaceAfterVersion(BigEndianReader reader, IFontInfo forReference, string source)
         {
             Woff2CacheData cache;
 
@@ -175,7 +175,7 @@ namespace Scryber.OpenType.Woff2
                 {
                     var info = ReadInfoFromTables(list, newReader, source, hasOs2);
 
-                    if (null != info && info.TypefaceCount > 0)
+                    if (null != info && info.FontCount > 0)
                     {
                         cache = new Woff2CacheData()
                         {

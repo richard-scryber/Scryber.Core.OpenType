@@ -151,15 +151,15 @@ namespace Scryber.Core.OpenType.Tests
                     ExitClean("Could not read the info from the font file");
                     return;
                 }
-                else if(info.TypefaceCount == 0)
+                else if(info.FontCount == 0)
                 {
                     ExitClean("No fonts could be read from the data: " + info.ErrorMessage ?? "Unknown error");
                     return;
                 }
                 else
                 {
-                    Console.WriteLine("Read  " + info.TypefaceCount + " typefaces from the font file " + info.Source);
-                    foreach (var reference in info.References)
+                    Console.WriteLine("Read  " + info.FontCount + " typefaces from the font file " + info.Source);
+                    foreach (var reference in info.Fonts)
                     {
                         Console.WriteLine("    " + reference.FamilyName + " (weight: " + reference.FontWeight.ToString() + ", width: " + reference.FontWidth + ", restrictions : " + reference.Restrictions + ", selections : " + reference.Selections.ToString() + ")");
                     }
@@ -171,7 +171,7 @@ namespace Scryber.Core.OpenType.Tests
             using (var ms = new System.IO.MemoryStream(data))
             {
 
-                foreach (var fref in info.References)
+                foreach (var fref in info.Fonts)
                 {
                     Console.WriteLine();
 

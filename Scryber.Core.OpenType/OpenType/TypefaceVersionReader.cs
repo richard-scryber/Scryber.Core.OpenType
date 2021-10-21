@@ -51,7 +51,7 @@ namespace Scryber.OpenType
 
         public abstract ITypefaceInfo ReadTypefaceInfoAfterVersion(BigEndianReader reader, string source);
 
-        public abstract ITypeface ReadTypefaceAfterVersion(BigEndianReader reader, ITypefaceReference forReference, string source);
+        public abstract ITypefaceFont ReadTypefaceAfterVersion(BigEndianReader reader, IFontInfo forReference, string source);
 
         public abstract override string ToString();
 

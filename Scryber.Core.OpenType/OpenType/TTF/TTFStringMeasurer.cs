@@ -8,24 +8,66 @@ namespace Scryber.OpenType.TTF
 
     public delegate double Measurer(string chars, int startOffset, double emsize, double available, bool wordboundary, out int fitted);
 
-    public class TTFStringMeasurer : ITypefaceMetrics
+    public class TTFStringMeasurer : IFontMetrics
     {
 
         private CMAPSubTable _offsets;
         private List<HMetric> _metrics;
         private int unitsPerEm;
         private int _lineHeight;
+        private bool _useTypo;
         private TrueTypeFile _fontfile;
         private CMapEncoding _cMapEncoding;
+        private HorizontalHeader _hheader;
+        private OS2Table _os2;
         private Dictionary<char, HMetric> _lookup;
 
-        private TTFStringMeasurer(int unitsPerEm, CMAPSubTable offsets, OS2Table oS2, List<HMetric> metrics, TrueTypeFile font, CMapEncoding encoding, int lineheight)
+
+        /// <summary>
+        /// Gets the number of font units in an uppercase M (the basic
+        /// bounding box for a character).
+        /// </summary>
+        public int FUnitsPerEm { get { return this.unitsPerEm; } }
+
+        /// <summary>
+        /// Gets the ascender height of this font in FontUnits 
+        /// </summary>
+        public int AscenderHeightFU { get { return this._useTypo ? _os2.TypoAscender : _hheader.Ascender; }  }
+
+        /// <summary>
+        /// Gets the descenter height of this font in FontUnits
+        /// </summary>
+        public int DescenderHeightFU { get { return this._useTypo ? _os2.TypoDescender : _hheader.Descender; } }
+
+        /// <summary>
+        /// Gets the standard spacing between a descender and the next
+        /// asender in Font Units
+        /// </summary>
+        public int LineSpaceingFU { get { return this._useTypo ? _os2.TypoLineGap : _hheader.LineGap; } }
+
+        /// <summary>
+        /// Gets the width of a lowercase x in Font Units
+        /// </summary>
+        public int ExWidthFU { get { return this._useTypo ? _os2.XAverageCharWidth : _hheader.XMaxExtent; } }
+
+
+        /// <summary>
+        /// Returns true if this font should be a vertical font (read from
+        /// top to bottom, rather than horizontally).
+        /// </summary>
+        /// <remarks>Always return false here as this measurer does not support vertical fonts</remarks>
+        public bool Vertical { get { return false; } }
+
+        private TTFStringMeasurer(int unitsPerEm, CMAPSubTable offsets, OS2Table oS2, HorizontalHeader hheader, List<HMetric> metrics, TrueTypeFile font, CMapEncoding encoding, int lineheight)
         {
             this.unitsPerEm = unitsPerEm;
             this._offsets = offsets;
+            this._os2 = oS2;
             this._metrics = metrics;
             this._lookup = new Dictionary<char, HMetric>();
-            _lineHeight = lineheight;
+            this._useTypo = (FontSelection.UseTypographicSizes & oS2.Selection) > 0;
+            this._lineHeight = lineheight;
+            this._hheader = hheader;
             this._fontfile = font;
             this._cMapEncoding = encoding;
         }
@@ -93,7 +135,7 @@ namespace Scryber.OpenType.TTF
 
         }
 
-        LineSize ITypefaceMetrics.Measure(string chars, int startOffset, double emSize, double maxWidth, TypeMeasureOptions options)
+        LineSize IFontMetrics.Measure(string chars, int startOffset, double emSize, double maxWidth, TypeMeasureOptions options)
         {
             int fitted;
 
@@ -140,7 +182,7 @@ namespace Scryber.OpenType.TTF
                 lineHeight = hhead.Ascender - hhead.Descender + hhead.LineGap; 
 
 
-            return new TTFStringMeasurer(head.UnitsPerEm, map, os2, table.HMetrics, forfont, encoding, lineHeight);
+            return new TTFStringMeasurer(head.UnitsPerEm, map, os2, hhead, table.HMetrics, forfont, encoding, lineHeight);
         }
     }
 

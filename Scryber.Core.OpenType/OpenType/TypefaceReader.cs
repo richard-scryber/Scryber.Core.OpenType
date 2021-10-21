@@ -743,7 +743,7 @@ namespace Scryber.OpenType
         /// <param name="uri">The relative or absolute url containing one or more typefaces</param>
         /// <returns>An enumerable collection of typefaces or null if there were none.</returns>
         /// <remarks>For single font files (ttf, otf or woff) this will be just one, for collections (ttc, otc or woff2) this could be more than one</remarks>
-        public IEnumerable<ITypeface> GetTypefaces(Uri uri)
+        public IEnumerable<ITypefaceFont> GetTypefaces(Uri uri)
         {
             if (null == uri)
                 throw new ArgumentNullException(nameof(uri));
@@ -764,7 +764,7 @@ namespace Scryber.OpenType
         /// <param name="uri">The relative or absolute url containing one or more typefaces</param>
         /// <returns>An enumerable collection of typefaces or null if there were none.</returns>
         /// <remarks>For single font files (ttf, otf or woff) this will be just one, for collections (ttc, otc or woff2) this could be more than one</remarks>
-        public IEnumerable<ITypeface> GetTypefaces(FileInfo path)
+        public IEnumerable<ITypefaceFont> GetTypefaces(FileInfo path)
         {
             if (null == path)
                 throw new ArgumentNullException(nameof(path));
@@ -785,7 +785,7 @@ namespace Scryber.OpenType
         /// <param name="seekableStream">The stream that supports seeking, having a position explicily set.</param>
         /// <returns>An enumerable collection of typefaces or null if there were none.</returns>
         /// <remarks>For single font files (ttf, otf or woff) this will be just one, for collections (ttc, otc or woff2) this could be more than one</remarks>
-        public IEnumerable<ITypeface> GetTypefaces(Stream seekableStream, string source)
+        public IEnumerable<ITypefaceFont> GetTypefaces(Stream seekableStream, string source)
         {
             if (null == seekableStream)
                 throw new ArgumentNullException(nameof(seekableStream));
@@ -809,27 +809,27 @@ namespace Scryber.OpenType
         /// <param name="stream"></param>
         /// <param name="source"></param>
         /// <returns></returns>
-        protected virtual IEnumerable<ITypeface> DoGetTypefaces(Stream stream, string source)
+        protected virtual IEnumerable<ITypefaceFont> DoGetTypefaces(Stream stream, string source)
         {
             var info = this.DoGetTypefaceInformation(stream, source);
 
-            if (null != info && info.References.Length > 0)
+            if (null != info && info.Fonts.Length > 0)
             {
                 //reset the stream, rather than reloading
                 //as we know it is seekable
 
                 stream.Position = 0;
 
-                if (info.References.Length == 1)
+                if (info.Fonts.Length == 1)
                 {
-                    var one = this.GetTypeface(stream, info.Source, info.References[0]);
-                    return new ITypeface[] { one };
+                    var one = this.GetTypeface(stream, info.Source, info.Fonts[0]);
+                    return new ITypefaceFont[] { one };
                 }
                 else
                 {
-                    List<ITypeface> typefaces = new List<ITypeface>();
+                    List<ITypefaceFont> typefaces = new List<ITypefaceFont>();
 
-                    foreach (var tfref in info.References)
+                    foreach (var tfref in info.Fonts)
                     {
                         stream.Position = 0;
                         var one = this.GetTypeface(stream, info.Source, tfref);
@@ -856,7 +856,7 @@ namespace Scryber.OpenType
         /// </summary>
         /// <param name="uri">The relative or absolute url containing one or more typefaces</param>
         /// <returns>An enumerable collection of typefaces or null if there were none.</returns>
-        public async Task<IEnumerable<ITypeface>> GetTypefacesAsync(Uri uri)
+        public async Task<IEnumerable<ITypefaceFont>> GetTypefacesAsync(Uri uri)
         {
             if (null == uri)
                 throw new ArgumentNullException(nameof(uri));
@@ -865,22 +865,22 @@ namespace Scryber.OpenType
             {
                 var info = this.DoGetTypefaceInformation(stream, uri.ToString());
 
-                if(null != info && info.References.Length > 0)
+                if(null != info && info.Fonts.Length > 0)
                 {
                     //reset the stream, rather than reloading
                     //as we know it is seekable
                     stream.Position = 0;
                     
-                    if(info.References.Length == 1)
+                    if(info.Fonts.Length == 1)
                     {
-                        var one = this.GetTypeface(stream, uri.ToString(), info.References[0]);
-                        return new ITypeface[] { one };
+                        var one = this.GetTypeface(stream, uri.ToString(), info.Fonts[0]);
+                        return new ITypefaceFont[] { one };
                     }
                     else
                     {
-                        List<ITypeface> typefaces = new List<ITypeface>();
+                        List<ITypefaceFont> typefaces = new List<ITypefaceFont>();
 
-                        foreach (var tfref in info.References)
+                        foreach (var tfref in info.Fonts)
                         {
                             stream.Position = 0;
                             var one = this.GetTypeface(stream, info.Source, tfref);
@@ -905,7 +905,7 @@ namespace Scryber.OpenType
         /// <param name="uri">The relative or absolute url containing one or more typefaces</param>
         /// <returns>An enumerable collection of typefaces or null if there were none.</returns>
         /// <remarks>For single font files (ttf, otf or woff) this will be the font typeface, for collections (ttc, otc or woff2) this will be the first in the file</remarks>
-        public virtual ITypeface GetFirstTypeface(Uri uri)
+        public virtual ITypefaceFont GetFirstTypeface(Uri uri)
         {
             if (null == uri)
                 throw new ArgumentNullException(nameof(uri));
@@ -914,14 +914,14 @@ namespace Scryber.OpenType
             {
                 var info = this.DoGetTypefaceInformation(stream, uri.ToString());
 
-                if (null != info && info.References.Length > 0)
+                if (null != info && info.Fonts.Length > 0)
                 {
                     //reset the stream, rather than reloading
                     //as we know it is seekable
 
                     stream.Position = 0;
 
-                    var one = this.GetTypeface(stream, info.Source, info.References[0]);
+                    var one = this.GetTypeface(stream, info.Source, info.Fonts[0]);
                     return one;
 
                 }
@@ -935,7 +935,7 @@ namespace Scryber.OpenType
         /// <param name="uri">The relative or absolute url containing one or more typefaces</param>
         /// <returns>An enumerable collection of typefaces or null if there were none.</returns>
         /// <remarks>For single font files (ttf, otf or woff) this will be the font typeface, for collections (ttc, otc or woff2) this will be the first in the file</remarks>
-        public virtual async Task<ITypeface> GetFirstTypefaceAsync(Uri uri)
+        public virtual async Task<ITypefaceFont> GetFirstTypefaceAsync(Uri uri)
         {
             if (null == uri)
                 throw new ArgumentNullException(nameof(uri));
@@ -944,14 +944,14 @@ namespace Scryber.OpenType
             {
                 var info = this.DoGetTypefaceInformation(stream, uri.ToString());
 
-                if (null != info && info.References.Length > 0)
+                if (null != info && info.Fonts.Length > 0)
                 {
                     //reset the stream, rather than reloading
                     //as we know it is seekable
 
                     stream.Position = 0;
 
-                    var one = this.GetTypeface(stream, info.Source, info.References[0]);
+                    var one = this.GetTypeface(stream, info.Source, info.Fonts[0]);
                     return one;
 
                 }
@@ -963,37 +963,37 @@ namespace Scryber.OpenType
 
 
 
-        public async Task<IEnumerable<ITypeface>> GetTypefacesAsync(ITypefaceInfo forInfo)
+        public async Task<IEnumerable<ITypefaceFont>> GetTypefacesAsync(ITypefaceInfo forInfo)
         {
             if (null == forInfo)
                 throw new ArgumentNullException(nameof(forInfo));
 
-            if (forInfo.References == null)
-                return new ITypeface[] { };
+            if (forInfo.Fonts == null)
+                return new ITypefaceFont[] { };
 
-            if (forInfo.TypefaceCount == 0 && (forInfo.References == null || forInfo.References.Length == 0))
-                return new ITypeface[] { };
+            if (forInfo.FontCount == 0 && (forInfo.Fonts == null || forInfo.Fonts.Length == 0))
+                return new ITypefaceFont[] { };
 
-            if (forInfo.TypefaceCount != forInfo.References.Length)
-                throw new ArgumentOutOfRangeException(nameof(forInfo.TypefaceCount), "The number of references in the information does not match the specified TypefaceCount");
+            if (forInfo.FontCount != forInfo.Fonts.Length)
+                throw new ArgumentOutOfRangeException(nameof(forInfo.FontCount), "The number of references in the information does not match the specified TypefaceCount");
 
             if (string.IsNullOrEmpty(forInfo.Source))
                 throw new ArgumentNullException(nameof(forInfo.Source), "The path must be set on the typeface info, so the reader can load the file");
 
-            if (forInfo.TypefaceCount == 1)
+            if (forInfo.FontCount == 1)
             {
                 using (var stream = await this._loader.GetStreamAsync(forInfo.Source, true))
                 {
-                    var one = GetTypeface(stream, forInfo.Source, forInfo.References[0]);
-                    return new ITypeface[] { one };
+                    var one = GetTypeface(stream, forInfo.Source, forInfo.Fonts[0]);
+                    return new ITypefaceFont[] { one };
                 }
             }
             else
             {
-                List<ITypeface> loaded = new List<ITypeface>();
+                List<ITypefaceFont> loaded = new List<ITypefaceFont>();
                 using (var stream = await this._loader.GetStreamAsync(forInfo.Source, true))
                 {
-                    foreach (var reference in forInfo.References)
+                    foreach (var reference in forInfo.Fonts)
                     {
                         stream.Position = 0;
                         var one = GetTypeface(stream, forInfo.Source, reference);
@@ -1004,37 +1004,37 @@ namespace Scryber.OpenType
             }
         }
 
-        public virtual IEnumerable<ITypeface> GetTypefaces(ITypefaceInfo forInfo)
+        public virtual IEnumerable<ITypefaceFont> GetTypefaces(ITypefaceInfo forInfo)
         {
             if (null == forInfo)
                 throw new ArgumentNullException(nameof(forInfo));
 
-            if (forInfo.References == null)
-                return new ITypeface[] { };
+            if (forInfo.Fonts == null)
+                return new ITypefaceFont[] { };
 
-            if (forInfo.TypefaceCount == 0 && (forInfo.References == null || forInfo.References.Length == 0))
-                return new ITypeface[] { };
+            if (forInfo.FontCount == 0 && (forInfo.Fonts == null || forInfo.Fonts.Length == 0))
+                return new ITypefaceFont[] { };
 
-            if (forInfo.TypefaceCount != forInfo.References.Length)
-                throw new ArgumentOutOfRangeException(nameof(forInfo.TypefaceCount), "The number of references in the information does not match the specified TypefaceCount");
+            if (forInfo.FontCount != forInfo.Fonts.Length)
+                throw new ArgumentOutOfRangeException(nameof(forInfo.FontCount), "The number of references in the information does not match the specified TypefaceCount");
 
             if (string.IsNullOrEmpty(forInfo.Source))
                 throw new ArgumentNullException(nameof(forInfo.Source), "The path must be set on the typeface info, so the reader can load the file");
 
-            if(forInfo.TypefaceCount == 1)
+            if(forInfo.FontCount == 1)
             {
-                return new ITypeface[]
+                return new ITypefaceFont[]
                 {
-                    GetTypeface(forInfo, forInfo.References[0])
+                    GetTypeface(forInfo, forInfo.Fonts[0])
                 };
             }
             else
             {
-                List<ITypeface> loaded = new List<ITypeface>();
+                List<ITypefaceFont> loaded = new List<ITypefaceFont>();
 
                 using (var stream = this._loader.GetStream(forInfo.Source, true))
                 {
-                    foreach (var reference in forInfo.References)
+                    foreach (var reference in forInfo.Fonts)
                     {
                         stream.Position = 0;
                         var one = GetTypeface(forInfo, reference);
@@ -1045,23 +1045,23 @@ namespace Scryber.OpenType
             }
         }
 
-        public async Task<ITypeface> GetTypefaceAsync(ITypefaceInfo info, ITypefaceReference forReference)
+        public async Task<ITypefaceFont> GetTypefaceAsync(ITypefaceInfo info, IFontInfo forReference)
         {
             throw new NotImplementedException();
         }
 
 
-        public virtual ITypeface GetTypeface(ITypefaceInfo info, ITypefaceReference forReference)
+        public virtual ITypefaceFont GetTypeface(ITypefaceInfo info, IFontInfo forReference)
         {
             throw new NotImplementedException();
         }
 
-        public virtual ITypeface GetTypeface(Uri uri, ITypefaceReference forReference)
+        public virtual ITypefaceFont GetTypeface(Uri uri, IFontInfo forReference)
         {
             throw new NotImplementedException();
         }
 
-        public virtual ITypeface GetTypeface(FileInfo file, ITypefaceReference theReference)
+        public virtual ITypefaceFont GetTypeface(FileInfo file, IFontInfo theReference)
         {
             if (null == file)
                 throw new ArgumentNullException(nameof(file));
@@ -1076,7 +1076,7 @@ namespace Scryber.OpenType
         }
 
 
-        public virtual ITypeface GetTypeface(Stream seekableStream, string source, ITypefaceReference theReference)
+        public virtual ITypefaceFont GetTypeface(Stream seekableStream, string source, IFontInfo theReference)
         {
             if (null == seekableStream)
                 throw new ArgumentNullException(nameof(seekableStream));

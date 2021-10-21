@@ -26,6 +26,14 @@ namespace Scryber.OpenType.Woff
                 throw new NotSupportedException("Cannot convert a Woff font to " + format.ToString());
         }
 
+        public override bool CanGetFileData(DataFormat format)
+        {
+            if (format == DataFormat.Woff || format == DataFormat.TTF)
+                return null != this.FileData;
+            else
+                return base.CanGetFileData(format);
+        }
+
         private byte[] ConvertWoffToTTF()
         {
             if(_convertedTTF == null)
