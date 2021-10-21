@@ -4,9 +4,12 @@ using Scryber.OpenType.TTF;
 
 namespace Scryber.OpenType.Woff2
 {
+    /// <summary>
+    /// NOT SUPPORTED - need to sort the glyph, loca and hmtx table transformations.
+    /// </summary>
     public class Woff2VersionReader : TrueTypeVersionReader
     {
-
+        [Obsolete("The Woff2 reading is not currently supported")]
         public Woff2VersionReader(string id, byte[] header)
             : base(id, header, DataFormat.Woff2)
         {

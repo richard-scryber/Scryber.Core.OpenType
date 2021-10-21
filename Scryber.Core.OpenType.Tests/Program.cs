@@ -1,4 +1,4 @@
-﻿#define UseOpenFont
+﻿//#define UseOpenFont
 //#define Performance
 #define UseLocal
 
@@ -6,9 +6,9 @@ using System;
 using System.Threading.Tasks;
 using Scryber.OpenType;
 using Scryber.OpenType.SubTables;
-using Typography.OpenFont.WebFont;
+//using Typography.OpenFont.WebFont;
 using System.IO;
-using Typography.OpenFont.Extensions;
+//using Typography.OpenFont.Extensions;
 
 namespace Scryber.Core.OpenType.Tests
 {
@@ -158,7 +158,7 @@ namespace Scryber.Core.OpenType.Tests
                 }
                 else
                 {
-                    Console.WriteLine("Read  " + info.TypefaceCount + " typefaces from the font file " + info.Path);
+                    Console.WriteLine("Read  " + info.TypefaceCount + " typefaces from the font file " + info.Source);
                     foreach (var reference in info.References)
                     {
                         Console.WriteLine("    " + reference.FamilyName + " (weight: " + reference.FontWeight.ToString() + ", width: " + reference.FontWidth + ", restrictions : " + reference.Restrictions + ", selections : " + reference.Selections.ToString() + ")");
@@ -176,7 +176,7 @@ namespace Scryber.Core.OpenType.Tests
                     Console.WriteLine();
 
                     ms.Position = 0;
-                    var typeface = tfreader.GetTypeface(ms, fref);
+                    var typeface = tfreader.GetTypeface(ms, info.Source, fref);
 
                     if (null == typeface || typeface.IsValid == false)
                     {
