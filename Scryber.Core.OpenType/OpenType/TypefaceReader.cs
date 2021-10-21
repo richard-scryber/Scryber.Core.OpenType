@@ -17,9 +17,19 @@ using Scryber.OpenType.Utility;
 namespace Scryber.OpenType
 {
     /// <summary>
-    /// Reads supported typefaces from files and streams. Start by reading the summary ITypefaceInfo for a file,
-    /// and then read the ITypeface for a Reference returned for the file, as some typefaces can have multiple fonts within them 
+    /// Reads supported typefaces and fonts from files and streams including true type fonts, collections, open type fonts and web fonts (WOFF only).
+    /// The Read Typeface methods will return information about the typeface data and fonts within it (e.g. Helvetica Black, Italic etc.).
+    /// The Get Font methods will extract a particular font from the typeface data.
     /// </summary>
+    /// <remarks>The TypefaceReader disinguishes between a typeface as a
+    /// single data entity that can be read using the multiple ReadTypeface... methods, and can contain multiple Font programs within it.
+    ///
+    /// The TypefaceReader can then GetFont... programs from within the Typeface for explicit single fonts.
+    ///
+    /// ttf, otf and woff contain single fonts, the collection types can contain multiple fonts programs within them.
+    ///
+    /// The constructor for the reader accepts base paths to use as a reference when reading multiple sources from a standard loaction
+    /// </remarks>
     public class TypefaceReader : IDisposable
     {
 
@@ -160,10 +170,10 @@ namespace Scryber.OpenType
 
 
         //
-        // GetAllTypefaceInformation
+        // ReadAllTypefaces
         //
 
-        #region public ITypefaceInfo[] GetAllTypefaceInformation(System.IO.DirectoryInfo directory ...)
+        #region public ITypefaceInfo[] ReadAllTypefaces(System.IO.DirectoryInfo directory ...)
 
         /// <summary>
         /// Reads a summary of all the typeface files in the specified directory.
@@ -173,7 +183,7 @@ namespace Scryber.OpenType
         /// <param name="includeSubdirectories">An optional flag to also look for files in a subdirectory. Default is false</param>
         /// <param name="registerErrors">An optional flag to include in the results any read errors for matched files. Default is false</param>
         /// <returns>An array of all the Typefaces found in the files with References to their inner font variation(s)</returns>
-        public ITypefaceInfo[] GetAllTypefaceInformation(System.IO.DirectoryInfo directory, string matchExtension = null, bool includeSubdirectories = false, bool registerErrors = false)
+        public ITypefaceInfo[] ReadAllTypefaces(System.IO.DirectoryInfo directory, string matchExtension = null, bool includeSubdirectories = false, bool registerErrors = false)
         {
             if (!directory.Exists)
                 throw new DirectoryNotFoundException("Directory '" + directory.FullName + "' could not be found");
@@ -182,13 +192,13 @@ namespace Scryber.OpenType
 
             Utility.PathHelper.MatchFiles(files, directory, matchExtension, includeSubdirectories);
 
-            return this.GetAllTypefaceInformation(files, registerErrors);
+            return this.ReadAllTypefaces(files, registerErrors);
             
         }
 
         #endregion
 
-        #region public ITypefaceInfo[] GetAllTypefaceInformation(IEnumerable<FileInfo> files.. 
+        #region public ITypefaceInfo[] ReadAllTypefaces(IEnumerable<FileInfo> files.. 
 
 
         /// <summary>
@@ -196,8 +206,8 @@ namespace Scryber.OpenType
         /// </summary>
         /// <param name="files">An enumerable collection of Files that can be scanned and information returned on.</param>
         /// <param name="registerErrors">An optional flag that if true will add any read errors to the returned information array</param>
-        /// <returns>An array of all the Typefaces found in the files with References to their inner font variation(s)</returns>
-        public ITypefaceInfo[] GetAllTypefaceInformation(IEnumerable<FileInfo> files, bool registerErrors = false)
+        /// <returns>An array of all the Typefaces found in the files with references to their inner Font(s)</returns>
+        public ITypefaceInfo[] ReadAllTypefaces(IEnumerable<FileInfo> files, bool registerErrors = false)
         {
             if (null == files)
                 throw new ArgumentNullException(nameof(files));
@@ -210,7 +220,7 @@ namespace Scryber.OpenType
 
                 using (var fs = _loader.GetStream(file, true))
                 {
-                    if (this.TryGetTypefaceInformation(fs, file.FullName, out foundOne))
+                    if (this.TryReadTypeface(fs, file.FullName, out foundOne))
                         found.Add(foundOne);
                     else if (registerErrors)
                     {
@@ -229,15 +239,15 @@ namespace Scryber.OpenType
 
         #endregion
 
-        #region public ITypefaceInfo[] GetAllTypefaceInformation(IEnumerable<Uri> urls.. 
+        #region public ITypefaceInfo[] ReadAllTypefaces(IEnumerable<Uri> urls.. 
 
         /// <summary>
-        /// Reads the summary information for all the requested urls.
+        /// Reads the summary typeface information for all the requested urls.
         /// </summary>
         /// <param name="urls">An enumerable collection of full uri's that can be enumerated over inturn.</param>
         /// <param name="registerErrors">An optional flag that if true will add any read errors to the returned information array</param>
         /// <returns>An array of all the Typefaces found in the files with References to their inner font variation(s)</returns>
-        public ITypefaceInfo[] GetAllTypefaceInformation(IEnumerable<Uri> urls, bool registerErrors = false)
+        public ITypefaceInfo[] ReadAllTypefaces(IEnumerable<Uri> urls, bool registerErrors = false)
         {
             if (null == urls)
                 throw new ArgumentNullException(nameof(urls));
@@ -250,7 +260,7 @@ namespace Scryber.OpenType
 
                 using (var fs = _loader.GetStream(url, true))
                 {
-                    if (this.TryGetTypefaceInformation(fs, url.ToString(), out foundOne))
+                    if (this.TryReadTypeface(fs, url.ToString(), out foundOne))
                         found.Add(foundOne);
                     else if (registerErrors)
                     {
@@ -269,12 +279,12 @@ namespace Scryber.OpenType
 
         #endregion
 
-        
+
         //
-        // GetAllTypefaceInformationAsync
+        // ReadAllTypefacesAsync
         //
 
-        #region public virtual ITypefaceInfo[] GetAllTypefaceInformationAsync(System.IO.DirectoryInfo directory ...)
+        #region public virtual ITypefaceInfo[] ReadAllTypefacesAsync(System.IO.DirectoryInfo directory ...)
 
         /// <summary>
         /// Reads a summary of all the typeface files in the specified directory.
@@ -284,7 +294,7 @@ namespace Scryber.OpenType
         /// <param name="includeSubdirectories">An optional flag to also look for files in a subdirectory. Default is false</param>
         /// <param name="registerErrors">An optional flag include in the results any read errors for matched files. Default is false</param>
         /// <returns></returns>
-        public virtual async Task<ITypefaceInfo[]> GetAllTypefaceInformationAsync(System.IO.DirectoryInfo directory, string matchExtension = null, bool includeSubdirectories = false, bool registerErrors = false)
+        public virtual async Task<ITypefaceInfo[]> ReadAllTypefacesAsync(System.IO.DirectoryInfo directory, string matchExtension = null, bool includeSubdirectories = false, bool registerErrors = false)
         {
             if (!directory.Exists)
                 throw new DirectoryNotFoundException("Directory '" + directory.FullName + "' could not be found");
@@ -295,7 +305,7 @@ namespace Scryber.OpenType
             {
                 Utility.PathHelper.MatchFiles(files, directory, matchExtension, includeSubdirectories);
 
-                return this.GetAllTypefaceInformation(files.ToArray(), registerErrors);
+                return this.ReadAllTypefaces(files.ToArray(), registerErrors);
             });
 
             return info;
@@ -303,7 +313,7 @@ namespace Scryber.OpenType
 
         #endregion
 
-        #region public virtual async Task<ITypefaceInfo[]> GetAllTypefaceInformationAsync(IEnumerable<FileInfo> files ...)
+        #region public virtual async Task<ITypefaceInfo[]> ReadAllTypefacesAsync(IEnumerable<FileInfo> files ...)
 
         /// <summary>
         /// Reads the summary information for all the requested files.
@@ -311,7 +321,7 @@ namespace Scryber.OpenType
         /// <param name="files">An enumerable collection of Files that can be scanned and information returned on.</param>
         /// <param name="registerErrors">An optional flag that if true will add any read errors to the returned information array</param>
         /// <returns>An array of all the Typefaces found in the files with References to their inner font variation(s)</returns>
-        public virtual async Task<ITypefaceInfo[]> GetAllTypefaceInformationAsync(IEnumerable<FileInfo> files, bool registerErrors = false)
+        public virtual async Task<ITypefaceInfo[]> ReadAllTypefacesAsync(IEnumerable<FileInfo> files, bool registerErrors = false)
         {
             if (null == files)
                 throw new ArgumentNullException(nameof(files));
@@ -326,7 +336,7 @@ namespace Scryber.OpenType
 
                     using (var fs = this.Loader.GetStream(file, true))
                     {
-                        if (this.TryGetTypefaceInformation(fs, file.FullName, out foundOne))
+                        if (this.TryReadTypeface(fs, file.FullName, out foundOne))
                             found.Add(foundOne);
 
                         else if (registerErrors)
@@ -348,7 +358,7 @@ namespace Scryber.OpenType
 
         #endregion
 
-        #region public Task<ITypefaceInfo[]> GetAllTypefaceInformationAsync(IEnumerable<Uri> absoluteUrls.. 
+        #region public Task<ITypefaceInfo[]> ReadAllTypefacesAsync(IEnumerable<Uri> absoluteUrls.. 
 
         /// <summary>
         /// Reads the summary information for all the requested files asyncronously.
@@ -356,7 +366,7 @@ namespace Scryber.OpenType
         /// <param name="urls">An enumerable collection of Files that can be scanned and information returned on.</param>
         /// <param name="registerErrors">An optional flag that if true will add any read errors to the returned information array</param>
         /// <returns>An array of all the Typefaces found in the files with References to their inner font variation(s)</returns>
-        public virtual async Task<ITypefaceInfo[]> GetAllTypefaceInformationAsync(IEnumerable<Uri> urls, bool registerErrors = false)
+        public virtual async Task<ITypefaceInfo[]> ReadAllTypefacesAsync(IEnumerable<Uri> urls, bool registerErrors = false)
         {
             if (null == urls)
                 throw new ArgumentNullException(nameof(urls));
@@ -371,7 +381,7 @@ namespace Scryber.OpenType
 
                     using (var fs = _loader.GetStream(url, true))
                     {
-                        if (this.TryGetTypefaceInformation(fs, url.ToString(), out foundOne))
+                        if (this.TryReadTypeface(fs, url.ToString(), out foundOne))
                             found.Add(foundOne);
                         else if (registerErrors)
                         {
@@ -392,10 +402,10 @@ namespace Scryber.OpenType
         #endregion
 
         //
-        // TryGetTypefaceInformation
+        // TryReadTypeface
         //
 
-        #region public bool TryGetTypefaceInformation(FileInfo fromFile, out ITypefaceInfo info)
+        #region public bool TryReadTypeface(FileInfo fromFile, out ITypefaceInfo info)
 
         /// <summary>
         /// Attempts to read the typeface information from a file
@@ -403,7 +413,7 @@ namespace Scryber.OpenType
         /// <param name="fromFile">The file to read the info from</param>
         /// <param name="info">Set to the info for the typeface if successful, or an error message</param>
         /// <returns>True if successfully read the information from file, otherwise false</returns>
-        public bool TryGetTypefaceInformation(FileInfo fromFile, out ITypefaceInfo info)
+        public bool TryReadTypeface(FileInfo fromFile, out ITypefaceInfo info)
         {
             Stream stream;
             string message;
@@ -426,11 +436,16 @@ namespace Scryber.OpenType
             }
             else
             {
-                result = this.TryGetTypefaceInformation(stream, fromFile.FullName, out info);
+                try
+                {
+                    result = this.TryReadTypeface(stream, fromFile.FullName, out info);
+                }
+                finally
+                {
+                    if (null != stream)
+                        stream.Dispose();
 
-                if (null != stream)
-                    stream.Dispose();
-
+                }
             }
 
             return result;
@@ -438,7 +453,7 @@ namespace Scryber.OpenType
 
         #endregion
 
-        #region public bool TryGetTypefaceInformation(Uri fromUrl, out ITypefaceInfo info)
+        #region public bool TryReadTypeface(Uri fromUrl, out ITypefaceInfo info)
 
         /// <summary>
         /// Attempts to read the typeface information from a url
@@ -446,7 +461,7 @@ namespace Scryber.OpenType
         /// <param name="fromUrl">The url to read the info from</param>
         /// <param name="info">Set to the info for the typeface if successful, or an error message</param>
         /// <returns>True if successfully read the information from the url, otherwise false</returns>
-        public bool TryGetTypefaceInformation(Uri fromUrl, out ITypefaceInfo info)
+        public bool TryReadTypeface(Uri fromUrl, out ITypefaceInfo info)
         {
             Stream stream;
             string message;
@@ -469,10 +484,16 @@ namespace Scryber.OpenType
             }
             else
             {
-                result = this.TryGetTypefaceInformation(stream, fromUrl.ToString(), out info);
+                try
+                {
+                    result = this.TryReadTypeface(stream, fromUrl.ToString(), out info);
 
-                if (null != stream)
-                    stream.Dispose();
+                }
+                finally
+                {
+                    if (null != stream)
+                        stream.Dispose();
+                }
             }
 
             return result;
@@ -480,7 +501,7 @@ namespace Scryber.OpenType
 
         #endregion
 
-        #region public bool TryGetTypefaceInformation(Stream seekableStream, string source, out ITypefaceInfo info)
+        #region public bool TryReadTypeface(Stream seekableStream, string source, out ITypefaceInfo info)
 
         /// <summary>
         /// Attempts to read the typeface information from a seekable stream
@@ -489,7 +510,7 @@ namespace Scryber.OpenType
         /// <param name="source">The name or path for the information</param>
         /// <param name="info">Set to the info for the typeface if successful, or an error message</param>
         /// <returns>True if successfully read the information from the url, otherwise false</returns>
-        public bool TryGetTypefaceInformation(Stream seekableStream, string source, out ITypefaceInfo info)
+        public bool TryReadTypeface(Stream seekableStream, string source, out ITypefaceInfo info)
         {
             info = null;
             if (null == seekableStream)
@@ -503,162 +524,16 @@ namespace Scryber.OpenType
                 return false;
             }
 
-            return DoTryGetTypefaceInformation(seekableStream, source, out info);
-        }
-
-        #endregion
-
-
-        //
-        // GetTypefaceInformation
-        //
-
-        #region public ITypefaceInfo GetTypefaceInformation(string path)
-
-        /// <summary>
-        /// Reads the available typeface information from the requested path.
-        /// This can either be an absolute Url or File path, or relative if a base path was provided in the constructor.
-        /// If the base was a Url and the path is relative, it is assumed to be a relative url (not a relative file path).
-        /// </summary>
-        /// <param name="path">The absolute or relative path</param>
-        /// <returns></returns>
-        public ITypefaceInfo GetTypefaceInformation(string path)
-        {
-            using (var stream = _loader.GetStream(path, true))
-            {
-                return DoGetTypefaceInformation(stream, path);
-            }
-
-        }
-
-        #endregion
-
-        #region public ITypefaceInfo GetTypefaceInformation(Uri path)
-
-        /// <summary>
-        /// Reads the available typeface information from the requested path. This can either be an absolute Url, or relative if a base path was provided in the constructor
-        /// </summary>
-        /// <param name="path">The absolute or relative url</param>
-        /// <returns></returns>
-        public ITypefaceInfo GetTypefaceInformation(Uri path)
-        {
-            using (var stream = _loader.GetStream(path, true))
-            {
-                return DoGetTypefaceInformation(stream, path.ToString());
-            }
-
-        }
-
-        #endregion
-
-        #region public ITypefaceInfo GetTypefaceInformation(FileInfo path)
-
-        /// <summary>
-        /// Reads the available typeface information from the requested path. This can either be an absolute File path, or relative if a base path was provided in the constructor
-        /// </summary>
-        /// <param name="path">The absolute or relative file path</param>
-        /// <returns></returns>
-        public ITypefaceInfo GetTypefaceInformation(FileInfo path)
-        {
-            using (var stream = _loader.GetStream(path, true))
-            {
-                return DoGetTypefaceInformation(stream, path.ToString());
-            }
-
-        }
-
-        #endregion
-
-        #region public ITypefaceInfo GetTypefaceInformation(Stream seekableStream, string source)
-
-        /// <summary>
-        /// Reads the available typeface information from the requested SEEKABLE stream with the specified source name
-        /// </summary>
-        /// <param name="seekableStream">The seekable stream to read the info from</param>
-        /// <param name="source">Can be any name or path to identify the returned info with</param>
-        /// <returns>The information read from the typeface stream</returns>
-        public ITypefaceInfo GetTypefaceInformation(Stream seekableStream, string source)
-        {
-            if (null == seekableStream)
-                throw new ArgumentNullException(nameof(seekableStream));
-
-            if (seekableStream.CanSeek == false)
-            {
-                throw new ArgumentOutOfRangeException(nameof(seekableStream), "The provided stream cannot be positioned, use a FileStream or a MemoryStream if needed to create a seekable stream");
-            }
-
-            return DoGetTypefaceInformation(seekableStream, source);
-        }
-
-
-        #endregion
-
-        //
-        // GetTypefaceInformationAsync
-        //
-
-        #region public async Task<ITypefaceInfo> GetTypefaceInformationAsync(string path)
-
-        /// <summary>
-        /// Asyncronously reads the available typeface information from the requested path.
-        /// This can either be an absolute Url or File path, or relative if a base path was provided in the constructor.
-        /// If the base was a Url and the path is relative, it is assumed to be a relative url (not a relative file path).
-        /// </summary>
-        /// <param name="path">The absolute or relative path</param>
-        /// <returns></returns>
-        public async Task<ITypefaceInfo> GetTypefaceInformationAsync(string path)
-        {
-            using (var stream = await _loader.GetStreamAsync(path, true))
-            {
-                return DoGetTypefaceInformation(stream, path);
-            }
-        }
-
-        #endregion
-
-        #region public async Task<ITypefaceInfo> GetTypefaceInformationAsync(Uri path)
-
-        /// <summary>
-        /// Asyncronously reads the available typeface information from the requested path.
-        /// This can either be an absolute Url or File path, or relative if a base path was provided in the constructor.
-        /// If the base was a Url and the path is relative, it is assumed to be a relative url (not a relative file path).
-        /// </summary>
-        /// <param name="path">The absolute or relative path</param>
-        /// <returns></returns>
-        public async Task<ITypefaceInfo> GetTypefaceInformationAsync(Uri path)
-        {
-            using (var stream = await _loader.GetStreamAsync(path, true))
-            {
-                return DoGetTypefaceInformation(stream, path.ToString());
-            }
-        }
-
-        #endregion
-
-        #region public async Task<ITypefaceInfo> GetTypefaceInformationAsync(FileInfo path)
-
-        /// <summary>
-        /// Asyncronously reads the available typeface information from the requested path.
-        /// This can either be an absolute Url or File path, or relative if a base path was provided in the constructor.
-        /// If the base was a Url and the path is relative, it is assumed to be a relative url (not a relative file path).
-        /// </summary>
-        /// <param name="path">The absolute or relative path</param>
-        /// <returns></returns>
-        public async Task<ITypefaceInfo> GetTypefaceInformationAsync(FileInfo path)
-        {
-            using (var stream = await _loader.GetStreamAsync(path, true))
-            {
-                return DoGetTypefaceInformation(stream, path.FullName);
-            }
+            return DoTryReadTypeface(seekableStream, source, out info);
         }
 
         #endregion
 
         //
-        // DoTry and DoGet TypefaceInformation
+        // DoTryReadTypeface
         //
 
-        #region protected virtual bool DoTryGetTypefaceInformation(Stream seekableStream, string source, out ITypefaceInfo info)
+        #region protected virtual bool DoTryReadTypeface(Stream seekableStream, string source, out ITypefaceInfo info)
 
         /// <summary>
         /// Trys to get the specific typeface Information from the provided stream, which must be seekable (supports the Postion setting)
@@ -667,7 +542,7 @@ namespace Scryber.OpenType
         /// <param name="source">The original source for the stream (for reference identification only)</param>
         /// <param name="info">Set to the typeface information with References to specific font faces within if successful</param>
         /// <returns>True if reading of the stream was successful</returns>
-        protected virtual bool DoTryGetTypefaceInformation(Stream seekableStream, string source, out ITypefaceInfo info)
+        protected virtual bool DoTryReadTypeface(Stream seekableStream, string source, out ITypefaceInfo info)
         {
             using (var reader = new BigEndianReader(seekableStream))
             {
@@ -699,7 +574,159 @@ namespace Scryber.OpenType
 
         #endregion
 
-        #region protected virtual ITypefaceInfo DoGetTypefaceInformation(Stream seekableStream, string source)
+
+        //
+        // ReadTypeface
+        //
+
+        #region public ITypefaceInfo ReadTypeface(string path)
+
+        /// <summary>
+        /// Reads the available typeface information from the requested path.
+        /// This can either be an absolute Url or File path, or relative if a base path was provided in the constructor.
+        /// If the base was a Url and the path is relative, it is assumed to be a relative url (not a relative file path).
+        /// </summary>
+        /// <param name="path">The absolute or relative path</param>
+        /// <returns></returns>
+        public ITypefaceInfo ReadTypeface(string path)
+        {
+            using (var stream = _loader.GetStream(path, true))
+            {
+                return DoReadTypeface(stream, path);
+            }
+
+        }
+
+        #endregion
+
+        #region public ITypefaceInfo ReadTypeface(Uri path)
+
+        /// <summary>
+        /// Reads the available typeface information from the requested path. This can either be an absolute Url, or relative if a base path was provided in the constructor
+        /// </summary>
+        /// <param name="path">The absolute or relative url</param>
+        /// <returns></returns>
+        public ITypefaceInfo ReadTypeface(Uri path)
+        {
+            using (var stream = _loader.GetStream(path, true))
+            {
+                return DoReadTypeface(stream, path.ToString());
+            }
+
+        }
+
+        #endregion
+
+        #region public ITypefaceInfo ReadTypeface(FileInfo path)
+
+        /// <summary>
+        /// Reads the available typeface information from the requested path. This can either be an absolute File path, or relative if a base path was provided in the constructor
+        /// </summary>
+        /// <param name="path">The absolute or relative file path</param>
+        /// <returns></returns>
+        public ITypefaceInfo ReadTypeface(FileInfo path)
+        {
+            using (var stream = _loader.GetStream(path, true))
+            {
+                return DoReadTypeface(stream, path.ToString());
+            }
+
+        }
+
+        #endregion
+
+        #region public ITypefaceInfo ReadTypeface(Stream seekableStream, string source)
+
+        /// <summary>
+        /// Reads the available typeface information from the requested SEEKABLE stream with the specified source name
+        /// </summary>
+        /// <param name="seekableStream">The seekable stream to read the info from</param>
+        /// <param name="source">Can be any name or path to identify the returned info with</param>
+        /// <returns>The information read from the typeface stream</returns>
+        public ITypefaceInfo ReadTypeface(Stream seekableStream, string source)
+        {
+            if (null == seekableStream)
+                throw new ArgumentNullException(nameof(seekableStream));
+
+            if (seekableStream.CanSeek == false)
+            {
+                throw new ArgumentOutOfRangeException(nameof(seekableStream), "The provided stream cannot be positioned, use a FileStream or a MemoryStream if needed to create a seekable stream");
+            }
+
+            return DoReadTypeface(seekableStream, source);
+        }
+
+
+        #endregion
+
+        //
+        // ReadTypefaceAsync
+        //
+
+        #region public async Task<ITypefaceInfo> ReadTypefaceAsync(string path)
+
+        /// <summary>
+        /// Asyncronously reads the available typeface information from the requested path.
+        /// This can either be an absolute Url or File path, or relative if a base path was provided in the constructor.
+        /// If the base was a Url and the path is relative, it is assumed to be a relative url (not a relative file path).
+        /// </summary>
+        /// <param name="path">The absolute or relative path</param>
+        /// <returns></returns>
+        public async Task<ITypefaceInfo> ReadTypefaceAsync(string path)
+        {
+            using (var stream = await _loader.GetStreamAsync(path, true))
+            {
+                return DoReadTypeface(stream, path);
+            }
+        }
+
+        #endregion
+
+        #region public async Task<ITypefaceInfo> ReadTypefaceAsync(Uri path)
+
+        /// <summary>
+        /// Asyncronously reads the available typeface information from the requested path.
+        /// This can either be an absolute Url or File path, or relative if a base path was provided in the constructor.
+        /// If the base was a Url and the path is relative, it is assumed to be a relative url (not a relative file path).
+        /// </summary>
+        /// <param name="path">The absolute or relative path</param>
+        /// <returns></returns>
+        public async Task<ITypefaceInfo> ReadTypefaceAsync(Uri path)
+        {
+            using (var stream = await _loader.GetStreamAsync(path, true))
+            {
+                return DoReadTypeface(stream, path.ToString());
+            }
+        }
+
+        #endregion
+
+        #region public async Task<ITypefaceInfo> ReadTypefaceAsync(FileInfo path)
+
+        /// <summary>
+        /// Asyncronously reads the available typeface information from the requested path.
+        /// This can either be an absolute Url or File path, or relative if a base path was provided in the constructor.
+        /// If the base was a Url and the path is relative, it is assumed to be a relative url (not a relative file path).
+        /// </summary>
+        /// <param name="path">The absolute or relative path</param>
+        /// <returns></returns>
+        public async Task<ITypefaceInfo> ReadTypefaceAsync(FileInfo path)
+        {
+            using (var stream = await _loader.GetStreamAsync(path, true))
+            {
+                return DoReadTypeface(stream, path.FullName);
+            }
+        }
+
+        #endregion
+
+        //
+        // DoGetTypefaceInformation
+        //
+
+
+
+        #region protected virtual ITypefaceInfo DoReadTypeface(Stream seekableStream, string source)
 
         /// <summary>
         /// Gets the specific typeface Information from the provided stream, which must be seekable (supports the Postion setting)
@@ -707,7 +734,7 @@ namespace Scryber.OpenType
         /// <param name="seekableStream">The Seekable stream to load the font information from</param>
         /// <param name="source">The original source for the stream (for reference identification only)</param>
         /// <returns>The typeface information for the stream</returns>
-        protected virtual ITypefaceInfo DoGetTypefaceInformation(Stream seekableStream, string source)
+        protected virtual ITypefaceInfo DoReadTypeface(Stream seekableStream, string source)
         {
             using (var reader = new BigEndianReader(seekableStream))
             {
@@ -732,238 +759,18 @@ namespace Scryber.OpenType
         #endregion
 
         //
-        // GetTypefaces
+        // GetFonts
         //
 
-        #region public virtual IEnumerable<ITypeface> GetTypefaces(Uri uri)
+        #region public IEnumerable<ITypefaceFont> GetFonts(ITypefaceInfo forInfo)
 
         /// <summary>
-        /// Gets all the typefaces defined in the data returned from the relative or absolute url
+        /// Gets all the typeface fonts in the typeface information
         /// </summary>
-        /// <param name="uri">The relative or absolute url containing one or more typefaces</param>
-        /// <returns>An enumerable collection of typefaces or null if there were none.</returns>
+        /// <param name="forInfo">The typeface to load the font programs for</param>
+        /// <returns>An enumerable collection of font programmes or empty if there were none.</returns>
         /// <remarks>For single font files (ttf, otf or woff) this will be just one, for collections (ttc, otc or woff2) this could be more than one</remarks>
-        public IEnumerable<ITypefaceFont> GetTypefaces(Uri uri)
-        {
-            if (null == uri)
-                throw new ArgumentNullException(nameof(uri));
-
-            using (var stream = _loader.GetStream(uri, true))
-            {
-                return DoGetTypefaces(stream, uri.ToString());
-            }
-        }
-
-        #endregion
-
-        #region public virtual IEnumerable<ITypeface> GetTypefaces(FileInfo path)
-
-        /// <summary>
-        /// Gets all the typefaces defined in the data returned from the relative or absolute url
-        /// </summary>
-        /// <param name="uri">The relative or absolute url containing one or more typefaces</param>
-        /// <returns>An enumerable collection of typefaces or null if there were none.</returns>
-        /// <remarks>For single font files (ttf, otf or woff) this will be just one, for collections (ttc, otc or woff2) this could be more than one</remarks>
-        public IEnumerable<ITypefaceFont> GetTypefaces(FileInfo path)
-        {
-            if (null == path)
-                throw new ArgumentNullException(nameof(path));
-
-            using (var stream = _loader.GetStream(path, true))
-            {
-                return DoGetTypefaces(stream, path.FullName);
-            }
-        }
-
-        #endregion
-
-        #region public IEnumerable<ITypeface> GetTypefaces(Stream seekableStream, string source)
-
-        /// <summary>
-        /// Gets all the typefaces defined in the provided SEEKABLE stream with the specified source set.
-        /// </summary>
-        /// <param name="seekableStream">The stream that supports seeking, having a position explicily set.</param>
-        /// <returns>An enumerable collection of typefaces or null if there were none.</returns>
-        /// <remarks>For single font files (ttf, otf or woff) this will be just one, for collections (ttc, otc or woff2) this could be more than one</remarks>
-        public IEnumerable<ITypefaceFont> GetTypefaces(Stream seekableStream, string source)
-        {
-            if (null == seekableStream)
-                throw new ArgumentNullException(nameof(seekableStream));
-            if (!seekableStream.CanSeek)
-                throw new ArgumentException("The stream must support seeking (setting the position)", nameof(seekableStream));
-
-            return DoGetTypefaces(seekableStream, source);
-        }
-
-        #endregion
-
-        //
-        // DoGetTypefaces
-        //
-
-        #region protected virtual IEnumerable<ITypeface> DoGetTypefaces(Stream stream, string source)
-
-        /// <summary>
-        /// Main method to read all the typefaces defined in a stream. Inheritors can override.
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <param name="source"></param>
-        /// <returns></returns>
-        protected virtual IEnumerable<ITypefaceFont> DoGetTypefaces(Stream stream, string source)
-        {
-            var info = this.DoGetTypefaceInformation(stream, source);
-
-            if (null != info && info.Fonts.Length > 0)
-            {
-                //reset the stream, rather than reloading
-                //as we know it is seekable
-
-                stream.Position = 0;
-
-                if (info.Fonts.Length == 1)
-                {
-                    var one = this.GetTypeface(stream, info.Source, info.Fonts[0]);
-                    return new ITypefaceFont[] { one };
-                }
-                else
-                {
-                    List<ITypefaceFont> typefaces = new List<ITypefaceFont>();
-
-                    foreach (var tfref in info.Fonts)
-                    {
-                        stream.Position = 0;
-                        var one = this.GetTypeface(stream, info.Source, tfref);
-                        typefaces.Add(one);
-                    }
-
-                    return typefaces;
-                }
-
-            }
-            return null;
-        }
-
-        #endregion
-
-        //
-        // GetTypefacesAsync
-        //
-
-        #region public async Task<IEnumerable<ITypeface>> GetTypefacesAsync(Uri uri)
-
-        /// <summary>
-        /// Asyncronously gets all the typefaces defined in the data returned from the relative or absolute url
-        /// </summary>
-        /// <param name="uri">The relative or absolute url containing one or more typefaces</param>
-        /// <returns>An enumerable collection of typefaces or null if there were none.</returns>
-        public async Task<IEnumerable<ITypefaceFont>> GetTypefacesAsync(Uri uri)
-        {
-            if (null == uri)
-                throw new ArgumentNullException(nameof(uri));
-
-            using (var stream = await _loader.GetStreamAsync(uri, true))
-            {
-                var info = this.DoGetTypefaceInformation(stream, uri.ToString());
-
-                if(null != info && info.Fonts.Length > 0)
-                {
-                    //reset the stream, rather than reloading
-                    //as we know it is seekable
-                    stream.Position = 0;
-                    
-                    if(info.Fonts.Length == 1)
-                    {
-                        var one = this.GetTypeface(stream, uri.ToString(), info.Fonts[0]);
-                        return new ITypefaceFont[] { one };
-                    }
-                    else
-                    {
-                        List<ITypefaceFont> typefaces = new List<ITypefaceFont>();
-
-                        foreach (var tfref in info.Fonts)
-                        {
-                            stream.Position = 0;
-                            var one = this.GetTypeface(stream, info.Source, tfref);
-                            typefaces.Add(one);
-                        }
-
-                        return typefaces;
-                    }
-
-                }
-                return null;
-            }
-        }
-
-        #endregion
-
-        
-
-        /// <summary>
-        /// Asyncronously gets the first typeface defined in the data returned from the relative or absolute url. NOT recommended for TTC or Woff2
-        /// </summary>
-        /// <param name="uri">The relative or absolute url containing one or more typefaces</param>
-        /// <returns>An enumerable collection of typefaces or null if there were none.</returns>
-        /// <remarks>For single font files (ttf, otf or woff) this will be the font typeface, for collections (ttc, otc or woff2) this will be the first in the file</remarks>
-        public virtual ITypefaceFont GetFirstTypeface(Uri uri)
-        {
-            if (null == uri)
-                throw new ArgumentNullException(nameof(uri));
-
-            using (var stream = _loader.GetStream(uri, true))
-            {
-                var info = this.DoGetTypefaceInformation(stream, uri.ToString());
-
-                if (null != info && info.Fonts.Length > 0)
-                {
-                    //reset the stream, rather than reloading
-                    //as we know it is seekable
-
-                    stream.Position = 0;
-
-                    var one = this.GetTypeface(stream, info.Source, info.Fonts[0]);
-                    return one;
-
-                }
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Asyncronously gets the first typeface defined in the data returned from the relative or absolute url. NOT recommended for TTC or Woff2
-        /// </summary>
-        /// <param name="uri">The relative or absolute url containing one or more typefaces</param>
-        /// <returns>An enumerable collection of typefaces or null if there were none.</returns>
-        /// <remarks>For single font files (ttf, otf or woff) this will be the font typeface, for collections (ttc, otc or woff2) this will be the first in the file</remarks>
-        public virtual async Task<ITypefaceFont> GetFirstTypefaceAsync(Uri uri)
-        {
-            if (null == uri)
-                throw new ArgumentNullException(nameof(uri));
-
-            using (var stream = await _loader.GetStreamAsync(uri, true))
-            {
-                var info = this.DoGetTypefaceInformation(stream, uri.ToString());
-
-                if (null != info && info.Fonts.Length > 0)
-                {
-                    //reset the stream, rather than reloading
-                    //as we know it is seekable
-
-                    stream.Position = 0;
-
-                    var one = this.GetTypeface(stream, info.Source, info.Fonts[0]);
-                    return one;
-
-                }
-                return null;
-            }
-        }
-
-
-
-
-
-        public async Task<IEnumerable<ITypefaceFont>> GetTypefacesAsync(ITypefaceInfo forInfo)
+        public IEnumerable<ITypefaceFont> GetFonts(ITypefaceInfo forInfo)
         {
             if (null == forInfo)
                 throw new ArgumentNullException(nameof(forInfo));
@@ -982,21 +789,21 @@ namespace Scryber.OpenType
 
             if (forInfo.FontCount == 1)
             {
-                using (var stream = await this._loader.GetStreamAsync(forInfo.Source, true))
+                return new ITypefaceFont[]
                 {
-                    var one = GetTypeface(stream, forInfo.Source, forInfo.Fonts[0]);
-                    return new ITypefaceFont[] { one };
-                }
+                    GetFont(forInfo, forInfo.Fonts[0])
+                };
             }
             else
             {
                 List<ITypefaceFont> loaded = new List<ITypefaceFont>();
-                using (var stream = await this._loader.GetStreamAsync(forInfo.Source, true))
+
+                using (var stream = this._loader.GetStream(forInfo.Source, true))
                 {
                     foreach (var reference in forInfo.Fonts)
                     {
                         stream.Position = 0;
-                        var one = GetTypeface(stream, forInfo.Source, reference);
+                        var one = GetFont(forInfo, reference);
                         loaded.Add(one);
                     }
                 }
@@ -1004,7 +811,178 @@ namespace Scryber.OpenType
             }
         }
 
-        public virtual IEnumerable<ITypefaceFont> GetTypefaces(ITypefaceInfo forInfo)
+        #endregion
+
+        #region public virtual IEnumerable<ITypefaceFont> GetFonts(Uri uri)
+
+        /// <summary>
+        /// Gets all the typeface fonts in the data returned from the relative or absolute url
+        /// </summary>
+        /// <param name="uri">The relative or absolute url containing one or more typefaces</param>
+        /// <returns>An enumerable collection of typefaces or null if there were none.</returns>
+        /// <remarks>For single font files (ttf, otf or woff) this will be just one, for collections (ttc, otc or woff2) this could be more than one</remarks>
+        public IEnumerable<ITypefaceFont> GetFonts(Uri uri)
+        {
+            if (null == uri)
+                throw new ArgumentNullException(nameof(uri));
+
+            using (var stream = _loader.GetStream(uri, true))
+            {
+                return DoGetFonts(stream, uri.ToString());
+            }
+        }
+
+        #endregion
+
+        #region public virtual IEnumerable<ITypefaceFont> GetFonts(FileInfo path)
+
+        /// <summary>
+        /// Gets all the typeface fonts defined in the data returned from the relative or absolute filepath
+        /// </summary>
+        /// <param name="uri">The relative or absolute url containing one or more typeface fonts</param>
+        /// <returns>An enumerable collection of typefaces or null if there were none.</returns>
+        /// <remarks>For single font files (ttf, otf or woff) this will be just one, for collections (ttc, otc or woff2) this could be more than one</remarks>
+        public IEnumerable<ITypefaceFont> GetFonts(FileInfo path)
+        {
+            if (null == path)
+                throw new ArgumentNullException(nameof(path));
+
+            using (var stream = _loader.GetStream(path, true))
+            {
+                return DoGetFonts(stream, path.FullName);
+            }
+        }
+
+        #endregion
+
+        #region public IEnumerable<ITypefaceFont> GetFonts(Stream seekableStream, string source)
+
+        /// <summary>
+        /// Gets all the typeface fonts defined in the provided SEEKABLE stream with the specified source set.
+        /// </summary>
+        /// <param name="seekableStream">The stream that supports seeking, having a position explicily set.</param>
+        /// <returns>An enumerable collection of typefaces or null if there were none.</returns>
+        /// <remarks>For single font files (ttf, otf or woff) this will be just one, for collections (ttc, otc or woff2) this could be more than one</remarks>
+        public IEnumerable<ITypefaceFont> GetFonts(Stream seekableStream, string source)
+        {
+            if (null == seekableStream)
+                throw new ArgumentNullException(nameof(seekableStream));
+            if (!seekableStream.CanSeek)
+                throw new ArgumentException("The stream must support seeking (setting the position)", nameof(seekableStream));
+
+            return DoGetFonts(seekableStream, source);
+        }
+
+        #endregion
+
+        //
+        // DoGetFonts
+        //
+
+        #region protected virtual IEnumerable<ITypefaceFont> DoGetFonts(Stream stream, string source)
+
+        /// <summary>
+        /// Main method to read all the typeface fonts defined in a stream. Inheritors can override.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        protected virtual IEnumerable<ITypefaceFont> DoGetFonts(Stream stream, string source)
+        {
+            var info = this.DoReadTypeface(stream, source);
+
+            if (null != info && info.Fonts.Length > 0)
+            {
+                //reset the stream, rather than reloading
+                //as we know it is seekable
+
+                stream.Position = 0;
+
+                if (info.Fonts.Length == 1)
+                {
+                    var one = this.GetFont(stream, info.Source, info.Fonts[0]);
+                    return new ITypefaceFont[] { one };
+                }
+                else
+                {
+                    List<ITypefaceFont> typefaces = new List<ITypefaceFont>();
+
+                    foreach (var tfref in info.Fonts)
+                    {
+                        stream.Position = 0;
+                        var one = this.GetFont(stream, info.Source, tfref);
+                        typefaces.Add(one);
+                    }
+
+                    return typefaces;
+                }
+
+            }
+            return null;
+        }
+
+        #endregion
+
+        //
+        // GetFontsAsync
+        //
+
+        #region public async Task<IEnumerable<ITypefaceFont>> GetFontsAsync(Uri uri)
+
+        /// <summary>
+        /// Asyncronously gets all the fonts defined in the typeface font data returned from the relative or absolute url
+        /// </summary>
+        /// <param name="uri">The relative or absolute url containing one or more typefaces</param>
+        /// <returns>An enumerable collection of typefaces or null if there were none.</returns>
+        public async Task<IEnumerable<ITypefaceFont>> GetFontsAsync(Uri uri)
+        {
+            if (null == uri)
+                throw new ArgumentNullException(nameof(uri));
+
+            using (var stream = await _loader.GetStreamAsync(uri, true))
+            {
+                var info = this.DoReadTypeface(stream, uri.ToString());
+
+                if (null != info && info.Fonts.Length > 0)
+                {
+                    //reset the stream, rather than reloading
+                    //as we know it is seekable
+                    stream.Position = 0;
+
+                    if (info.Fonts.Length == 1)
+                    {
+                        var one = this.GetFont(stream, uri.ToString(), info.Fonts[0]);
+                        return new ITypefaceFont[] { one };
+                    }
+                    else
+                    {
+                        List<ITypefaceFont> typefaces = new List<ITypefaceFont>();
+
+                        foreach (var tfref in info.Fonts)
+                        {
+                            stream.Position = 0;
+                            var one = this.GetFont(stream, info.Source, tfref);
+                            typefaces.Add(one);
+                        }
+
+                        return typefaces;
+                    }
+
+                }
+                return null;
+            }
+        }
+
+        #endregion
+
+        #region public async Task<IEnumerable<ITypefaceFont>> GetFontsAsync(ITypefaceInfo forInfo)
+
+        /// <summary>
+        /// Asyncronously gets all the fonts defined in the typeface information returned from one fo the ReadTypeface methods.
+        /// </summary>
+        /// <param name="forInfo">The typeface to get all the font programs from</param>
+        /// <returns>An enumerable collection of fonts or an empty array if there were no fonts in the typeface.</returns>
+        public async Task<IEnumerable<ITypefaceFont>> GetFontsAsync(ITypefaceInfo forInfo)
         {
             if (null == forInfo)
                 throw new ArgumentNullException(nameof(forInfo));
@@ -1021,23 +999,24 @@ namespace Scryber.OpenType
             if (string.IsNullOrEmpty(forInfo.Source))
                 throw new ArgumentNullException(nameof(forInfo.Source), "The path must be set on the typeface info, so the reader can load the file");
 
-            if(forInfo.FontCount == 1)
+
+            if (forInfo.FontCount == 1)
             {
-                return new ITypefaceFont[]
+                using (var stream = await this._loader.GetStreamAsync(forInfo.Source, true))
                 {
-                    GetTypeface(forInfo, forInfo.Fonts[0])
-                };
+                    var one = GetFont(stream, forInfo.Source, forInfo.Fonts[0]);
+                    return new ITypefaceFont[] { one };
+                }
             }
             else
             {
                 List<ITypefaceFont> loaded = new List<ITypefaceFont>();
-
-                using (var stream = this._loader.GetStream(forInfo.Source, true))
+                using (var stream = await this._loader.GetStreamAsync(forInfo.Source, true))
                 {
                     foreach (var reference in forInfo.Fonts)
                     {
                         stream.Position = 0;
-                        var one = GetTypeface(forInfo, reference);
+                        var one = GetFont(stream, forInfo.Source, reference);
                         loaded.Add(one);
                     }
                 }
@@ -1045,47 +1024,304 @@ namespace Scryber.OpenType
             }
         }
 
-        public async Task<ITypefaceFont> GetTypefaceAsync(ITypefaceInfo info, IFontInfo forReference)
+        #endregion
+
+        //
+        // GetFirstFont
+        //
+
+        #region public ITypefaceFont GetFirstFont(Uri uri)
+
+        /// <summary>
+        /// Asyncronously gets the first typeface defined in the data returned from the relative or absolute url. NOT recommended for TTC or Woff2
+        /// </summary>
+        /// <param name="uri">The relative or absolute url containing one or more typefaces</param>
+        /// <returns>An enumerable collection of typefaces or null if there were none.</returns>
+        /// <remarks>For single font files (ttf, otf or woff) this will be the font typeface, for collections (ttc, otc or woff2) this will be the first in the file</remarks>
+        public ITypefaceFont GetFirstFont(Uri uri)
         {
-            throw new NotImplementedException();
+            if (null == uri)
+                throw new ArgumentNullException(nameof(uri));
+
+            using (var stream = _loader.GetStream(uri, true))
+            {
+                var info = this.DoReadTypeface(stream, uri.ToString());
+
+                if (null != info && info.Fonts.Length > 0)
+                {
+                    //reset the stream, rather than reloading
+                    //as we know it is seekable
+
+                    stream.Position = 0;
+
+                    var one = this.GetFont(stream, info.Source, info.Fonts[0]);
+                    return one;
+
+                }
+                else
+                    throw new TypefaceReadException("No fonts were returned from the typeface at path " + uri.ToString());
+            }
         }
 
+        #endregion
 
-        public virtual ITypefaceFont GetTypeface(ITypefaceInfo info, IFontInfo forReference)
-        {
-            throw new NotImplementedException();
-        }
+        #region public ITypefaceFont GetFirstFont(FileInfo file)
 
-        public virtual ITypefaceFont GetTypeface(Uri uri, IFontInfo forReference)
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual ITypefaceFont GetTypeface(FileInfo file, IFontInfo theReference)
+        /// <summary>
+        /// Asyncronously gets the first typeface defined in the data returned from the relative or absolute url. NOT recommended for TTC or Woff2
+        /// </summary>
+        /// <param name="uri">The relative or absolute url containing one or more typefaces</param>
+        /// <returns>An enumerable collection of typefaces or null if there were none.</returns>
+        /// <remarks>For single font files (ttf, otf or woff) this will be the font typeface, for collections (ttc, otc or woff2) this will be the first in the file</remarks>
+        public ITypefaceFont GetFirstFont(FileInfo file)
         {
             if (null == file)
                 throw new ArgumentNullException(nameof(file));
 
-            if (!file.Exists)
-                throw new FileNotFoundException("The file at path " + file.FullName + " no longer exists");
-
-            using(var fs = file.OpenRead())
+            using (var stream = _loader.GetStream(file, true))
             {
-                return GetTypeface(fs, file.FullName, theReference);
+                var info = this.DoReadTypeface(stream, file.FullName);
+
+                if (null != info && info.Fonts.Length > 0)
+                {
+                    //reset the stream, rather than reloading
+                    //as we know it is seekable
+
+                    stream.Position = 0;
+
+                    var one = this.GetFont(stream, info.Source, info.Fonts[0]);
+                    return one;
+
+                }
+                else
+                    throw new TypefaceReadException("No fonts were returned from the typeface at path " + file.FullName.ToString());
             }
         }
 
+        #endregion
 
-        public virtual ITypefaceFont GetTypeface(Stream seekableStream, string source, IFontInfo theReference)
+        //
+        // GetFirstFontAsync
+        //
+
+        #region public async Task<ITypefaceFont> GetFirstFontAsync(Uri uri)
+
+        /// <summary>
+        /// Asyncronously gets the first typeface defined in the data returned from the relative or absolute url. NOT recommended for TTC or Woff2
+        /// </summary>
+        /// <param name="uri">The relative or absolute url containing one or more typefaces</param>
+        /// <returns>An enumerable collection of typefaces or null if there were none.</returns>
+        /// <remarks>For single font files (ttf, otf or woff) this will be the font typeface, for collections (ttc, otc or woff2) this will be the first in the file</remarks>
+        public async Task<ITypefaceFont> GetFirstFontAsync(Uri uri)
+        {
+            if (null == uri)
+                throw new ArgumentNullException(nameof(uri));
+
+            using (var stream = await _loader.GetStreamAsync(uri, true))
+            {
+                var info = this.DoReadTypeface(stream, uri.ToString());
+
+                if (null != info && info.Fonts.Length > 0)
+                {
+                    //reset the stream, rather than reloading
+                    //as we know it is seekable
+
+                    stream.Position = 0;
+
+                    var one = this.GetFont(stream, info.Source, info.Fonts[0]);
+                    return one;
+
+                }
+                else
+                    throw new TypefaceReadException("No fonts were returned from the typeface at path " + uri.ToString());
+            }
+        }
+
+        #endregion
+
+        #region public async Task<ITypefaceFont> GetFirstFontAsync(FileInfo file)
+
+        /// <summary>
+        /// Asyncronously gets the first typeface defined in the data returned from the relative or absolute url. NOT recommended for TTC or Woff2
+        /// </summary>
+        /// <param name="uri">The relative or absolute url containing one or more typefaces</param>
+        /// <returns>An enumerable collection of typefaces or null if there were none.</returns>
+        /// <remarks>For single font files (ttf, otf or woff) this will be the font typeface, for collections (ttc, otc or woff2) this will be the first in the file</remarks>
+        public async Task<ITypefaceFont> GetFirstFontAsync(FileInfo file)
+        {
+            if (null == file)
+                throw new ArgumentNullException(nameof(file));
+
+            using (var stream = await _loader.GetStreamAsync(file, true))
+            {
+                var info = this.DoReadTypeface(stream, file.FullName);
+
+                if (null != info && info.Fonts.Length > 0)
+                {
+                    //reset the stream, rather than reloading
+                    //as we know it is seekable
+
+                    stream.Position = 0;
+
+                    var one = this.GetFont(stream, info.Source, info.Fonts[0]);
+                    return one;
+
+                }
+                else
+                    throw new TypefaceReadException("No fonts were returned from the typeface at path " + file.FullName.ToString());
+            }
+        }
+
+        #endregion
+
+
+        //
+        // GetFont
+        //
+
+        #region public ITypefaceFont GetFont(ITypefaceInfo forInfo, int fontIndex)
+
+        /// <summary>
+        /// Gets the font program data at the specified index in the typeface information returned from the ReadTypeface method(s)
+        /// </summary>
+        /// <param name="forInfo">The typeface information returned from a ReadTypeface</param>
+        /// <param name="fontIndex">This index of the font program to get from the Fonts</param>
+        /// <returns>The font prgram matching the font info at the specified index</returns>
+        public ITypefaceFont GetFont(ITypefaceInfo forInfo, int fontIndex)
+        {
+            if (null == forInfo)
+                throw new ArgumentNullException(nameof(forInfo));
+
+            if (forInfo.Fonts == null)
+                throw new ArgumentNullException(nameof(forInfo.Fonts));
+
+            if (forInfo.Fonts.Length <= fontIndex)
+                throw new ArgumentOutOfRangeException(nameof(fontIndex));
+
+            return this.GetFont(forInfo, forInfo.Fonts[fontIndex]);
+
+        }
+
+        #endregion
+
+        #region public ITypefaceFont GetFont(ITypefaceInfo info, IFontInfo forReference)
+
+        /// <summary>
+        /// Gets the font program data for the reference in the typeface information returned from the ReadTypeface method(s)
+        /// </summary>
+        /// <param name="forInfo">The typeface information returned from a ReadTypeface</param>
+        /// <param name="forReference">This font reference, that must also be in the typeface information</param>
+        /// <returns>The font program matching the font info</returns>
+        public ITypefaceFont GetFont(ITypefaceInfo info, IFontInfo forReference)
+        {
+            if (null == info)
+                throw new ArgumentNullException(nameof(info));
+
+            if (null == forReference)
+                throw new ArgumentNullException(nameof(forReference));
+
+            if (Array.IndexOf(info.Fonts, forReference) < 0)
+                throw new IndexOutOfRangeException("The font reference was not found in the typeface information");
+            
+            using (var stream = _loader.GetStream(info.Source, true))
+            {
+                return DoGetFont(stream, info.Source, forReference);
+            }
+        }
+
+        #endregion
+
+        #region public ITypefaceFont GetFont(Uri uri, IFontInfo forReference)
+
+        /// <summary>
+        /// Gets the font program data for the reference in the data returned from the Uri
+        /// </summary>
+        /// <param name="uri">The absolute or relative url of the typeface that will contain the font program</param>
+        /// <param name="forReference">This font reference, that the is in the url</param>
+        /// <returns>The font program matching the font info</returns>
+        public ITypefaceFont GetFont(Uri uri, IFontInfo forReference)
+        {
+            if (null == uri)
+                throw new ArgumentNullException(nameof(uri));
+
+            if (null == forReference)
+                throw new ArgumentNullException(nameof(forReference));
+
+            using (var stream = _loader.GetStream(uri, true))
+            {
+                return DoGetFont(stream, uri.ToString(), forReference);
+            }
+        }
+
+        #endregion
+
+        #region  public ITypefaceFont GetFont(FileInfo file, IFontInfo forReference)
+
+        /// <summary>
+        /// Gets the font program data for the reference in the data returned from the file path
+        /// </summary>
+        /// <param name="file">The absolute or relative file path of the typeface that will contain the font program</param>
+        /// <param name="forReference">This font reference, that the is in the file</param>
+        /// <returns>The font program matching the font info</returns>
+        public ITypefaceFont GetFont(FileInfo file, IFontInfo forReference)
+        {
+            if (null == file)
+                throw new ArgumentNullException(nameof(file));
+
+            if (null == forReference)
+                throw new ArgumentNullException(nameof(forReference));
+
+            using (var fs = _loader.GetStream(file, true))
+            {
+                return DoGetFont(fs, file.FullName, forReference);
+            }
+        }
+
+        #endregion
+
+        #region public ITypefaceFont GetFont(Stream seekableStream, string source, IFontInfo forReference)
+
+        /// <summary>
+        /// Gets the font program data for the reference in the data returned from the stream
+        /// </summary>
+        /// <param name="seekableStream">The seekable stream that will contain the font program</param>
+        /// <param name="source">A path to the stream, that will be used as the source property on the font program</param>
+        /// <param name="forReference">This font reference, that the is in the url</param>
+        /// <returns>The font program matching the font info</returns>
+        public ITypefaceFont GetFont(Stream seekableStream, string source, IFontInfo forReference)
         {
             if (null == seekableStream)
                 throw new ArgumentNullException(nameof(seekableStream));
+
+            if (null == forReference)
+                throw new ArgumentNullException(nameof(forReference));
 
             if (seekableStream.CanSeek == false)
             {
                 throw new ArgumentOutOfRangeException(nameof(seekableStream), "The provided stream cannot be positioned, use a FileStream or a MemoryStream if needed to create a seekable stream");
             }
 
+            return DoGetFont(seekableStream, source, forReference);
+        }
+
+        #endregion
+
+        //
+        // DoGetFont
+        //
+
+        #region protected virtual ITypefaceFont DoGetFont(Stream seekableStream, string source, IFontInfo theReference)
+
+        /// <summary>
+        /// Main implementation method for getting a font program from a stream. Inheritors can override.
+        /// </summary>
+        /// <param name="seekableStream"></param>
+        /// <param name="source"></param>
+        /// <param name="theReference"></param>
+        /// <returns></returns>
+        protected virtual ITypefaceFont DoGetFont(Stream seekableStream, string source, IFontInfo theReference)
+        {
+            
             using (var reader = new BigEndianReader(seekableStream))
             {
                 TypefaceVersionReader version;
@@ -1095,14 +1331,121 @@ namespace Scryber.OpenType
                 else
                 {
                     var typeface = version.ReadTypefaceAfterVersion(reader, theReference, source);
-                    
+
                     return typeface;
                 }
             }
 
         }
 
+        #endregion
 
+
+        //
+        // GetFontAsync
+        //
+
+
+        #region public async Task<ITypefaceFont> GetFontAsyncGetFont(ITypefaceInfo forInfo, int fontIndex)
+
+        /// <summary>
+        /// Gets the font program data at the specified index in the typeface information returned from the ReadTypeface method(s)
+        /// </summary>
+        /// <param name="forInfo">The typeface information returned from a ReadTypeface</param>
+        /// <param name="fontIndex">This index of the font program to get from the Fonts</param>
+        /// <returns>The font prgram matching the font info at the specified index</returns>
+        public async Task<ITypefaceFont> GetFontAsync(ITypefaceInfo forInfo, int fontIndex)
+        {
+            if (null == forInfo)
+                throw new ArgumentNullException(nameof(forInfo));
+
+            if (forInfo.Fonts == null)
+                throw new ArgumentNullException(nameof(forInfo.Fonts));
+
+            if (forInfo.Fonts.Length <= fontIndex)
+                throw new ArgumentOutOfRangeException(nameof(fontIndex));
+
+            return await this.GetFontAsync(forInfo, forInfo.Fonts[fontIndex]);
+        }
+
+        #endregion
+
+        #region public async Task<ITypefaceFont> GetFontAsync(ITypefaceInfo info, IFontInfo forReference)
+
+        /// <summary>
+        /// Asyncronously gets the font program data for the reference in the typeface information returned from the ReadTypeface method(s)
+        /// </summary>
+        /// <param name="forInfo">The typeface information returned from a ReadTypeface</param>
+        /// <param name="forReference">This font reference, that must also be in the typeface information</param>
+        /// <returns>The font program matching the font info</returns>
+        public async Task<ITypefaceFont> GetFontAsync(ITypefaceInfo info, IFontInfo forReference)
+        {
+            if (null == info)
+                throw new ArgumentNullException(nameof(info));
+
+            if (null == forReference)
+                throw new ArgumentNullException(nameof(forReference));
+
+            if (Array.IndexOf(info.Fonts, forReference) < 0)
+                throw new IndexOutOfRangeException("The font reference was not found in the typeface information");
+
+            using (var stream = await _loader.GetStreamAsync(info.Source, true))
+            {
+                return DoGetFont(stream, info.Source, forReference);
+            }
+        }
+
+        #endregion
+
+        #region public async Task<ITypefaceFont> GetFontAsync(Uri uri, IFontInfo forReference)
+
+        /// <summary>
+        /// Asyncronously gets the font program data for the reference in the data returned from the Uri
+        /// </summary>
+        /// <param name="uri">The absolute or relative url of the typeface that will contain the font program</param>
+        /// <param name="forReference">This font reference, that the is in the url</param>
+        /// <returns>The font program matching the font info</returns>
+        public async Task<ITypefaceFont> GetFontAsync(Uri uri, IFontInfo forReference)
+        {
+            if (null == uri)
+                throw new ArgumentNullException(nameof(uri));
+
+            if (null == forReference)
+                throw new ArgumentNullException(nameof(forReference));
+
+            using (var stream = await _loader.GetStreamAsync(uri, true))
+            {
+                return DoGetFont(stream, uri.ToString(), forReference);
+            }
+        }
+
+        #endregion
+
+        #region public async Task<ITypefaceFont> GetFontAsync(FileInfo file, IFontInfo forReference)
+
+
+        /// <summary>
+        /// Asyncronously gets the font program data for the reference in the data returned from the file path
+        /// </summary>
+        /// <param name="file">The absolute or relative file path of the typeface that will contain the font program</param>
+        /// <param name="forReference">This font reference, that the is in the file</param>
+        /// <returns>The font program matching the font info</returns>
+        public async Task<ITypefaceFont> GetFontAsync(FileInfo file, IFontInfo forReference)
+        {
+            if (null == file)
+                throw new ArgumentNullException(nameof(file));
+
+            if (null == forReference)
+                throw new ArgumentNullException(nameof(forReference));
+
+            using (var fs = await _loader.GetStreamAsync(file, true))
+            {
+                return DoGetFont(fs, file.FullName, forReference);
+            }
+        }
+
+
+        #endregion
 
         //
         // IDisposeable Implementation

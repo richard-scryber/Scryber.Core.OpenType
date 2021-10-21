@@ -50,7 +50,7 @@ namespace Scryber.OpenType.TTC
                 if (null != data && data.Length > 0)
                 {
                     using (System.IO.MemoryStream ms = new System.IO.MemoryStream(data))
-                        return new TypefaceReader().GetTypeface(ms, source, forReference);
+                        return new TypefaceReader().GetFont(ms, source, forReference);
                 }
             }
 

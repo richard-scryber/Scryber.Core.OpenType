@@ -40,7 +40,7 @@ namespace Scryber.OpenType.UnitTests
                     using (var stream = new FileStream(path, FileMode.Open))
                     {
 
-                        var info = reader.GetTypefaceInformation(stream, path);
+                        var info = reader.ReadTypeface(stream, path);
 
                     }
                 });
@@ -58,7 +58,7 @@ namespace Scryber.OpenType.UnitTests
 
                 Assert.ThrowsException<FileNotFoundException>(() =>
                 {
-                    var info = reader.GetTypefaceInformation(path);
+                    var info = reader.ReadTypeface(path);
                 });
 
             }
@@ -76,7 +76,7 @@ namespace Scryber.OpenType.UnitTests
 
                 Assert.ThrowsException<FileNotFoundException>(() =>
                 {
-                    var info = reader.GetTypefaceInformation(path);
+                    var info = reader.ReadTypeface(path);
                 });
 
             }
@@ -95,7 +95,7 @@ namespace Scryber.OpenType.UnitTests
 
                 Assert.ThrowsException<FileNotFoundException>(() =>
                 {
-                    var info = reader.GetTypefaceInformation(path);
+                    var info = reader.ReadTypeface(path);
                 });
 
             }
@@ -115,13 +115,13 @@ namespace Scryber.OpenType.UnitTests
 
                 Assert.ThrowsException<System.Net.WebException>(() =>
                 {
-                    var info = reader.GetTypefaceInformation(path);
+                    var info = reader.ReadTypeface(path);
                 });
 
 #else 
                 Assert.ThrowsException<AggregateException>(() =>
                 {
-                    var info = reader.GetTypefaceInformation(path);
+                    var info = reader.ReadTypeface(path);
                 });
 #endif
 
@@ -143,13 +143,13 @@ namespace Scryber.OpenType.UnitTests
 
                 Assert.ThrowsException<System.Net.WebException>(() =>
                 {
-                    var info = reader.GetTypefaceInformation(path);
+                    var info = reader.ReadTypeface(path);
                 });
 
 #else 
                 Assert.ThrowsException<AggregateException>(() =>
                 {
-                    var info = reader.GetTypefaceInformation(path);
+                    var info = reader.ReadTypeface(path);
                 });
 #endif
                 loader = reader.Loader;
@@ -178,7 +178,7 @@ namespace Scryber.OpenType.UnitTests
 
                     Assert.ThrowsException<AggregateException>(() =>
                     {
-                        var info = reader.GetTypefaceInformation(path);
+                        var info = reader.ReadTypeface(path);
                     });
 
                     //check http is set
@@ -222,7 +222,7 @@ namespace Scryber.OpenType.UnitTests
 
                     Assert.ThrowsException<AggregateException>(() =>
                     {
-                        var info = reader.GetTypefaceInformation(path);
+                        var info = reader.ReadTypeface(path);
 
                     });
 

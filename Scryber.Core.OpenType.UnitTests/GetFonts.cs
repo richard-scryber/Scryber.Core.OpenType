@@ -18,7 +18,7 @@ namespace Scryber.OpenType.UnitTests
             {
                 var file = new FileInfo(ValidateHelvetica.UrlPath);
 
-                var faces = reader.GetTypefaces(file);
+                var faces = reader.GetFonts(file);
                 Assert.IsNotNull(faces);
 
                 var all = faces.ToArray();
@@ -37,7 +37,7 @@ namespace Scryber.OpenType.UnitTests
             {
                 var file = new Uri(ValidateHelvetica.UrlPath, UriKind.Relative);
 
-                var faces = reader.GetTypefaces(file);
+                var faces = reader.GetFonts(file);
                 Assert.IsNotNull(faces);
 
                 var all = faces.ToArray();
@@ -56,7 +56,7 @@ namespace Scryber.OpenType.UnitTests
             {
                 var file = new FileInfo(ValidateGillSans.UrlPath);
 
-                var faces = reader.GetTypefaces(file);
+                var faces = reader.GetFonts(file);
                 Assert.IsNotNull(faces);
 
                 var all = faces.ToArray();
@@ -75,7 +75,7 @@ namespace Scryber.OpenType.UnitTests
             {
                 var file = new Uri(ValidateGillSans.UrlPath, UriKind.Relative);
 
-                var faces = reader.GetTypefaces(file);
+                var faces = reader.GetFonts(file);
                 Assert.IsNotNull(faces);
 
                 var all = faces.ToArray();
@@ -94,7 +94,7 @@ namespace Scryber.OpenType.UnitTests
             {
                 var file = new FileInfo(ValidateHachi.UrlPath);
 
-                var faces = reader.GetTypefaces(file);
+                var faces = reader.GetFonts(file);
                 Assert.IsNotNull(faces);
 
                 var all = faces.ToArray();
@@ -113,7 +113,7 @@ namespace Scryber.OpenType.UnitTests
             {
                 var file = new FileInfo(ValidateNoto.UrlPath);
 
-                var faces = reader.GetTypefaces(file);
+                var faces = reader.GetFonts(file);
                 Assert.IsNotNull(faces);
 
                 var all = faces.ToArray();
@@ -132,7 +132,7 @@ namespace Scryber.OpenType.UnitTests
             {
                 var file = new FileInfo(ValidateRoboto.UrlPath);
 
-                var faces = reader.GetTypefaces(file);
+                var faces = reader.GetFonts(file);
                 Assert.IsNotNull(faces);
 
                 var all = faces.ToArray();
@@ -151,7 +151,7 @@ namespace Scryber.OpenType.UnitTests
             {
                 var file = new FileInfo(ValidateOpenSans.UrlPath);
 
-                var faces = reader.GetTypefaces(file);
+                var faces = reader.GetFonts(file);
                 Assert.IsNotNull(faces);
 
                 var all = faces.ToArray();
@@ -170,13 +170,17 @@ namespace Scryber.OpenType.UnitTests
             {
                 var file = new FileInfo(ValidateFestive.UrlPath);
 
+                //We are not currently supported in Woff2
+
                 Assert.ThrowsException<NotSupportedException>(() =>
                 {
-                    var faces = reader.GetTypefaces(file);
+                    var faces = reader.GetFonts(file);
                 });
                 
                 
             }
+
+            Assert.Inconclusive("The Woff2 format needs to be implemented in the OpenType library");
         }
     }
 }

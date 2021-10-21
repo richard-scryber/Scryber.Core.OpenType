@@ -132,11 +132,11 @@ namespace Scryber.OpenType.Woff2
                 Woff2TableEntry entry = new Woff2TableEntry(offset);
                 entry.Read(reader);
 
-                if (entry.Tag == Const.OS2Table)
+                if (entry.Tag == TrueTypeTableNames.WindowsMetrics)
                     hasOs2 = true;
-                else if (entry.Tag == Const.FontHeaderTable)
+                else if (entry.Tag == TrueTypeTableNames.FontHeader)
                     hasFHead = true;
-                else if (entry.Tag == Const.NameTable)
+                else if (entry.Tag == TrueTypeTableNames.NamingTable)
                     hasName = true;
 
                 // If the table data has been transformed,

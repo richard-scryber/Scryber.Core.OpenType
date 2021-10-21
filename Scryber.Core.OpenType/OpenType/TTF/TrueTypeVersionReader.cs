@@ -50,11 +50,11 @@ namespace Scryber.OpenType.TTF
                 TrueTypeTableEntry dir = new TrueTypeTableEntry();
                 dir.Read(reader);
                 list.Add(dir);
-                if (dir.Tag == Const.OS2Table)
+                if (dir.Tag == TrueTypeTableNames.WindowsMetrics)
                     hasOs2 = true;
-                else if (dir.Tag == Const.FontHeaderTable)
+                else if (dir.Tag == TrueTypeTableNames.FontHeader)
                     hasFHead = true;
-                else if (dir.Tag == Const.NameTable)
+                else if (dir.Tag == TrueTypeTableNames.NamingTable)
                     hasName = true;
             }
 
@@ -71,12 +71,13 @@ namespace Scryber.OpenType.TTF
             WeightClass weight;
             WidthClass width;
             FontSelection selection;
+            int FamilyNameID = 1;
 
             var factory = this.GetTableFactory();
-            var ntable = factory.ReadTable(Const.NameTable, list, reader) as SubTables.NamingTable;
+            var ntable = factory.ReadTable(TrueTypeTableNames.NamingTable, list, reader) as SubTables.NamingTable;
 
             NameEntry nameEntry;
-            if (ntable.Names.TryGetEntry(Const.FamilyNameID, out nameEntry))
+            if (ntable.Names.TryGetEntry(FamilyNameID, out nameEntry))
                 familyname = nameEntry.ToString();
             else
                 return new Utility.UnknownTypefaceInfo(source, "The font family name could not be found in the font file");
@@ -84,7 +85,7 @@ namespace Scryber.OpenType.TTF
 
             if (hasOs2)
             {
-                SubTables.OS2Table os2table = factory.ReadTable(Const.OS2Table, list, reader) as SubTables.OS2Table;
+                SubTables.OS2Table os2table = factory.ReadTable(TrueTypeTableNames.WindowsMetrics, list, reader) as SubTables.OS2Table;
                 restrictions = os2table.FSType;
                 width = os2table.WidthClass;
                 weight = os2table.WeightClass;
@@ -92,7 +93,7 @@ namespace Scryber.OpenType.TTF
             }
             else
             {
-                SubTables.FontHeader fhead = factory.ReadTable(Const.FontHeaderTable, list, reader) as SubTables.FontHeader;
+                SubTables.FontHeader fhead = factory.ReadTable(TrueTypeTableNames.FontHeader, list, reader) as SubTables.FontHeader;
                 var mac = fhead.MacStyle;
                 restrictions = FontRestrictions.InstallableEmbedding;
                 weight = WeightClass.Normal;

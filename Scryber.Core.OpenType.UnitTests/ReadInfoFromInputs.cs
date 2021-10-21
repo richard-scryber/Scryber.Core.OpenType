@@ -38,7 +38,7 @@ namespace Scryber.OpenType.UnitTests
 
                 using (var stream = new FileStream(path, FileMode.Open))
                 {
-                    var info = reader.GetTypefaceInformation(stream, path);
+                    var info = reader.ReadTypeface(stream, path);
                     ValidateHelvetica.AssertInfo(info, path, 1);
                 }
             }
@@ -53,7 +53,7 @@ namespace Scryber.OpenType.UnitTests
                 var path = System.Environment.CurrentDirectory;
                 path = Path.Combine(path, PartialFilePath);
 
-                var info = reader.GetTypefaceInformation(path);
+                var info = reader.ReadTypeface(path);
                 ValidateHelvetica.AssertInfo(info, path, 2);
                 
             }
@@ -69,7 +69,7 @@ namespace Scryber.OpenType.UnitTests
                 path = Path.Combine(path, PartialFilePath);
                 var fi = new FileInfo(path);
 
-                var info = reader.GetTypefaceInformation(path);
+                var info = reader.ReadTypeface(path);
                 ValidateHelvetica.AssertInfo(info, path, 3);
 
             }
@@ -85,7 +85,7 @@ namespace Scryber.OpenType.UnitTests
             using (var reader = new TypefaceReader(di))
             {
                 path = PartialFilePath;
-                var info = reader.GetTypefaceInformation(path);
+                var info = reader.ReadTypeface(path);
                 ValidateHelvetica.AssertInfo(info, path, 4);
 
             }
@@ -101,7 +101,7 @@ namespace Scryber.OpenType.UnitTests
             using (var reader = new TypefaceReader())
             {
                 path = path + UrlPath;
-                var info = reader.GetTypefaceInformation(path);
+                var info = reader.ReadTypeface(path);
                 ValidateHelvetica.AssertInfo(info, path, 5);
 
             }
@@ -118,7 +118,7 @@ namespace Scryber.OpenType.UnitTests
             using (reader = new TypefaceReader(new Uri(path)))
             {
                 path = UrlPath;
-                var info = reader.GetTypefaceInformation(path);
+                var info = reader.ReadTypeface(path);
                 ValidateHelvetica.AssertInfo(info, path, 6);
 
                 //check http is set
@@ -150,7 +150,7 @@ namespace Scryber.OpenType.UnitTests
                     Assert.IsNotNull(reader.Loader.Client, "The loader SHOULD have a client as it was provided");
 
                     path = UrlPath;
-                    var info = reader.GetTypefaceInformation(path);
+                    var info = reader.ReadTypeface(path);
                     ValidateHelvetica.AssertInfo(info, path, 7);
 
                     //check http is set
@@ -191,7 +191,7 @@ namespace Scryber.OpenType.UnitTests
 
                     var path = RootUrl;
                     path = path + UrlPath;
-                    var info = reader.GetTypefaceInformation(path);
+                    var info = reader.ReadTypeface(path);
                     ValidateHelvetica.AssertInfo(info, path, 8);
 
                     //check http is set

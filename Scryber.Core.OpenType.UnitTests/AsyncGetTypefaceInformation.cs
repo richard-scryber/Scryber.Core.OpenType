@@ -32,7 +32,7 @@ namespace Scryber.OpenType.UnitTests
                 path = path + UrlPath;
                 var uri = new Uri(path);
 
-                info = reader.GetTypefaceInformationAsync(uri).Result;
+                info = reader.ReadTypefaceAsync(uri).Result;
 
                 Assert.IsNotNull(info, "Info was not returned");
                 Assert.IsTrue(string.IsNullOrEmpty(info.ErrorMessage), "An Error message was returned");
@@ -57,7 +57,7 @@ namespace Scryber.OpenType.UnitTests
                 path = UrlPath;
                 var uri = new Uri(path, UriKind.Relative);
 
-                info = reader.GetTypefaceInformationAsync(uri).Result;
+                info = reader.ReadTypefaceAsync(uri).Result;
 
                 Assert.IsNotNull(info, "Info was not returned");
                 Assert.IsTrue(string.IsNullOrEmpty(info.ErrorMessage), "An Error message was returned");
@@ -83,7 +83,7 @@ namespace Scryber.OpenType.UnitTests
                 path = Path.Combine(path, PartialFilePath);
                 var file = new FileInfo(path);
 
-                info = reader.GetTypefaceInformationAsync(file).Result;
+                info = reader.ReadTypefaceAsync(file).Result;
 
                 Assert.IsNotNull(info, "Info was not returned");
                 Assert.IsTrue(string.IsNullOrEmpty(info.ErrorMessage), "An Error message was returned");
@@ -108,7 +108,7 @@ namespace Scryber.OpenType.UnitTests
                 path = PartialFilePath;
                 var file = new FileInfo(path);
 
-                info = reader.GetTypefaceInformationAsync(file).Result;
+                info = reader.ReadTypefaceAsync(file).Result;
 
                 Assert.IsNotNull(info, "Info was not returned");
                 Assert.IsTrue(string.IsNullOrEmpty(info.ErrorMessage), "An Error message was returned");
@@ -133,7 +133,7 @@ namespace Scryber.OpenType.UnitTests
                 path = PartialFilePath;
                 
 
-                info = reader.GetTypefaceInformationAsync(path).Result;
+                info = reader.ReadTypefaceAsync(path).Result;
 
                 Assert.IsNotNull(info, "Info was not returned");
                 Assert.IsTrue(string.IsNullOrEmpty(info.ErrorMessage), "An Error message was returned");
@@ -157,7 +157,7 @@ namespace Scryber.OpenType.UnitTests
                 //valid path
                 path = UrlPath;
 
-                info = reader.GetTypefaceInformationAsync(path).Result;
+                info = reader.ReadTypefaceAsync(path).Result;
 
                 Assert.IsNotNull(info, "Info was not returned");
                 Assert.IsTrue(string.IsNullOrEmpty(info.ErrorMessage), "An Error message was returned");

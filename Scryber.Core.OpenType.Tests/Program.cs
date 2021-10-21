@@ -145,7 +145,7 @@ namespace Scryber.Core.OpenType.Tests
 
             using (var ms = new System.IO.MemoryStream(data))
             {
-                info = tfreader.GetTypefaceInformation(ms, path);
+                info = tfreader.ReadTypeface(ms, path);
                 if(null == info)
                 {
                     ExitClean("Could not read the info from the font file");
@@ -176,7 +176,7 @@ namespace Scryber.Core.OpenType.Tests
                     Console.WriteLine();
 
                     ms.Position = 0;
-                    var typeface = tfreader.GetTypeface(ms, info.Source, fref);
+                    var typeface = tfreader.GetFont(ms, info.Source, fref);
 
                     if (null == typeface || typeface.IsValid == false)
                     {

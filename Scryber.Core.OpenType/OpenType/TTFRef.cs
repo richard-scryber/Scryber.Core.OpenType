@@ -477,11 +477,11 @@ namespace Scryber.OpenType
                 TrueTypeTableEntry dir = new TrueTypeTableEntry();
                 dir.Read(reader);
                 list.Add(dir);
-                if (dir.Tag == Const.OS2Table)
+                if (dir.Tag == TrueTypeTableNames.WindowsMetrics)
                     hasOs2 = true;
-                else if (dir.Tag == Const.FontHeaderTable)
+                else if (dir.Tag == TrueTypeTableNames.FontHeader)
                     hasFHead = true;
-                else if (dir.Tag == Const.NameTable)
+                else if (dir.Tag == TrueTypeTableNames.NamingTable)
                     hasName = true;
             }
 
@@ -492,7 +492,7 @@ namespace Scryber.OpenType
             SubTables.NamingTable ntable = null;
 
             if (hasName)
-                ntable = fact.ReadTable(Const.NameTable, list, reader) as SubTables.NamingTable;
+                ntable = fact.ReadTable(TrueTypeTableNames.NamingTable, list, reader) as SubTables.NamingTable;
             else
                 throw new ArgumentNullException("The required '" + TrueTypeTableNames.NamingTable + "' is not present in this font file. The OpenType file is corrupt");
 
@@ -504,7 +504,9 @@ namespace Scryber.OpenType
 
             TTFRef ttfref = new TTFRef(fullpath);
             NameEntry entry;
-            if (ntable.Names.TryGetEntry(Const.FamilyNameID, out entry))
+            int FamilyNameID = 1;
+
+            if (ntable.Names.TryGetEntry(FamilyNameID, out entry))
             {
                 ttfref.FamilyName = entry.ToString();
             }
@@ -546,7 +548,7 @@ namespace Scryber.OpenType
                     ttfref.FontSelection |= FontSelection.Underscore;
             }
             else
-                throw new ArgumentNullException("The required '" + Const.OS2Table + "' or '" + Const.FontHeaderTable + " are not present in this font file. The OpenType file is corrupt");
+                throw new ArgumentNullException("The required '" + TrueTypeTableNames.WindowsMetrics + "' or '" + TrueTypeTableNames.FontHeader + " are not present in this font file. The OpenType file is corrupt");
 
 
             return ttfref;

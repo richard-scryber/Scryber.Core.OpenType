@@ -32,11 +32,11 @@ namespace Scryber.OpenType.Woff
                 entry.Read(reader);
                 list.Add(entry);
 
-                if (entry.Tag == Const.OS2Table)
+                if (entry.Tag == TrueTypeTableNames.WindowsMetrics)
                     hasOs2 = true;
-                else if (entry.Tag == Const.FontHeaderTable)
+                else if (entry.Tag == TrueTypeTableNames.FontHeader)
                     hasFHead = true;
-                else if (entry.Tag == Const.NameTable)
+                else if (entry.Tag == TrueTypeTableNames.NamingTable)
                     hasName = true;
             }
 

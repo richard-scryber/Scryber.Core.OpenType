@@ -42,7 +42,7 @@ namespace Scryber.OpenType.UnitTests
 
                 using (stream = new FileStream(path, FileMode.Open))
                 {
-                    result = reader.TryGetTypefaceInformation(stream, path, out info);
+                    result = reader.TryReadTypeface(stream, path, out info);
                 }
 
                 Assert.IsTrue(result, "Could not read the valid input from a stream");
@@ -68,7 +68,7 @@ namespace Scryber.OpenType.UnitTests
                 path = Path.Combine(path, PartialFilePath);
                 FileStream stream = null;
 
-                result = reader.TryGetTypefaceInformation(stream, path, out info);
+                result = reader.TryReadTypeface(stream, path, out info);
 
                 Assert.IsFalse(result, "Reported as true, to read the INVALID input from a stream");
                 Assert.IsNotNull(info, "Info was not returned even though we are trying");
@@ -101,7 +101,7 @@ namespace Scryber.OpenType.UnitTests
                     var data = http.GetByteArrayAsync(path).Result;
 
                     using (var stream = new MemoryStream(data))
-                        result = reader.TryGetTypefaceInformation(stream, path, out info);
+                        result = reader.TryReadTypeface(stream, path, out info);
 
                     Assert.IsTrue(result, "Reported as false, to read the input from a stream");
                     Assert.IsNotNull(info, "Info was not returned");
@@ -136,7 +136,7 @@ namespace Scryber.OpenType.UnitTests
                     //We need a seekable stream, this will fail.
 
                     using (var stream = http.GetStreamAsync(path).Result)
-                        result = reader.TryGetTypefaceInformation(stream, path, out info);
+                        result = reader.TryReadTypeface(stream, path, out info);
 
                     Assert.IsFalse(result, "Reported as true, to read the input from a seekable stream");
                     Assert.IsNotNull(info, "Info was not returned");
@@ -164,7 +164,7 @@ namespace Scryber.OpenType.UnitTests
                 path = path + UrlPath;
                 var uri = new Uri(path);
 
-                result = reader.TryGetTypefaceInformation(uri, out info);
+                result = reader.TryReadTypeface(uri, out info);
 
                 Assert.IsTrue(result, "Reported as false, to read the input from a stream");
                 Assert.IsNotNull(info, "Info was not returned");
@@ -190,7 +190,7 @@ namespace Scryber.OpenType.UnitTests
                 path = UrlPath;
                 var uri = new Uri(path, UriKind.Relative);
 
-                result = reader.TryGetTypefaceInformation(uri, out info);
+                result = reader.TryReadTypeface(uri, out info);
 
                 Assert.IsTrue(result, "Reported as false, to read the input from a stream");
                 Assert.IsNotNull(info, "Info was not returned");
@@ -216,7 +216,7 @@ namespace Scryber.OpenType.UnitTests
                 path = PartialFilePath;
                 var file = new FileInfo(path);
 
-                result = reader.TryGetTypefaceInformation(file, out info);
+                result = reader.TryReadTypeface(file, out info);
 
                 Assert.IsTrue(result, "Reported as false, to read the input from a stream");
                 Assert.IsNotNull(info, "Info was not returned");
@@ -242,7 +242,7 @@ namespace Scryber.OpenType.UnitTests
                 path = FailingUrlPath;
                 var uri = new Uri(path);
 
-                result = reader.TryGetTypefaceInformation(uri, out info);
+                result = reader.TryReadTypeface(uri, out info);
 
                 Assert.IsFalse(result, "Reported as true, to read the input from an invalid stream");
                 Assert.IsNotNull(info, "Info was not returned");
@@ -267,7 +267,7 @@ namespace Scryber.OpenType.UnitTests
                 path = FailingPartialFilePath;
                 var file = new FileInfo(path);
 
-                result = reader.TryGetTypefaceInformation(file, out info);
+                result = reader.TryReadTypeface(file, out info);
 
                 Assert.IsFalse(result, "Reported as true, to read the input from an invalid stream");
                 Assert.IsNotNull(info, "Info was not returned");
