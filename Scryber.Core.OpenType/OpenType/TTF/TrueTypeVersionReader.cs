@@ -124,14 +124,14 @@ namespace Scryber.OpenType.TTF
             return new Utility.SingleTypefaceInfo(source, DataFormat.TTF, familyname, restrictions, weight, width, selection, 0);
         }
 
-        public override ITypeface ReadTypefaceAfterVersion(BigEndianReader reader, ITypefaceReference forReference)
+        public override ITypeface ReadTypefaceAfterVersion(BigEndianReader reader, ITypefaceReference forReference, string source)
         {
             long startOffset = reader.BaseStream.Position - 4;
 
             TrueTypeHeader header;
             if (TrueTypeHeader.TryReadHeaderAfterVersion(reader, this, false, out header) == false)
                 throw new TypefaceReadException("Could not read the TrueType header for " + forReference.ToString() + " font");
-
+             
             List<TrueTypeTableEntry> dirs;
             try
             {

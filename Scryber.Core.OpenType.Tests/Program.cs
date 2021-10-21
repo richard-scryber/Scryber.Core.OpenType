@@ -1,4 +1,4 @@
-﻿//#define UseOpenFont
+﻿#define UseOpenFont
 //#define Performance
 #define UseLocal
 
@@ -6,6 +6,9 @@ using System;
 using System.Threading.Tasks;
 using Scryber.OpenType;
 using Scryber.OpenType.SubTables;
+using Typography.OpenFont.WebFont;
+using System.IO;
+using Typography.OpenFont.Extensions;
 
 namespace Scryber.Core.OpenType.Tests
 {
@@ -24,8 +27,8 @@ namespace Scryber.Core.OpenType.Tests
                 new { Name = "Helvetica",           Include = false, LocalPath = "./fonts/Helvetica.ttf", RemotePath = "https://raw.githubusercontent.com/richard-scryber/scryber.core/svgParsing/Scryber.Drawing/Text/_FontResources/Helvetica/Helvetica.ttf"},
                 new { Name = "Gill Sans ttc",       Include = false, LocalPath = "./fonts/GillSans.ttc", RemotePath = "https://raw.githubusercontent.com/richard-scryber/scryber.core.opentype/master/Scryber.Core.OpenType.Tests/fonts/GillSans.ttc"},
                 new { Name = "Open Sans Black Wof", Include = false, LocalPath = "./fonts/OpenSansBlack.woff", RemotePath = "https://fonts.gstatic.com/s/opensans/v26/memQYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWq8tWZ0Pw86hd0Rk0ZjWVAexoMUdjFXmQ.woff"},
-                new { Name = "Noto TC",             Include = true,  LocalPath = "./fonts/NotoTC.otf", RemotePath = "https://fonts.gstatic.com/s/notosanstc/v20/-nF7OG829Oofr2wohFbTp9iFOQ.otf"},
-                new { Name = "Festive",             Include = false, LocalPath = "./fonts/Festive.woff2", RemotePath = "https://fonts.gstatic.com/s/festive/v1/cY9Ffj6KX1xcoDWhJt_qyvPQgah_Lw.woff2"}
+                new { Name = "Noto TC",             Include = false,  LocalPath = "./fonts/NotoTC.otf", RemotePath = "https://fonts.gstatic.com/s/notosanstc/v20/-nF7OG829Oofr2wohFbTp9iFOQ.otf"},
+                new { Name = "Festive",             Include = true, LocalPath = "./fonts/Festive.woff2", RemotePath = "https://fonts.gstatic.com/s/festive/v1/cY9Ffj6KX1xcoDWhJt_qyvPQgah_Lw.woff2"}
             };
 
             var path = AppContext.BaseDirectory;

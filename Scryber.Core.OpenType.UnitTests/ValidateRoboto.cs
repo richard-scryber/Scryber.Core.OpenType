@@ -25,8 +25,8 @@ namespace Scryber.OpenType.UnitTests
 
             if (!string.IsNullOrEmpty(source))
             {
-                Assert.IsNotNull(info.Path, "Roboto info Path was null for test " + testIndex);
-                Assert.AreEqual(source, info.Path, "Roboto info Path was not equal to " + source + " for test " + testIndex);
+                Assert.IsNotNull(info.Source, "Roboto info Path was null for test " + testIndex);
+                Assert.AreEqual(source, info.Source, "Roboto info Path was not equal to " + source + " for test " + testIndex);
             }
 
             Assert.IsNotNull(info.References, "Roboto references was null for " + testIndex);

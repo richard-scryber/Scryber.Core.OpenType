@@ -5,7 +5,7 @@ namespace Scryber.OpenType.Utility
     {
         private static readonly ITypefaceReference[] _EMPTY = new ITypefaceReference[] { };
 
-        public string Path { get; private set; }
+        public string Source { get; private set; }
 
         public int TypefaceCount { get { return 0; } }
 
@@ -17,7 +17,7 @@ namespace Scryber.OpenType.Utility
 
         public UnknownTypefaceInfo(string sourcePath, string error)
         {
-            this.Path = sourcePath;
+            this.Source = sourcePath;
             this.ErrorMessage = error;
         }
     }

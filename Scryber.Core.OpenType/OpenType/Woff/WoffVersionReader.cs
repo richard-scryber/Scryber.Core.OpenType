@@ -48,65 +48,7 @@ namespace Scryber.OpenType.Woff
         }
 
 
-        //protected ITypefaceInfo ReadInfoFromTables(TrueTypeTableEntryList list, BigEndianReader reader, string source, bool hasOs2)
-        //{
-        //    string familyname;
-        //    FontRestrictions restrictions;
-        //    WeightClass weight;
-        //    WidthClass width;
-        //    FontSelection selection;
-
-        //    var factory = this.GetTableFactory();
-        //    var ntable = factory.ReadTable(Const.NameTable, list, reader) as SubTables.NamingTable;
-
-        //    NameEntry nameEntry;
-        //    if (ntable.Names.TryGetEntry(Const.FamilyNameID, out nameEntry))
-        //        familyname = nameEntry.ToString();
-        //    else
-        //        return new Utility.UnknownTypefaceInfo(source, "The font family name could not be found in the font file");
-
-
-        //    if (hasOs2)
-        //    {
-        //        SubTables.OS2Table os2table = factory.ReadTable(Const.OS2Table, list, reader) as SubTables.OS2Table;
-        //        restrictions = os2table.FSType;
-        //        width = os2table.WidthClass;
-        //        weight = os2table.WeightClass;
-        //        selection = os2table.Selection;
-        //    }
-        //    else
-        //    {
-        //        SubTables.FontHeader fhead = factory.ReadTable(Const.FontHeaderTable, list, reader) as SubTables.FontHeader;
-        //        var mac = fhead.MacStyle;
-        //        restrictions = FontRestrictions.InstallableEmbedding;
-        //        weight = WeightClass.Normal;
-        //        width = WidthClass.Medium;
-
-        //        if ((mac & FontStyleFlags.Condensed) > 0)
-        //            width = WidthClass.Condensed;
-
-        //        else if ((mac & FontStyleFlags.Extended) > 0)
-        //            width = WidthClass.Expanded;
-
-        //        selection = 0;
-        //        if ((mac & FontStyleFlags.Italic) > 0)
-        //            selection |= FontSelection.Italic;
-
-        //        if ((mac & FontStyleFlags.Bold) > 0)
-        //        {
-        //            selection |= FontSelection.Bold;
-        //            weight = WeightClass.Bold;
-        //        }
-        //        if ((mac & FontStyleFlags.Outline) > 0)
-        //            selection |= FontSelection.Outlined;
-
-        //        if ((mac & FontStyleFlags.Underline) > 0)
-        //            selection |= FontSelection.Underscore;
-        //    }
-
-
-        //    return new Utility.SingleTypefaceInfo(source, DataFormat.TTF, familyname, restrictions, weight, width, selection, 0);
-        //}
+        
 
         public override string ToString()
         {
@@ -118,7 +60,7 @@ namespace Scryber.OpenType.Woff
             return new WoffTableFactory();
         }
 
-        public override ITypeface ReadTypefaceAfterVersion(BigEndianReader reader, ITypefaceReference forReference)
+        public override ITypeface ReadTypefaceAfterVersion(BigEndianReader reader, ITypefaceReference forReference, string source)
         {
             long startOffset = reader.Position - VersionByteSize;
 

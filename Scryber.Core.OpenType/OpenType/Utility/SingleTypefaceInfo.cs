@@ -9,7 +9,7 @@ namespace Scryber.OpenType.Utility
     {
         private ITypefaceReference[] _thisRef;
 
-        public string Path { get; set; }
+        public string Source { get; set; }
 
         public int TypefaceCount
         {
@@ -39,7 +39,7 @@ namespace Scryber.OpenType.Utility
 
         public SingleTypefaceInfo(string path, DataFormat format, string family, FontRestrictions restrictions, WeightClass weight, WidthClass width, FontSelection selection, long offset)
         {
-            this.Path = path;
+            this.Source = path;
             this.SourceFormat = format;
             this.FamilyName = family;
             this.Restrictions = restrictions;

@@ -25,8 +25,8 @@ namespace Scryber.OpenType.UnitTests
 
             if (!string.IsNullOrEmpty(source))
             {
-                Assert.IsNotNull(info.Path, "Hachi Maru Pop info Path was null for test " + testIndex);
-                Assert.AreEqual(source, info.Path, "Hachi Maru Pop info Path was not equal to " + source + " for test " + testIndex);
+                Assert.IsNotNull(info.Source, "Hachi Maru Pop info Path was null for test " + testIndex);
+                Assert.AreEqual(source, info.Source, "Hachi Maru Pop info Path was not equal to " + source + " for test " + testIndex);
             }
 
             Assert.IsNotNull(info.References, "Hachi Maru Pop references was null for " + testIndex);

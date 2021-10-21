@@ -7,10 +7,10 @@ namespace Scryber.OpenType.Utility
         {
             this.References = references;
             this.SourceFormat = format;
-            this.Path = path;
+            this.Source = path;
         }
 
-        public string Path { get; private set; }
+        public string Source { get; private set; }
 
         public int TypefaceCount { get { return this.References.Length; } }
 

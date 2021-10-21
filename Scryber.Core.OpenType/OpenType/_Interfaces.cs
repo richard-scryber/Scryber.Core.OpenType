@@ -19,7 +19,7 @@ namespace Scryber.OpenType
 
     public interface ITypefaceInfo
     {
-        string Path { get; }
+        string Source { get; }
 
         int TypefaceCount { get; }
 

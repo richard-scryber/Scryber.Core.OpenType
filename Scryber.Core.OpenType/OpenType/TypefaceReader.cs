@@ -822,7 +822,7 @@ namespace Scryber.OpenType
 
                 if (info.References.Length == 1)
                 {
-                    var one = this.GetTypeface(stream, info.References[0]);
+                    var one = this.GetTypeface(stream, info.Source, info.References[0]);
                     return new ITypeface[] { one };
                 }
                 else
@@ -832,7 +832,7 @@ namespace Scryber.OpenType
                     foreach (var tfref in info.References)
                     {
                         stream.Position = 0;
-                        var one = this.GetTypeface(stream, tfref);
+                        var one = this.GetTypeface(stream, info.Source, tfref);
                         typefaces.Add(one);
                     }
 
@@ -873,7 +873,7 @@ namespace Scryber.OpenType
                     
                     if(info.References.Length == 1)
                     {
-                        var one = this.GetTypeface(stream, info.References[0]);
+                        var one = this.GetTypeface(stream, uri.ToString(), info.References[0]);
                         return new ITypeface[] { one };
                     }
                     else
@@ -883,7 +883,7 @@ namespace Scryber.OpenType
                         foreach (var tfref in info.References)
                         {
                             stream.Position = 0;
-                            var one = this.GetTypeface(stream, tfref);
+                            var one = this.GetTypeface(stream, info.Source, tfref);
                             typefaces.Add(one);
                         }
 
@@ -921,7 +921,7 @@ namespace Scryber.OpenType
 
                     stream.Position = 0;
 
-                    var one = this.GetTypeface(stream, info.References[0]);
+                    var one = this.GetTypeface(stream, info.Source, info.References[0]);
                     return one;
 
                 }
@@ -951,7 +951,7 @@ namespace Scryber.OpenType
 
                     stream.Position = 0;
 
-                    var one = this.GetTypeface(stream, info.References[0]);
+                    var one = this.GetTypeface(stream, info.Source, info.References[0]);
                     return one;
 
                 }
@@ -977,26 +977,26 @@ namespace Scryber.OpenType
             if (forInfo.TypefaceCount != forInfo.References.Length)
                 throw new ArgumentOutOfRangeException(nameof(forInfo.TypefaceCount), "The number of references in the information does not match the specified TypefaceCount");
 
-            if (string.IsNullOrEmpty(forInfo.Path))
-                throw new ArgumentNullException(nameof(forInfo.Path), "The path must be set on the typeface info, so the reader can load the file");
+            if (string.IsNullOrEmpty(forInfo.Source))
+                throw new ArgumentNullException(nameof(forInfo.Source), "The path must be set on the typeface info, so the reader can load the file");
 
             if (forInfo.TypefaceCount == 1)
             {
-                using (var stream = await this._loader.GetStreamAsync(forInfo.Path, true))
+                using (var stream = await this._loader.GetStreamAsync(forInfo.Source, true))
                 {
-                    var one = GetTypeface(stream, forInfo.References[0]);
+                    var one = GetTypeface(stream, forInfo.Source, forInfo.References[0]);
                     return new ITypeface[] { one };
                 }
             }
             else
             {
                 List<ITypeface> loaded = new List<ITypeface>();
-                using (var stream = await this._loader.GetStreamAsync(forInfo.Path, true))
+                using (var stream = await this._loader.GetStreamAsync(forInfo.Source, true))
                 {
                     foreach (var reference in forInfo.References)
                     {
                         stream.Position = 0;
-                        var one = GetTypeface(stream, reference);
+                        var one = GetTypeface(stream, forInfo.Source, reference);
                         loaded.Add(one);
                     }
                 }
@@ -1018,8 +1018,8 @@ namespace Scryber.OpenType
             if (forInfo.TypefaceCount != forInfo.References.Length)
                 throw new ArgumentOutOfRangeException(nameof(forInfo.TypefaceCount), "The number of references in the information does not match the specified TypefaceCount");
 
-            if (string.IsNullOrEmpty(forInfo.Path))
-                throw new ArgumentNullException(nameof(forInfo.Path), "The path must be set on the typeface info, so the reader can load the file");
+            if (string.IsNullOrEmpty(forInfo.Source))
+                throw new ArgumentNullException(nameof(forInfo.Source), "The path must be set on the typeface info, so the reader can load the file");
 
             if(forInfo.TypefaceCount == 1)
             {
@@ -1032,7 +1032,7 @@ namespace Scryber.OpenType
             {
                 List<ITypeface> loaded = new List<ITypeface>();
 
-                using (var stream = this._loader.GetStream(forInfo.Path, true))
+                using (var stream = this._loader.GetStream(forInfo.Source, true))
                 {
                     foreach (var reference in forInfo.References)
                     {
@@ -1071,12 +1071,12 @@ namespace Scryber.OpenType
 
             using(var fs = file.OpenRead())
             {
-                return GetTypeface(fs, theReference);
+                return GetTypeface(fs, file.FullName, theReference);
             }
         }
 
 
-        public virtual ITypeface GetTypeface(Stream seekableStream, ITypefaceReference theReference)
+        public virtual ITypeface GetTypeface(Stream seekableStream, string source, ITypefaceReference theReference)
         {
             if (null == seekableStream)
                 throw new ArgumentNullException(nameof(seekableStream));
@@ -1094,7 +1094,7 @@ namespace Scryber.OpenType
 
                 else
                 {
-                    var typeface = version.ReadTypefaceAfterVersion(reader, theReference);
+                    var typeface = version.ReadTypefaceAfterVersion(reader, theReference, source);
                     
                     return typeface;
                 }

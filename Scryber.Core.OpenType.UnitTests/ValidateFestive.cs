@@ -4,18 +4,18 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Scryber.OpenType.UnitTests
 {
     /// <summary>
-    /// Validates the contents of OpenSans woff file
+    /// Validates the contents of OpenSans woff2 file
     /// </summary>
-    public static class ValidateOpenSans
+    public static class ValidateFestive
     {
-        public const string FamilyName = "Open Sans ExtraBold";
-        public const WeightClass Weight = WeightClass.ExtraBold;
+        public const string FamilyName = "Festive";
+        public const WeightClass Weight = WeightClass.Medium;
         public const WidthClass Width = WidthClass.Medium;
         public const FontRestrictions Restrictions = FontRestrictions.InstallableEmbedding;
         public const FontSelection Selections = (FontSelection)385;
 
         public const string RootUrl = "https://raw.githubusercontent.com/richard-scryber/Scryber.Core.OpenType/main/Scryber.Core.OpenType.UnitTests/";
-        public const string UrlPath = "fonts/OpenSansBlack.woff";
+        public const string UrlPath = "fonts/Festive.woff2";
 
 
         public static void AssertInfo(ITypefaceInfo info, string source, int testIndex)

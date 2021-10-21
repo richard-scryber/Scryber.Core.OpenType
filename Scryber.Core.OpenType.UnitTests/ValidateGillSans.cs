@@ -47,8 +47,8 @@ namespace Scryber.OpenType.UnitTests
 
             if (!string.IsNullOrEmpty(source))
             {
-                Assert.IsNotNull(info.Path, "Gill Sans info Path was null for test " + testIndex);
-                Assert.AreEqual(source, info.Path, "Gill Sans info Path was not equal to " + source + " for test " + testIndex);
+                Assert.IsNotNull(info.Source, "Gill Sans info Path was null for test " + testIndex);
+                Assert.AreEqual(source, info.Source, "Gill Sans info Path was not equal to " + source + " for test " + testIndex);
             }
 
             Assert.IsNotNull(info.References, "Gill Sans references was null for " + testIndex);

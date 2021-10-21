@@ -164,7 +164,20 @@ namespace Scryber.OpenType.UnitTests
         [TestMethod("9. Get the  Festive Woff2 typeface from a file")]
         public void ValidGetTypefacesFestiveFile()
         {
-            Assert.Inconclusive("Not implemented for Festive");
+            var path = new DirectoryInfo(System.Environment.CurrentDirectory);
+
+            using (var reader = new TypefaceReader(path))
+            {
+                var file = new FileInfo(ValidateFestive.UrlPath);
+
+                var faces = reader.GetTypefaces(file);
+                Assert.IsNotNull(faces);
+
+                var all = faces.ToArray();
+                Assert.AreEqual(1, all.Length);
+
+                ValidateFestive.AssertTypeface(all[0]);
+            }
         }
     }
 }

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net5.0;netcoreapp3.1;netstandard2.1;netstandard2.0;net48</TargetFrameworks>
+    <TargetFrameworks>net6.0;net5.0;netcoreapp3.1;netstandard2.1;net48</TargetFrameworks>
 
     <IsPackable>false</IsPackable>
     <RootNamespace>Scryber.OpenType.UnitTests</RootNamespace>
@@ -40,6 +40,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="fonts\OpenSansBlack.woff">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="fonts\Festive.woff2">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

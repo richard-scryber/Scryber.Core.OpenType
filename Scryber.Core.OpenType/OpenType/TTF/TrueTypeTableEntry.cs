@@ -89,6 +89,8 @@ namespace Scryber.OpenType.TTF
         {
         }
 
+        
+
         public TrueTypeTableEntryList(IEnumerable<TrueTypeTableEntry> items)
             : this()
         {

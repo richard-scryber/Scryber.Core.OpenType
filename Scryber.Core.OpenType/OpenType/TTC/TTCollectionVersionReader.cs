@@ -21,7 +21,7 @@ namespace Scryber.OpenType.TTC
             this.VersionIdentifier = type;
         }
 
-        public override ITypeface ReadTypefaceAfterVersion(BigEndianReader reader, ITypefaceReference forReference)
+        public override ITypeface ReadTypefaceAfterVersion(BigEndianReader reader, ITypefaceReference forReference, string source)
         {
             this.EnsureSeekable(reader);
             Utility.SingleTypefaceInfo found = null;
@@ -50,7 +50,7 @@ namespace Scryber.OpenType.TTC
                 if (null != data && data.Length > 0)
                 {
                     using (System.IO.MemoryStream ms = new System.IO.MemoryStream(data))
-                        return new TypefaceReader().GetTypeface(ms, forReference);
+                        return new TypefaceReader().GetTypeface(ms, source, forReference);
                 }
             }
 

@@ -51,7 +51,7 @@ namespace Scryber.OpenType
 
         public abstract ITypefaceInfo ReadTypefaceInfoAfterVersion(BigEndianReader reader, string source);
 
-        public abstract ITypeface ReadTypefaceAfterVersion(BigEndianReader reader, ITypefaceReference forReference);
+        public abstract ITypeface ReadTypefaceAfterVersion(BigEndianReader reader, ITypefaceReference forReference, string source);
 
         public abstract override string ToString();
 
@@ -122,7 +122,7 @@ namespace Scryber.OpenType
                 vers = new Woff.WoffVersionReader(new string(chars), data);
 
             else if (chars[0] == 'w' && chars[1] == 'O' && chars[2] == 'F' && chars[3] == '2')   //wOF2
-                vers = new Woff2.Woff2Version(new string(chars), data);
+                vers = new Woff2.Woff2VersionReader(new string(chars), data);
 
             else                                                                                 //1.0
             {
