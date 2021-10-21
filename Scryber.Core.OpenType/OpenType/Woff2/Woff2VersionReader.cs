@@ -57,7 +57,7 @@ namespace Scryber.OpenType.Woff2
         }
 
 
-        private void EnsureTablesDecoded(Woff2CacheData cache)
+        protected virtual void EnsureTablesDecoded(Woff2CacheData cache)
         {
             if (cache.GlyphDecoded == false)
             {
@@ -95,7 +95,7 @@ namespace Scryber.OpenType.Woff2
 
         #region Woff2Cache implementation
 
-        private class Woff2CacheData
+        protected class Woff2CacheData
         {
             public byte[] UncompressedData;
             public Woff2TableEntryList Entries;

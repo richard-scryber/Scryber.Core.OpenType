@@ -150,5 +150,16 @@ namespace Scryber.OpenType.Woff2
 
         }
 
+
+        /// <summary>
+        /// read float, 2.14 format
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <returns></returns>
+        public static float ReadF2Dot14(this BigEndianReader reader)
+        {
+            return ((float)reader.ReadInt16()) / (1 << 14); /* Format 2.14 */
+        }
+
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Scryber.OpenType.Woff2
 {
@@ -136,7 +137,114 @@ namespace Scryber.OpenType.Woff2
 
             //TODO: Read more from line 296 in OpenFoint.Woff2Reader
 
+            using(var composites = new MemoryStream())
+            {
+                reader.Position = expected_CompositeStreamStartAt;
 
+                var compositeData = reader.Read((int)compositeStreamSize);
+                composites.Write(compositeData, 0, (int)compositeStreamSize);
+
+                int compositeGlyphCount = compositeGlyphs.Count;
+                using(var compositeReader = new BigEndianReader(composites))
+                {
+                    for(int i = 0; i < compositeGlyphCount; i++)
+                    {
+                        ushort compositeGlyphIndex = compositeGlyphs[i];
+                        bool hasInstructions = CompositeHasInstructions(compositeReader, compositeGlyphIndex);
+                        if (hasInstructions)
+                            break;
+                        allGlyphs[compositeGlyphIndex].compositeHasInstructions = hasInstructions;
+                    }
+
+                }
+            }
+
+        }
+
+
+        static bool CompositeHasInstructions(BigEndianReader reader, ushort compositeGlyphIndex)
+        {
+
+            //To find if a composite has instruction or not.
+
+            //This method is similar to  ReadCompositeGlyph() (below)
+            //but this dose not create actual composite glyph.
+
+            CompositeGlyphFlags flags;
+            do
+            {
+                flags = (CompositeGlyphFlags)reader.ReadUInt16();
+                ushort glyphIndex = reader.ReadUInt16();
+                short arg1 = 0;
+                short arg2 = 0;
+                ushort arg1and2 = 0;
+
+                if (HasCompositeFlag(flags, CompositeGlyphFlags.ARG_1_AND_2_ARE_WORDS))
+                {
+                    arg1 = reader.ReadInt16();
+                    arg2 = reader.ReadInt16();
+                }
+                else
+                {
+                    arg1and2 = reader.ReadUInt16();
+                }
+                //-----------------------------------------
+                float xscale = 1;
+                float scale01 = 0;
+                float scale10 = 0;
+                float yscale = 1;
+
+                bool useMatrix = false;
+                //-----------------------------------------
+                bool hasScale = false;
+                if (HasCompositeFlag(flags, CompositeGlyphFlags.WE_HAVE_A_SCALE))
+                {
+                    //If the bit WE_HAVE_A_SCALE is set,
+                    //the scale value is read in 2.14 format-the value can be between -2 to almost +2.
+                    //The glyph will be scaled by this value before grid-fitting. 
+                    xscale = yscale = reader.ReadF2Dot14(); /* Format 2.14 */
+                    hasScale = true;
+                }
+                else if (HasCompositeFlag(flags, CompositeGlyphFlags.WE_HAVE_AN_X_AND_Y_SCALE))
+                {
+                    xscale = reader.ReadF2Dot14(); /* Format 2.14 */
+                    yscale = reader.ReadF2Dot14(); /* Format 2.14 */
+                    hasScale = true;
+                }
+                else if (HasCompositeFlag(flags, CompositeGlyphFlags.WE_HAVE_A_TWO_BY_TWO))
+                {
+
+                    //The bit WE_HAVE_A_TWO_BY_TWO allows for linear transformation of the X and Y coordinates by specifying a 2 × 2 matrix.
+                    //This could be used for scaling and 90-degree*** rotations of the glyph components, for example.
+
+                    //2x2 matrix
+
+                    //The purpose of USE_MY_METRICS is to force the lsb and rsb to take on a desired value.
+                    //For example, an i-circumflex (U+00EF) is often composed of the circumflex and a dotless-i. 
+                    //In order to force the composite to have the same metrics as the dotless-i,
+                    //set USE_MY_METRICS for the dotless-i component of the composite. 
+                    //Without this bit, the rsb and lsb would be calculated from the hmtx entry for the composite 
+                    //(or would need to be explicitly set with TrueType instructions).
+
+                    //Note that the behavior of the USE_MY_METRICS operation is undefined for rotated composite components. 
+                    useMatrix = true;
+                    hasScale = true;
+                    xscale = reader.ReadF2Dot14(); /* Format 2.14 */
+                    scale01 = reader.ReadF2Dot14(); /* Format 2.14 */
+                    scale10 = reader.ReadF2Dot14();/* Format 2.14 */
+                    yscale = reader.ReadF2Dot14(); /* Format 2.14 */
+
+                }
+
+            } while (HasCompositeFlag(flags, CompositeGlyphFlags.MORE_COMPONENTS));
+
+            //
+            return HasCompositeFlag(flags, CompositeGlyphFlags.WE_HAVE_INSTRUCTIONS);
+        }
+
+        static bool HasCompositeFlag(CompositeGlyphFlags flags, CompositeGlyphFlags value)
+        {
+            return (flags & value) == value;
         }
     }
 }

@@ -170,13 +170,12 @@ namespace Scryber.OpenType.UnitTests
             {
                 var file = new FileInfo(ValidateFestive.UrlPath);
 
-                var faces = reader.GetTypefaces(file);
-                Assert.IsNotNull(faces);
-
-                var all = faces.ToArray();
-                Assert.AreEqual(1, all.Length);
-
-                ValidateFestive.AssertTypeface(all[0]);
+                Assert.ThrowsException<NotSupportedException>(() =>
+                {
+                    var faces = reader.GetTypefaces(file);
+                });
+                
+                
             }
         }
     }
