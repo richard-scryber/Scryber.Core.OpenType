@@ -11,7 +11,7 @@ namespace Scryber.OpenType.UnitTests
     /// Checks failures from various reads
     /// </summary>
     [TestClass()]
-    public class InvalidReadFromInputs
+    public class TypefaceReader_InvalidReadTypeface
     {
         public const string RootUrl = ValidateHelvetica.RootUrl;
 

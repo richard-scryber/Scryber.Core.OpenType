@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Scryber.OpenType.UnitTests
 {
     [TestClass()]
-    public class GetTypefaces
+    public class TypefaceReader_GetFonts
     {
 
         [TestMethod("1. Get the Helvetica typeface from a file path")]
@@ -35,9 +35,9 @@ namespace Scryber.OpenType.UnitTests
 
             using (var reader = new TypefaceReader(path))
             {
-                var file = new Uri(ValidateHelvetica.UrlPath, UriKind.Relative);
+                var url = new Uri(ValidateHelvetica.UrlPath, UriKind.Relative);
 
-                var faces = reader.GetFonts(file);
+                var faces = reader.GetFonts(url);
                 Assert.IsNotNull(faces);
 
                 var all = faces.ToArray();
@@ -54,9 +54,9 @@ namespace Scryber.OpenType.UnitTests
 
             using (var reader = new TypefaceReader(path))
             {
-                var file = new FileInfo(ValidateGillSans.UrlPath);
+                var url = new FileInfo(ValidateGillSans.UrlPath);
 
-                var faces = reader.GetFonts(file);
+                var faces = reader.GetFonts(url);
                 Assert.IsNotNull(faces);
 
                 var all = faces.ToArray();
@@ -73,9 +73,9 @@ namespace Scryber.OpenType.UnitTests
 
             using (var reader = new TypefaceReader(path))
             {
-                var file = new Uri(ValidateGillSans.UrlPath, UriKind.Relative);
+                var url = new Uri(ValidateGillSans.UrlPath, UriKind.Relative);
 
-                var faces = reader.GetFonts(file);
+                var faces = reader.GetFonts(url);
                 Assert.IsNotNull(faces);
 
                 var all = faces.ToArray();
@@ -182,5 +182,8 @@ namespace Scryber.OpenType.UnitTests
 
             Assert.Inconclusive("The Woff2 format needs to be implemented in the OpenType library");
         }
+
+        
     }
+
 }

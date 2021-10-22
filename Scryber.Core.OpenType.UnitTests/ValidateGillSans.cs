@@ -20,18 +20,18 @@ namespace Scryber.OpenType.UnitTests
         public const string RootUrl = "https://raw.githubusercontent.com/richard-scryber/Scryber.Core.OpenType/main/Scryber.Core.OpenType.UnitTests/";
         public const string UrlPath = "fonts/GillSans.ttc";
 
-        private class FontFace
+        public class FontFace
         {
             public WeightClass Weight;
             public FontSelection Selection;
             public WidthClass Width;
         }
 
-        private static FontFace[] FontTypefaces = new FontFace[]
+        public static FontFace[] FontTypefaces = new FontFace[]
         {
             new FontFace() { Weight  = WeightClass.Normal, Selection = FontSelection.Regular, Width = WidthClass.Medium },
-            new FontFace() { Weight  = WeightClass.Normal, Selection = FontSelection.Italic, Width = WidthClass.Medium },
             new FontFace() { Weight  = WeightClass.Bold, Selection = FontSelection.Bold, Width = WidthClass.Medium },
+            new FontFace() { Weight  = WeightClass.Normal, Selection = FontSelection.Italic, Width = WidthClass.Medium },
             new FontFace() { Weight  = WeightClass.Bold, Selection = FontSelection.Italic | FontSelection.Bold, Width = WidthClass.Medium },
             new FontFace() { Weight  = WeightClass.SemiBold, Selection = FontSelection.Regular, Width = WidthClass.Medium },
             new FontFace() { Weight  = WeightClass.SemiBold, Selection = FontSelection.Italic, Width = WidthClass.Medium },
@@ -39,6 +39,9 @@ namespace Scryber.OpenType.UnitTests
             new FontFace() { Weight  = WeightClass.Light, Selection = FontSelection.Regular, Width = WidthClass.Medium },
             new FontFace() { Weight  = WeightClass.Light, Selection = FontSelection.Italic, Width = WidthClass.Medium }
         };
+
+        public const int BoldRegularIndex = 2;
+        public const int SemiBoldItalicIndex = 5;
 
         public static void AssertInfo(ITypefaceInfo info, string source, int testIndex)
         {
@@ -114,6 +117,16 @@ namespace Scryber.OpenType.UnitTests
             Assert.AreEqual(0, matches.Count, "Not all the typefaces were matched.");
                 
             
+        }
+
+        public static void AssertMatches(FontFace expected, ITypefaceFont font)
+        {
+            Assert.IsNotNull(font);
+            Assert.AreEqual(FamilyName, font.FamilyName);
+            Assert.AreEqual(expected.Weight, font.FontWeight);
+            Assert.AreEqual(expected.Width, font.FontWidth);
+            Assert.AreEqual(expected.Selection, font.Selections);
+
         }
     }
 }

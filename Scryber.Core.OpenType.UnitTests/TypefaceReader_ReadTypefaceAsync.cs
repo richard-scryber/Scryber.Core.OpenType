@@ -1,11 +1,12 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Scryber.OpenType.UnitTests
 {
     [TestClass()]
-    public class AsyncGetTypefaceInformation
+    public class TypefaceReader_ReadTypefaceAsync
     {
 
         public const string RootUrl = ValidateHelvetica.RootUrl;
@@ -19,7 +20,7 @@ namespace Scryber.OpenType.UnitTests
         
 
         [TestMethod("1. Async load from valid absolute url")]
-        public void AsyncLoadFromAbsoluteUrl()
+        public async Task AsyncLoadFromAbsoluteUrl()
         {
 
             ITypefaceInfo info;
@@ -32,7 +33,7 @@ namespace Scryber.OpenType.UnitTests
                 path = path + UrlPath;
                 var uri = new Uri(path);
 
-                info = reader.ReadTypefaceAsync(uri).Result;
+                info = await reader.ReadTypefaceAsync(uri);
 
                 Assert.IsNotNull(info, "Info was not returned");
                 Assert.IsTrue(string.IsNullOrEmpty(info.ErrorMessage), "An Error message was returned");
@@ -44,7 +45,7 @@ namespace Scryber.OpenType.UnitTests
         }
 
         [TestMethod("2. Async to load from valid relative url")]
-        public void AsyncLoadFromRelativeUrl()
+        public async Task AsyncLoadFromRelativeUrl()
         {
 
             ITypefaceInfo info;
@@ -57,7 +58,7 @@ namespace Scryber.OpenType.UnitTests
                 path = UrlPath;
                 var uri = new Uri(path, UriKind.Relative);
 
-                info = reader.ReadTypefaceAsync(uri).Result;
+                info = await reader.ReadTypefaceAsync(uri);
 
                 Assert.IsNotNull(info, "Info was not returned");
                 Assert.IsTrue(string.IsNullOrEmpty(info.ErrorMessage), "An Error message was returned");
@@ -70,7 +71,7 @@ namespace Scryber.OpenType.UnitTests
 
         
         [TestMethod("3. Async load from valid absolute file path")]
-        public void AsyncLoadFromAbsoluteFile()
+        public async Task AsyncLoadFromAbsoluteFile()
         {
 
             ITypefaceInfo info;
@@ -83,7 +84,7 @@ namespace Scryber.OpenType.UnitTests
                 path = Path.Combine(path, PartialFilePath);
                 var file = new FileInfo(path);
 
-                info = reader.ReadTypefaceAsync(file).Result;
+                info = await reader.ReadTypefaceAsync(file);
 
                 Assert.IsNotNull(info, "Info was not returned");
                 Assert.IsTrue(string.IsNullOrEmpty(info.ErrorMessage), "An Error message was returned");
@@ -95,7 +96,7 @@ namespace Scryber.OpenType.UnitTests
         }
 
         [TestMethod("4. Async load from valid relative file path")]
-        public void AsyncLoadFromRelativeFile()
+        public async Task AsyncLoadFromRelativeFile()
         {
 
             ITypefaceInfo info;
@@ -108,7 +109,7 @@ namespace Scryber.OpenType.UnitTests
                 path = PartialFilePath;
                 var file = new FileInfo(path);
 
-                info = reader.ReadTypefaceAsync(file).Result;
+                info = await reader.ReadTypefaceAsync(file);
 
                 Assert.IsNotNull(info, "Info was not returned");
                 Assert.IsTrue(string.IsNullOrEmpty(info.ErrorMessage), "An Error message was returned");
@@ -120,7 +121,7 @@ namespace Scryber.OpenType.UnitTests
         }
 
         [TestMethod("5. Async load from valid relative file string")]
-        public void AsyncLoadFromRelativeFileString()
+        public async Task AsyncLoadFromRelativeFileString()
         {
 
             ITypefaceInfo info;
@@ -133,7 +134,7 @@ namespace Scryber.OpenType.UnitTests
                 path = PartialFilePath;
                 
 
-                info = reader.ReadTypefaceAsync(path).Result;
+                info = await reader.ReadTypefaceAsync(path);
 
                 Assert.IsNotNull(info, "Info was not returned");
                 Assert.IsTrue(string.IsNullOrEmpty(info.ErrorMessage), "An Error message was returned");
@@ -145,7 +146,7 @@ namespace Scryber.OpenType.UnitTests
         }
 
         [TestMethod("6. Async load from valid relative url string")]
-        public void AsyncLoadFromRelativeUrlString()
+        public async Task AsyncLoadFromRelativeUrlString()
         {
 
             ITypefaceInfo info;
@@ -157,7 +158,7 @@ namespace Scryber.OpenType.UnitTests
                 //valid path
                 path = UrlPath;
 
-                info = reader.ReadTypefaceAsync(path).Result;
+                info = await reader.ReadTypefaceAsync(path);
 
                 Assert.IsNotNull(info, "Info was not returned");
                 Assert.IsTrue(string.IsNullOrEmpty(info.ErrorMessage), "An Error message was returned");

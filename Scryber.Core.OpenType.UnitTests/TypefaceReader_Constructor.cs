@@ -6,7 +6,7 @@ using Scryber.OpenType;
 namespace Scryber.OpenType.UnitTests
 {
     [TestClass]
-    public class ReaderConstructor
+    public class TypefaceReader_Constructor
     {
         [TestMethod("1. No Parameters is unrooted")]
         public void ParameterLess()

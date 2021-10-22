@@ -33,14 +33,18 @@ namespace Scryber.OpenType
     public class TypefaceReader : IDisposable
     {
 
-        #region public Utility.StreamLoader Loader {get;}
+        //
+        // properties
+        //
+
+        #region public virtual Utility.StreamLoader Loader {get;}
 
         private StreamLoader _loader;
 
         /// <summary>
         /// Gets the stream loader associated with this reader
         /// </summary>
-        public Utility.StreamLoader Loader
+        public virtual StreamLoader Loader
         {
             get { return _loader; }
         }
@@ -48,7 +52,7 @@ namespace Scryber.OpenType
         #endregion
 
         //
-        // .ctor
+        // .ctors
         //
 
         #region public TypefaceReader()
@@ -218,7 +222,7 @@ namespace Scryber.OpenType
             {
                 ITypefaceInfo foundOne;
 
-                using (var fs = _loader.GetStream(file, true))
+                using (var fs = this.Loader.GetStream(file, true))
                 {
                     if (this.TryReadTypeface(fs, file.FullName, out foundOne))
                         found.Add(foundOne);
@@ -258,7 +262,7 @@ namespace Scryber.OpenType
             {
                 ITypefaceInfo foundOne;
 
-                using (var fs = _loader.GetStream(url, true))
+                using (var fs = this.Loader.GetStream(url, true))
                 {
                     if (this.TryReadTypeface(fs, url.ToString(), out foundOne))
                         found.Add(foundOne);
@@ -379,7 +383,7 @@ namespace Scryber.OpenType
                 {
                     ITypefaceInfo foundOne;
 
-                    using (var fs = _loader.GetStream(url, true))
+                    using (var fs = this.Loader.GetStream(url, true))
                     {
                         if (this.TryReadTypeface(fs, url.ToString(), out foundOne))
                             found.Add(foundOne);
@@ -424,7 +428,7 @@ namespace Scryber.OpenType
                 info = new Utility.UnknownTypefaceInfo("", "The File Info was null");
                 result = false;
             }
-            else if (!_loader.TryGetStream(fromFile, true, out stream, out message))
+            else if (!this.Loader.TryGetStream(fromFile, true, out stream, out message))
             {
                 info = new Utility.UnknownTypefaceInfo(fromFile.FullName, message);
                 result = false;
@@ -472,7 +476,7 @@ namespace Scryber.OpenType
                 info = new Utility.UnknownTypefaceInfo("", "The Url was null");
                 result = false;
             }
-            else if (!_loader.TryGetStream(fromUrl, true, out stream, out message))
+            else if (!this.Loader.TryGetStream(fromUrl, true, out stream, out message))
             {
                 info = new Utility.UnknownTypefaceInfo(fromUrl.ToString(), message);
                 result = false;
@@ -533,46 +537,6 @@ namespace Scryber.OpenType
         // DoTryReadTypeface
         //
 
-        #region protected virtual bool DoTryReadTypeface(Stream seekableStream, string source, out ITypefaceInfo info)
-
-        /// <summary>
-        /// Trys to get the specific typeface Information from the provided stream, which must be seekable (supports the Postion setting)
-        /// </summary>
-        /// <param name="seekableStream">The Seekable stream to load the font information from</param>
-        /// <param name="source">The original source for the stream (for reference identification only)</param>
-        /// <param name="info">Set to the typeface information with References to specific font faces within if successful</param>
-        /// <returns>True if reading of the stream was successful</returns>
-        protected virtual bool DoTryReadTypeface(Stream seekableStream, string source, out ITypefaceInfo info)
-        {
-            using (var reader = new BigEndianReader(seekableStream))
-            {
-                TypefaceVersionReader version;
-                if (!TypefaceVersionReader.TryGetVersion(reader, out version))
-                {
-                    info = new Utility.UnknownTypefaceInfo(source, "Could not identify the typeface version");
-                    return false;
-                }
-                else
-                {
-                    bool success = false;
-                    info = null;
-
-                    try
-                    {
-                        info = version.ReadTypefaceInfoAfterVersion(reader, source);
-                        success = true;
-                    }
-                    catch (Exception ex)
-                    {
-                        info = new Utility.UnknownTypefaceInfo(source, "The typeface information could not be read : " + ex.Message);
-                        success = false;
-                    }
-                    return success;
-                }
-            }
-        }
-
-        #endregion
 
 
         //
@@ -590,7 +554,7 @@ namespace Scryber.OpenType
         /// <returns></returns>
         public ITypefaceInfo ReadTypeface(string path)
         {
-            using (var stream = _loader.GetStream(path, true))
+            using (var stream = this.Loader.GetStream(path, true))
             {
                 return DoReadTypeface(stream, path);
             }
@@ -608,7 +572,7 @@ namespace Scryber.OpenType
         /// <returns></returns>
         public ITypefaceInfo ReadTypeface(Uri path)
         {
-            using (var stream = _loader.GetStream(path, true))
+            using (var stream = this.Loader.GetStream(path, true))
             {
                 return DoReadTypeface(stream, path.ToString());
             }
@@ -626,7 +590,7 @@ namespace Scryber.OpenType
         /// <returns></returns>
         public ITypefaceInfo ReadTypeface(FileInfo path)
         {
-            using (var stream = _loader.GetStream(path, true))
+            using (var stream = this.Loader.GetStream(path, true))
             {
                 return DoReadTypeface(stream, path.ToString());
             }
@@ -674,7 +638,7 @@ namespace Scryber.OpenType
         /// <returns></returns>
         public async Task<ITypefaceInfo> ReadTypefaceAsync(string path)
         {
-            using (var stream = await _loader.GetStreamAsync(path, true))
+            using (var stream = await this.Loader.GetStreamAsync(path, true))
             {
                 return DoReadTypeface(stream, path);
             }
@@ -693,7 +657,7 @@ namespace Scryber.OpenType
         /// <returns></returns>
         public async Task<ITypefaceInfo> ReadTypefaceAsync(Uri path)
         {
-            using (var stream = await _loader.GetStreamAsync(path, true))
+            using (var stream = await this.Loader.GetStreamAsync(path, true))
             {
                 return DoReadTypeface(stream, path.ToString());
             }
@@ -712,7 +676,7 @@ namespace Scryber.OpenType
         /// <returns></returns>
         public async Task<ITypefaceInfo> ReadTypefaceAsync(FileInfo path)
         {
-            using (var stream = await _loader.GetStreamAsync(path, true))
+            using (var stream = await this.Loader.GetStreamAsync(path, true))
             {
                 return DoReadTypeface(stream, path.FullName);
             }
@@ -720,43 +684,7 @@ namespace Scryber.OpenType
 
         #endregion
 
-        //
-        // DoGetTypefaceInformation
-        //
 
-
-
-        #region protected virtual ITypefaceInfo DoReadTypeface(Stream seekableStream, string source)
-
-        /// <summary>
-        /// Gets the specific typeface Information from the provided stream, which must be seekable (supports the Postion setting)
-        /// </summary>
-        /// <param name="seekableStream">The Seekable stream to load the font information from</param>
-        /// <param name="source">The original source for the stream (for reference identification only)</param>
-        /// <returns>The typeface information for the stream</returns>
-        protected virtual ITypefaceInfo DoReadTypeface(Stream seekableStream, string source)
-        {
-            using (var reader = new BigEndianReader(seekableStream))
-            {
-                TypefaceVersionReader version;
-                if (!TypefaceVersionReader.TryGetVersion(reader, out version))
-                    throw new TypefaceReadException("Could not identify the version of the font the source " + (source ?? ""));
-
-                else
-                {
-                    var info = version.ReadTypefaceInfoAfterVersion(reader, source);
-                    if (null == info)
-                        throw new TypefaceReadException("Could not extract the information for the font source " + (source ?? ""));
-
-                    else if (!string.IsNullOrEmpty(info.ErrorMessage))
-                        throw new TypefaceReadException("Could not extract the information for the font source " + (source ?? "") + ": " + info.ErrorMessage);
-
-                    return info;
-                }
-            }
-        }
-
-        #endregion
 
         //
         // GetFonts
@@ -798,7 +726,7 @@ namespace Scryber.OpenType
             {
                 List<ITypefaceFont> loaded = new List<ITypefaceFont>();
 
-                using (var stream = this._loader.GetStream(forInfo.Source, true))
+                using (var stream = this.Loader.GetStream(forInfo.Source, true))
                 {
                     foreach (var reference in forInfo.Fonts)
                     {
@@ -826,7 +754,7 @@ namespace Scryber.OpenType
             if (null == uri)
                 throw new ArgumentNullException(nameof(uri));
 
-            using (var stream = _loader.GetStream(uri, true))
+            using (var stream = this.Loader.GetStream(uri, true))
             {
                 return DoGetFonts(stream, uri.ToString());
             }
@@ -847,7 +775,7 @@ namespace Scryber.OpenType
             if (null == path)
                 throw new ArgumentNullException(nameof(path));
 
-            using (var stream = _loader.GetStream(path, true))
+            using (var stream = this.Loader.GetStream(path, true))
             {
                 return DoGetFonts(stream, path.FullName);
             }
@@ -875,53 +803,6 @@ namespace Scryber.OpenType
 
         #endregion
 
-        //
-        // DoGetFonts
-        //
-
-        #region protected virtual IEnumerable<ITypefaceFont> DoGetFonts(Stream stream, string source)
-
-        /// <summary>
-        /// Main method to read all the typeface fonts defined in a stream. Inheritors can override.
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <param name="source"></param>
-        /// <returns></returns>
-        protected virtual IEnumerable<ITypefaceFont> DoGetFonts(Stream stream, string source)
-        {
-            var info = this.DoReadTypeface(stream, source);
-
-            if (null != info && info.Fonts.Length > 0)
-            {
-                //reset the stream, rather than reloading
-                //as we know it is seekable
-
-                stream.Position = 0;
-
-                if (info.Fonts.Length == 1)
-                {
-                    var one = this.GetFont(stream, info.Source, info.Fonts[0]);
-                    return new ITypefaceFont[] { one };
-                }
-                else
-                {
-                    List<ITypefaceFont> typefaces = new List<ITypefaceFont>();
-
-                    foreach (var tfref in info.Fonts)
-                    {
-                        stream.Position = 0;
-                        var one = this.GetFont(stream, info.Source, tfref);
-                        typefaces.Add(one);
-                    }
-
-                    return typefaces;
-                }
-
-            }
-            return null;
-        }
-
-        #endregion
 
         //
         // GetFontsAsync
@@ -932,14 +813,14 @@ namespace Scryber.OpenType
         /// <summary>
         /// Asyncronously gets all the fonts defined in the typeface font data returned from the relative or absolute url
         /// </summary>
-        /// <param name="uri">The relative or absolute url containing one or more typefaces</param>
+        /// <param name="uri">The url pointing to a data stream with one or more fonts programs in a typeface. Should be absolute, or relative if the reader was initialised with a root url.</param>
         /// <returns>An enumerable collection of typefaces or null if there were none.</returns>
         public async Task<IEnumerable<ITypefaceFont>> GetFontsAsync(Uri uri)
         {
             if (null == uri)
                 throw new ArgumentNullException(nameof(uri));
 
-            using (var stream = await _loader.GetStreamAsync(uri, true))
+            using (var stream = await this.Loader.GetStreamAsync(uri, true))
             {
                 var info = this.DoReadTypeface(stream, uri.ToString());
 
@@ -962,6 +843,56 @@ namespace Scryber.OpenType
                         {
                             stream.Position = 0;
                             var one = this.GetFont(stream, info.Source, tfref);
+                            typefaces.Add(one);
+                        }
+
+                        return typefaces;
+                    }
+
+                }
+                return null;
+            }
+        }
+
+        #endregion
+
+
+        #region public async Task<IEnumerable<ITypefaceFont>> GetFontsAsync(FileInfo path)
+
+        /// <summary>
+        /// Asyncronously gets all the fonts defined in the typeface font data returned from the relative or rooted file path
+        /// </summary>
+        /// <param name="path">The file path containing one or more typefaces. Should be absolute, or relative if the reader was initialised with a directory.</param>
+        /// <returns>An enumerable collection of typefaces or null if there were none.</returns>
+        public async Task<IEnumerable<ITypefaceFont>> GetFontsAsync(FileInfo path)
+        {
+            if (null == path)
+                throw new ArgumentNullException(nameof(path));
+
+            using (var stream = await this.Loader.GetStreamAsync(path, true))
+            {
+                var info = this.DoReadTypeface(stream, path.FullName);
+
+                if (null != info && info.Fonts.Length > 0)
+                {
+                    //reset the stream, rather than reloading
+                    //as we know it is seekable
+                    stream.Position = 0;
+
+                    if (info.Fonts.Length == 1)
+                    {
+                        var one = this.GetFont(stream, info.Source, info.Fonts[0]);
+                        return new ITypefaceFont[] { one };
+                    }
+                    else
+                    {
+                        List<ITypefaceFont> typefaces = new List<ITypefaceFont>();
+
+                        foreach (var tfref in info.Fonts)
+                        {
+                            stream.Position = 0;
+                            var one = this.GetFont(stream, info.Source, tfref);
+                            
                             typefaces.Add(one);
                         }
 
@@ -1002,7 +933,7 @@ namespace Scryber.OpenType
 
             if (forInfo.FontCount == 1)
             {
-                using (var stream = await this._loader.GetStreamAsync(forInfo.Source, true))
+                using (var stream = await this.Loader.GetStreamAsync(forInfo.Source, true))
                 {
                     var one = GetFont(stream, forInfo.Source, forInfo.Fonts[0]);
                     return new ITypefaceFont[] { one };
@@ -1011,7 +942,7 @@ namespace Scryber.OpenType
             else
             {
                 List<ITypefaceFont> loaded = new List<ITypefaceFont>();
-                using (var stream = await this._loader.GetStreamAsync(forInfo.Source, true))
+                using (var stream = await this.Loader.GetStreamAsync(forInfo.Source, true))
                 {
                     foreach (var reference in forInfo.Fonts)
                     {
@@ -1043,7 +974,7 @@ namespace Scryber.OpenType
             if (null == uri)
                 throw new ArgumentNullException(nameof(uri));
 
-            using (var stream = _loader.GetStream(uri, true))
+            using (var stream = this.Loader.GetStream(uri, true))
             {
                 var info = this.DoReadTypeface(stream, uri.ToString());
 
@@ -1078,7 +1009,7 @@ namespace Scryber.OpenType
             if (null == file)
                 throw new ArgumentNullException(nameof(file));
 
-            using (var stream = _loader.GetStream(file, true))
+            using (var stream = this.Loader.GetStream(file, true))
             {
                 var info = this.DoReadTypeface(stream, file.FullName);
 
@@ -1117,7 +1048,7 @@ namespace Scryber.OpenType
             if (null == uri)
                 throw new ArgumentNullException(nameof(uri));
 
-            using (var stream = await _loader.GetStreamAsync(uri, true))
+            using (var stream = await this.Loader.GetStreamAsync(uri, true))
             {
                 var info = this.DoReadTypeface(stream, uri.ToString());
 
@@ -1152,7 +1083,7 @@ namespace Scryber.OpenType
             if (null == file)
                 throw new ArgumentNullException(nameof(file));
 
-            using (var stream = await _loader.GetStreamAsync(file, true))
+            using (var stream = await this.Loader.GetStreamAsync(file, true))
             {
                 var info = this.DoReadTypeface(stream, file.FullName);
 
@@ -1223,9 +1154,62 @@ namespace Scryber.OpenType
             if (Array.IndexOf(info.Fonts, forReference) < 0)
                 throw new IndexOutOfRangeException("The font reference was not found in the typeface information");
             
-            using (var stream = _loader.GetStream(info.Source, true))
+            using (var stream = this.Loader.GetStream(info.Source, true))
             {
                 return DoGetFont(stream, info.Source, forReference);
+            }
+        }
+
+        #endregion
+
+        #region public ITypefaceFont GetFont(Uri uri, int forIndex)
+
+        /// <summary>
+        /// Gets the font program data for the reference in the data returned from the Uri
+        /// </summary>
+        /// <param name="uri">The absolute or relative url of the typeface that will contain the font program</param>
+        /// <param name="forReference">This font reference, that the is in the url</param>
+        /// <returns>The font program matching the font info</returns>
+        public ITypefaceFont GetFont(Uri uri, int forIndex)
+        {
+            if (null == uri)
+                throw new ArgumentNullException(nameof(uri));
+
+            using (var stream = this.Loader.GetStream(uri, true))
+            {
+                var info = DoReadTypeface(stream, uri.ToString());
+                if (null == info || info.FontCount == 0 || null == info.Fonts || info.Fonts.Length <= forIndex)
+                    throw new ArgumentOutOfRangeException(nameof(forIndex), "The typeface information did not contain a font reference at index " + forIndex);
+
+                stream.Position = 0;
+                return DoGetFont(stream, uri.ToString(), info.Fonts[forIndex]);
+            }
+        }
+
+        #endregion
+
+        #region  public ITypefaceFont GetFont(FileInfo file, int forIndex)
+
+        /// <summary>
+        /// Gets the font program data for the reference in the data returned from the file path
+        /// </summary>
+        /// <param name="file">The absolute or relative file path of the typeface that will contain the font program</param>
+        /// <param name="forReference">This font reference, that the is in the file</param>
+        /// <returns>The font program matching the font info</returns>
+        public ITypefaceFont GetFont(FileInfo file, int forIndex)
+        {
+            if (null == file)
+                throw new ArgumentNullException(nameof(file));
+
+            using (var stream = this.Loader.GetStream(file, true))
+            {
+                var info = DoReadTypeface(stream, file.FullName);
+
+                if (null == info || info.FontCount == 0 || null == info.Fonts || info.Fonts.Length <= forIndex)
+                    throw new ArgumentOutOfRangeException(nameof(forIndex), "The typeface information did not contain a font reference at index " + forIndex);
+
+                stream.Position = 0;
+                return DoGetFont(stream, file.FullName, info.Fonts[forIndex]);
             }
         }
 
@@ -1247,7 +1231,7 @@ namespace Scryber.OpenType
             if (null == forReference)
                 throw new ArgumentNullException(nameof(forReference));
 
-            using (var stream = _loader.GetStream(uri, true))
+            using (var stream = this.Loader.GetStream(uri, true))
             {
                 return DoGetFont(stream, uri.ToString(), forReference);
             }
@@ -1271,7 +1255,7 @@ namespace Scryber.OpenType
             if (null == forReference)
                 throw new ArgumentNullException(nameof(forReference));
 
-            using (var fs = _loader.GetStream(file, true))
+            using (var fs = this.Loader.GetStream(file, true))
             {
                 return DoGetFont(fs, file.FullName, forReference);
             }
@@ -1302,40 +1286,6 @@ namespace Scryber.OpenType
             }
 
             return DoGetFont(seekableStream, source, forReference);
-        }
-
-        #endregion
-
-        //
-        // DoGetFont
-        //
-
-        #region protected virtual ITypefaceFont DoGetFont(Stream seekableStream, string source, IFontInfo theReference)
-
-        /// <summary>
-        /// Main implementation method for getting a font program from a stream. Inheritors can override.
-        /// </summary>
-        /// <param name="seekableStream"></param>
-        /// <param name="source"></param>
-        /// <param name="theReference"></param>
-        /// <returns></returns>
-        protected virtual ITypefaceFont DoGetFont(Stream seekableStream, string source, IFontInfo theReference)
-        {
-            
-            using (var reader = new BigEndianReader(seekableStream))
-            {
-                TypefaceVersionReader version;
-                if (!TypefaceVersionReader.TryGetVersion(reader, out version))
-                    throw new NullReferenceException("Could not identify the typeface in the provided stream");
-
-                else
-                {
-                    var typeface = version.ReadTypefaceAfterVersion(reader, theReference, source);
-
-                    return typeface;
-                }
-            }
-
         }
 
         #endregion
@@ -1389,11 +1339,68 @@ namespace Scryber.OpenType
             if (Array.IndexOf(info.Fonts, forReference) < 0)
                 throw new IndexOutOfRangeException("The font reference was not found in the typeface information");
 
-            using (var stream = await _loader.GetStreamAsync(info.Source, true))
+            using (var stream = await this.Loader.GetStreamAsync(info.Source, true))
             {
                 return DoGetFont(stream, info.Source, forReference);
             }
         }
+
+        #endregion
+
+        #region public async Task<ITypefaceFont> GetFontAsync(Uri uri, IFontInfo forReference)
+
+        /// <summary>
+        /// Asyncronously gets the font program data for the reference in the data returned from the Uri
+        /// </summary>
+        /// <param name="uri">The absolute or relative url of the typeface that will contain the font program</param>
+        /// <param name="forIndex">The index of the font within the typeface collection</param>
+        /// <returns>The font program at the index in the collection</returns>
+        public async Task<ITypefaceFont> GetFontAsync(Uri uri, int forIndex)
+        {
+            if (null == uri)
+                throw new ArgumentNullException(nameof(uri));
+
+            
+            using (var stream = await this.Loader.GetStreamAsync(uri, true))
+            {
+                var info = DoReadTypeface(stream, uri.ToString());
+                if (null == info || info.FontCount == 0 || null == info.Fonts || info.Fonts.Length <= forIndex)
+                    throw new ArgumentOutOfRangeException(nameof(forIndex), "The typeface information did not contain a font reference at index " + forIndex);
+
+                stream.Position = 0;
+                return DoGetFont(stream, info.Source, info.Fonts[forIndex]);
+            }
+        }
+
+        #endregion
+
+        #region public async Task<ITypefaceFont> GetFontAsync(FileInfo file, IFontInfo forReference)
+
+
+        /// <summary>
+        /// Asyncronously gets the font program data for the reference in the data returned from the file path
+        /// </summary>
+        /// <param name="file">The absolute or relative file path of the typeface that will contain the font program</param>
+        /// <param name="forIndex">This font reference, that the is in the file</param>
+        /// <returns>The font program matching the font info</returns>
+        public async Task<ITypefaceFont> GetFontAsync(FileInfo file, int forIndex)
+        {
+            if (null == file)
+                throw new ArgumentNullException(nameof(file));
+
+
+            using (var stream = await this.Loader.GetStreamAsync(file, true))
+            {
+                var info = DoReadTypeface(stream, file.FullName);
+
+                if (null == info || info.FontCount == 0 || null == info.Fonts || info.Fonts.Length <= forIndex)
+                    throw new ArgumentOutOfRangeException(nameof(forIndex), "The typeface information did not contain a font reference at index " + forIndex);
+
+                stream.Position = 0;
+                return DoGetFont(stream, info.Source, info.Fonts[forIndex]);
+            }
+        }
+
 
         #endregion
 
@@ -1413,7 +1420,7 @@ namespace Scryber.OpenType
             if (null == forReference)
                 throw new ArgumentNullException(nameof(forReference));
 
-            using (var stream = await _loader.GetStreamAsync(uri, true))
+            using (var stream = await this.Loader.GetStreamAsync(uri, true))
             {
                 return DoGetFont(stream, uri.ToString(), forReference);
             }
@@ -1438,12 +1445,167 @@ namespace Scryber.OpenType
             if (null == forReference)
                 throw new ArgumentNullException(nameof(forReference));
 
-            using (var fs = await _loader.GetStreamAsync(file, true))
+            using (var fs = await this.Loader.GetStreamAsync(file, true))
             {
                 return DoGetFont(fs, file.FullName, forReference);
             }
         }
 
+
+        #endregion
+
+        //
+        // Protected implementation methods
+        //
+
+
+        #region protected virtual ITypefaceFont DoGetFont(Stream seekableStream, string source, IFontInfo theReference)
+
+        /// <summary>
+        /// Main implementation method for getting a font program from a stream. Inheritors can override.
+        /// </summary>
+        /// <param name="seekableStream"></param>
+        /// <param name="source"></param>
+        /// <param name="theReference"></param>
+        /// <returns></returns>
+        protected virtual ITypefaceFont DoGetFont(Stream seekableStream, string source, IFontInfo theReference)
+        {
+
+            using (var reader = new BigEndianReader(seekableStream))
+            {
+                TypefaceVersionReader version;
+                if (!TypefaceVersionReader.TryGetVersion(reader, out version))
+                    throw new NullReferenceException("Could not identify the typeface in the provided stream");
+
+                else
+                {
+                    var typeface = version.ReadTypefaceAfterVersion(reader, theReference, source);
+
+                    return typeface;
+                }
+            }
+
+        }
+
+        #endregion
+
+
+        #region protected virtual IEnumerable<ITypefaceFont> DoGetFonts(Stream stream, string source)
+
+        /// <summary>
+        /// Main method to read all the typeface fonts defined in a stream. Inheritors can override.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        protected virtual IEnumerable<ITypefaceFont> DoGetFonts(Stream stream, string source)
+        {
+            var info = this.DoReadTypeface(stream, source);
+
+            if (null != info && info.Fonts.Length > 0)
+            {
+                //reset the stream, rather than reloading
+                //as we know it is seekable
+
+                stream.Position = 0;
+
+                if (info.Fonts.Length == 1)
+                {
+                    var one = this.GetFont(stream, info.Source, info.Fonts[0]);
+                    return new ITypefaceFont[] { one };
+                }
+                else
+                {
+                    List<ITypefaceFont> typefaces = new List<ITypefaceFont>();
+
+                    foreach (var tfref in info.Fonts)
+                    {
+                        stream.Position = 0;
+                        var one = this.GetFont(stream, info.Source, tfref);
+                        typefaces.Add(one);
+                    }
+
+                    return typefaces;
+                }
+
+            }
+            return null;
+        }
+
+        #endregion
+
+
+        #region protected virtual ITypefaceInfo DoReadTypeface(Stream seekableStream, string source)
+
+        /// <summary>
+        /// Gets the specific typeface Information from the provided stream, which must be seekable (supports the Postion setting)
+        /// </summary>
+        /// <param name="seekableStream">The Seekable stream to load the font information from</param>
+        /// <param name="source">The original source for the stream (for reference identification only)</param>
+        /// <returns>The typeface information for the stream</returns>
+        protected virtual ITypefaceInfo DoReadTypeface(Stream seekableStream, string source)
+        {
+            using (var reader = new BigEndianReader(seekableStream))
+            {
+                TypefaceVersionReader version;
+                if (!TypefaceVersionReader.TryGetVersion(reader, out version))
+                    throw new TypefaceReadException("Could not identify the version of the font the source " + (source ?? ""));
+
+                else
+                {
+                    var info = version.ReadTypefaceInfoAfterVersion(reader, source);
+                    if (null == info)
+                        throw new TypefaceReadException("Could not extract the information for the font source " + (source ?? ""));
+
+                    else if (!string.IsNullOrEmpty(info.ErrorMessage))
+                        throw new TypefaceReadException("Could not extract the information for the font source " + (source ?? "") + ": " + info.ErrorMessage);
+
+                    return info;
+                }
+            }
+        }
+
+        #endregion
+
+
+        #region protected virtual bool DoTryReadTypeface(Stream seekableStream, string source, out ITypefaceInfo info)
+
+        /// <summary>
+        /// Trys to get the specific typeface Information from the provided stream, which must be seekable (supports the Postion setting)
+        /// </summary>
+        /// <param name="seekableStream">The Seekable stream to load the font information from</param>
+        /// <param name="source">The original source for the stream (for reference identification only)</param>
+        /// <param name="info">Set to the typeface information with References to specific font faces within if successful</param>
+        /// <returns>True if reading of the stream was successful</returns>
+        protected virtual bool DoTryReadTypeface(Stream seekableStream, string source, out ITypefaceInfo info)
+        {
+            using (var reader = new BigEndianReader(seekableStream))
+            {
+                TypefaceVersionReader version;
+                if (!TypefaceVersionReader.TryGetVersion(reader, out version))
+                {
+                    info = new Utility.UnknownTypefaceInfo(source, "Could not identify the typeface version");
+                    return false;
+                }
+                else
+                {
+                    bool success = false;
+                    info = null;
+
+                    try
+                    {
+                        info = version.ReadTypefaceInfoAfterVersion(reader, source);
+                        success = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        info = new Utility.UnknownTypefaceInfo(source, "The typeface information could not be read : " + ex.Message);
+                        success = false;
+                    }
+                    return success;
+                }
+            }
+        }
 
         #endregion
 

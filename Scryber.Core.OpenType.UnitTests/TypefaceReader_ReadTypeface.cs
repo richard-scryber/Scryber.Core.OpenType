@@ -11,7 +11,7 @@ namespace Scryber.OpenType.UnitTests
     /// Reads teh ITypeFaceInformation for a single ttf file from the various different sources
     /// </summary>
     [TestClass()]
-    public class ReadInfoFromInputs
+    public class TypefaceReader_ReadTypeface
     {
         public const string RootUrl = ValidateHelvetica.RootUrl;
 
@@ -28,7 +28,7 @@ namespace Scryber.OpenType.UnitTests
 
         
 
-        [TestMethod("1. Load Info from a file stream")]
+        [TestMethod("1. Read Typeface Info from a file stream")]
         public void LoadInfoFromFileStream()
         {
             using (var reader = new TypefaceReader())
@@ -45,7 +45,7 @@ namespace Scryber.OpenType.UnitTests
 
         }
 
-        [TestMethod("2. Load Info from a file path")]
+        [TestMethod("2. Read Typeface Info from a file path")]
         public void LoadInfoFromFilePath()
         {
             using (var reader = new TypefaceReader())
@@ -60,7 +60,7 @@ namespace Scryber.OpenType.UnitTests
 
         }
 
-        [TestMethod("3. Load Info from a file info")]
+        [TestMethod("3. Read Typeface Info from a file info")]
         public void LoadInfoFromFileInfo()
         {
             using (var reader = new TypefaceReader())
@@ -76,7 +76,7 @@ namespace Scryber.OpenType.UnitTests
 
         }
 
-        [TestMethod("4. Load Info from a base directory and path")]
+        [TestMethod("4. Read Typeface Info from a base directory and path")]
         public void LoadInfoFromDirectoryAndPath()
         {
             var path = System.Environment.CurrentDirectory;
@@ -93,7 +93,7 @@ namespace Scryber.OpenType.UnitTests
         }
 
 
-        [TestMethod("5. Load Info from an absolute Url")]
+        [TestMethod("5. Read Typeface Info from an absolute Url")]
         public void LoadInfoFromFullUrl()
         {
             var path = RootUrl;
@@ -108,7 +108,7 @@ namespace Scryber.OpenType.UnitTests
 
         }
 
-        [TestMethod("6. Load Info from a base and partial Url")]
+        [TestMethod("6. Read Typeface Info from a base and partial Url")]
         public void LoadInfoFromPartialUrl()
         {
             var path = RootUrl;
@@ -134,7 +134,7 @@ namespace Scryber.OpenType.UnitTests
 
 
 
-        [TestMethod("7. Load Info from base + partial + http")]
+        [TestMethod("7. Read Typeface Info from base + partial + http")]
         public void LoadInfoFromPartialUrlWithHttp()
         {
 #if NET48
@@ -175,7 +175,7 @@ namespace Scryber.OpenType.UnitTests
         }
 
 
-        [TestMethod("8. Load Info with just http client")]
+        [TestMethod("8. Read Typeface Info with just http client")]
         public void LoadInfoWithHttp()
         {
 #if NET48
