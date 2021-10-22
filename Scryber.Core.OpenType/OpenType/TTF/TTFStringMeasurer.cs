@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.Runtime.CompilerServices;
 using Scryber.OpenType.SubTables;
 
 namespace Scryber.OpenType.TTF
@@ -13,8 +13,8 @@ namespace Scryber.OpenType.TTF
 
         private CMAPSubTable _offsets;
         private List<HMetric> _metrics;
-        private int unitsPerEm;
-        private int _lineHeight;
+        private int _unitsPerEm;
+        private TypeMeasureOptions _options;
         private bool _useTypo;
         private TrueTypeFile _fontfile;
         private CMapEncoding _cMapEncoding;
@@ -27,7 +27,7 @@ namespace Scryber.OpenType.TTF
         /// Gets the number of font units in an uppercase M (the basic
         /// bounding box for a character).
         /// </summary>
-        public int FUnitsPerEm { get { return this.unitsPerEm; } }
+        public int FUnitsPerEm { get { return this._unitsPerEm; } }
 
         /// <summary>
         /// Gets the ascender height of this font in FontUnits 
@@ -46,9 +46,14 @@ namespace Scryber.OpenType.TTF
         public int LineSpaceingFU { get { return this._useTypo ? _os2.TypoLineGap : _hheader.LineGap; } }
 
         /// <summary>
+        /// Gets the default line height (Ascender, Descender and Spacing) in font units.
+        /// </summary>
+        public int LineHeightFU { get { return this.LineSpaceingFU + this.AscenderHeightFU - this.DescenderHeightFU; } }
+
+        /// <summary>
         /// Gets the width of a lowercase x in Font Units
         /// </summary>
-        public int ExWidthFU { get { return this._useTypo ? _os2.XAverageCharWidth : _hheader.XMaxExtent; } }
+        public int xAvgWidthFU { get { return _os2.XAverageCharWidth; } }
 
 
         /// <summary>
@@ -58,15 +63,21 @@ namespace Scryber.OpenType.TTF
         /// <remarks>Always return false here as this measurer does not support vertical fonts</remarks>
         public bool Vertical { get { return false; } }
 
-        private TTFStringMeasurer(int unitsPerEm, CMAPSubTable offsets, OS2Table oS2, HorizontalHeader hheader, List<HMetric> metrics, TrueTypeFile font, CMapEncoding encoding, int lineheight)
+        private TTFStringMeasurer(int unitsPerEm, CMAPSubTable offsets, OS2Table oS2, HorizontalHeader hheader, List<HMetric> metrics, TrueTypeFile font, CMapEncoding encoding, TypeMeasureOptions options)
         {
-            this.unitsPerEm = unitsPerEm;
+            this._unitsPerEm = unitsPerEm;
             this._offsets = offsets;
             this._os2 = oS2;
             this._metrics = metrics;
             this._lookup = new Dictionary<char, HMetric>();
-            this._useTypo = (FontSelection.UseTypographicSizes & oS2.Selection) > 0;
-            this._lineHeight = lineheight;
+            this._options = options;
+            if (options.FontUnits == FontUnitType.UseFontPreference)
+                this._useTypo = (oS2.Version >= OS2TableVersion.OpenType15) && ((oS2.Selection & FontSelection.UseTypographicSizes) > 0);
+            else if (options.FontUnits == FontUnitType.UseHeadMetrics)
+                this._useTypo = false;
+            else
+                this._useTypo = true;
+
             this._hheader = hheader;
             this._fontfile = font;
             this._cMapEncoding = encoding;
@@ -74,7 +85,7 @@ namespace Scryber.OpenType.TTF
 
         public double MeasureChars(string chars, int startOffset, double emsize, double available, bool wordboundary, out int fitted)
         {
-            int totalUnits = (int)((available / emsize) * this.unitsPerEm);
+            int totalUnits = (int)Math.Floor((available * this.FUnitsPerEm) / emsize);
 
             int measured = 0;
             int count = 0;
@@ -111,7 +122,7 @@ namespace Scryber.OpenType.TTF
 
                 if (measured > totalUnits)
                 {
-                    lastWordLen -= metric.AdvanceWidth;
+                    measured -= metric.AdvanceWidth;
                     break;
                 }
                 else
@@ -129,13 +140,13 @@ namespace Scryber.OpenType.TTF
                 }
             }
 
-            double w = (measured * emsize) / (double)unitsPerEm;
+            double w = (measured * emsize) / (double)_unitsPerEm;
             fitted = count;
             return w;
 
         }
 
-        LineSize IFontMetrics.Measure(string chars, int startOffset, double emSize, double maxWidth, TypeMeasureOptions options)
+        LineSize IFontMetrics.MeasureLine(string chars, int startOffset, double emSize, double maxWidth, TypeMeasureOptions options)
         {
             int fitted;
 
@@ -145,14 +156,16 @@ namespace Scryber.OpenType.TTF
             else
             {
                 double required = this.MeasureChars(chars, startOffset, emSize, maxWidth, options.BreakOnWordBoundaries, out fitted);
-                double lineh = ((double)this._lineHeight * emSize) / (double)unitsPerEm;
+                double h = this.LineHeightFU;
+                double units = (double)_unitsPerEm;
+                double lineh = (h * emSize) / units;
 
                 return new LineSize(required, lineh, fitted, (fitted < chars.Length) && options.BreakOnWordBoundaries);
             }
         }
 
 
-        public static TTFStringMeasurer Create(TrueTypeFile forfont, CMapEncoding encoding)
+        public static TTFStringMeasurer Create(TrueTypeFile forfont, CMapEncoding encoding, TypeMeasureOptions options)
         {
             HorizontalMetrics table = forfont.Directories["hmtx"].Table as HorizontalMetrics;
             CMAPTable cmap = forfont.Directories["cmap"].Table as CMAPTable;
@@ -173,16 +186,9 @@ namespace Scryber.OpenType.TTF
                 map = cmap.GetOffsetTable(CMapEncoding.MacRoman);
             }
             
-            int lineHeight;
-            bool useTypo = (FontSelection.UseTypographicSizes & os2.Selection) > 0;
+            
 
-            if (useTypo)
-                lineHeight = os2.TypoAscender - os2.TypoDescender + os2.TypoLineGap;
-            else
-                lineHeight = hhead.Ascender - hhead.Descender + hhead.LineGap; 
-
-
-            return new TTFStringMeasurer(head.UnitsPerEm, map, os2, hhead, table.HMetrics, forfont, encoding, lineHeight);
+            return new TTFStringMeasurer(head.UnitsPerEm, map, os2, hhead, table.HMetrics, forfont, encoding, options);
         }
     }
 

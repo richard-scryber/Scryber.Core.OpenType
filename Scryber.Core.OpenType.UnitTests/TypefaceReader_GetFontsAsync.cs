@@ -129,7 +129,7 @@ namespace Scryber.OpenType.UnitTests
                 //Set the relative path
                 var file = new FileInfo("INVALID/" + ValidateHelvetica.UrlPath);
 
-                Assert.ThrowsException<FileNotFoundException>(() =>
+                Assert.ThrowsException<TypefaceReadException>(() =>
                 {
                     var faces = reader.GetFonts(file);
 

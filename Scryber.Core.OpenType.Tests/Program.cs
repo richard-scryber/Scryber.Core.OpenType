@@ -1,6 +1,7 @@
 ﻿//#define UseOpenFont
-//#define Performance
+#define Performance
 #define UseLocal
+#define Legacy
 
 using System;
 using System.Threading.Tasks;
@@ -24,7 +25,7 @@ namespace Scryber.Core.OpenType.Tests
                 new { Name = "Roboto",              Include = false, LocalPath = "./fonts/Roboto.ttf", RemotePath = "https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Me5Q.ttf"},
                 new { Name = "Open Sans Black TTF", Include = false, LocalPath = "./fonts/Open Sans Black.ttf", RemotePath = "https://fonts.gstatic.com/s/opensans/v26/memQYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWq8tWZ0Pw86hd0Rk0ZjaVc.ttf"},
                 new { Name = "Pragati Narrow",      Include = false, LocalPath = "./fonts/PragatiNarrow.ttf", RemotePath = "https://fonts.gstatic.com/s/pragatinarrow/v8/vm8vdRf0T0bS1ffgsPB7WZ-mD17_.ttf"},   
-                new { Name = "Helvetica",           Include = false, LocalPath = "./fonts/Helvetica.ttf", RemotePath = "https://raw.githubusercontent.com/richard-scryber/scryber.core/svgParsing/Scryber.Drawing/Text/_FontResources/Helvetica/Helvetica.ttf"},
+                new { Name = "Helvetica",           Include = true, LocalPath = "./fonts/Helvetica.ttf", RemotePath = "https://raw.githubusercontent.com/richard-scryber/scryber.core/svgParsing/Scryber.Drawing/Text/_FontResources/Helvetica/Helvetica.ttf"},
                 new { Name = "Gill Sans ttc",       Include = false, LocalPath = "./fonts/GillSans.ttc", RemotePath = "https://raw.githubusercontent.com/richard-scryber/scryber.core.opentype/master/Scryber.Core.OpenType.Tests/fonts/GillSans.ttc"},
                 new { Name = "Open Sans Black Wof", Include = false, LocalPath = "./fonts/OpenSansBlack.woff", RemotePath = "https://fonts.gstatic.com/s/opensans/v26/memQYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWq8tWZ0Pw86hd0Rk0ZjWVAexoMUdjFXmQ.woff"},
                 new { Name = "Noto TC",             Include = false,  LocalPath = "./fonts/NotoTC.otf", RemotePath = "https://fonts.gstatic.com/s/notosanstc/v20/-nF7OG829Oofr2wohFbTp9iFOQ.otf"},
@@ -186,11 +187,11 @@ namespace Scryber.Core.OpenType.Tests
                     else
                         Console.WriteLine("Loaded font reference " + typeface.ToString());
 
-                    var metrics = typeface.GetMetrics();
+                    var metrics = typeface.GetMetrics(options);
 
                     if (null != metrics)
                     {
-                        var line = metrics.Measure("This is the text to measure", 0, 12.0, 10000, options);
+                        var line = metrics.MeasureLine("This is the text to measure", 0, 12.0, 10000, options);
                         Console.WriteLine("Measured the string to " + line.RequiredWidth + ", " + line.RequiredHeight + " points, and fitted " + line.CharsFitted + " chars" + (line.OnWordBoudary ? " breaking on the word boundary." : "."));
                     }
                     else
@@ -236,7 +237,7 @@ namespace Scryber.Core.OpenType.Tests
             string text = "This is the text to measure";
             int fitted;
 
-            var size = ttf.MeasureString(encoding, text, 0, 12, 10000, true, out fitted);
+            var size = ttf.MeasureString(encoding, text, 0, 12, 100, true, out fitted);
 
             Console.WriteLine("String Measured to " + size.ToString() + " and fitted " + fitted + " characters out of " + text.Length);
 
@@ -244,7 +245,7 @@ namespace Scryber.Core.OpenType.Tests
 
 #if Performance
 
-            var stopWatch = Stopwatch.StartNew();
+            var stopWatch = System.Diagnostics.Stopwatch.StartNew();
 
             MeasureStringMeasurer(ttf);
 
@@ -284,7 +285,7 @@ namespace Scryber.Core.OpenType.Tests
 
         static void MeasureStringMeasurer(TTFFile file)
         {
-            var measurer = Scryber.OpenType.TTF.TTFStringMeasurer.Create(file, CMapEncoding.WindowsUnicode);
+            var measurer = Scryber.OpenType.TTF.TTFStringMeasurer.Create(file, CMapEncoding.WindowsUnicode, TypeMeasureOptions.Default);
 
             for (var repeat = 0; repeat < maxRepeat; repeat++)
             {

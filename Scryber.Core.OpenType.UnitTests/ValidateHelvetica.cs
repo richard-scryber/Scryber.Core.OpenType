@@ -14,8 +14,30 @@ namespace Scryber.OpenType.UnitTests
         public const FontRestrictions Restrictions = 0;
         public const FontSelection Selections = 0;
 
+        //metrics
+        public const int FontAscender = 1577;
+        public const int FontDescender = -471;
+        public const int FontLineGap = 0;
+        public const int FontUnitsPerEm = 2048;
+        public const int FontXWidth = 1216;
+
+
+        
         public const string RootUrl = "https://raw.githubusercontent.com/richard-scryber/Scryber.Core.OpenType/main/Scryber.Core.OpenType.UnitTests/";
+
         public const string UrlPath = "fonts/Helvetica.ttf";
+
+        public static void AssertMetrics(IFontMetrics metrics)
+        {
+            Assert.AreEqual(FontAscender, metrics.AscenderHeightFU);
+            Assert.AreEqual(FontDescender, metrics.DescenderHeightFU);
+            Assert.AreEqual(FontLineGap, metrics.LineSpaceingFU);
+            Assert.AreEqual(FontUnitsPerEm, metrics.FUnitsPerEm);
+            Assert.AreEqual(FontXWidth, metrics.xAvgWidthFU);
+            Assert.IsFalse(metrics.Vertical);
+        }
+
+        
 
 
         public static void AssertInfo(ITypefaceInfo info, string source, int testIndex)

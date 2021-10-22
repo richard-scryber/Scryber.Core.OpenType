@@ -597,15 +597,21 @@ namespace Scryber.OpenType.TTF
             os2.WinAscent = reader.ReadUInt16();
             os2.WinDescent = reader.ReadUInt16();
 
-            zero = reader.ReadUInt32();
-            one = reader.ReadUInt32();
-            os2.CodePageRanges = new CodePageRange(zero, one);
+            if (os2.Version >= OS2TableVersion.TrueType166)
+            {
+                zero = reader.ReadUInt32();
+                one = reader.ReadUInt32();
+                os2.CodePageRanges = new CodePageRange(zero, one);
 
-            os2.Height = reader.ReadInt16();
-            os2.CapHeight = reader.ReadInt16();
-            os2.DefaultChar = reader.ReadUInt16();
-            os2.BreakChar = reader.ReadUInt16();
-            os2.MaxContext = reader.ReadUInt16();
+                if (os2.Version >= OS2TableVersion.OpenType12)
+                {
+                    os2.Height = reader.ReadInt16();
+                    os2.CapHeight = reader.ReadInt16();
+                    os2.DefaultChar = reader.ReadUInt16();
+                    os2.BreakChar = reader.ReadUInt16();
+                    os2.MaxContext = reader.ReadUInt16();
+                }
+            }
 
             return os2;
         }

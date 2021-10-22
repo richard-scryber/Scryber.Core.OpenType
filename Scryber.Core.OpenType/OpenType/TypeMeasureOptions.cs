@@ -21,8 +21,38 @@ namespace Scryber.OpenType
         /// </summary>
         public bool BreakOnWordBoundaries { get; set; }
 
+        /// <summary>
+        /// Set whether the typographic sizes should be used rather than the Header sizes for line heights, or allow the font to dictate which is best.
+        /// </summary>
+        public FontUnitType FontUnits { get; set; }
+
         public TypeMeasureOptions()
         {
+            FontUnits = FontUnitType.UseFontPreference;
+            BreakOnWordBoundaries = false;
+        }
+
+
+        /// <summary>
+        /// Returns the default options for measuing text (no spacing and break anywhere)
+        /// </summary>
+        public static TypeMeasureOptions Default
+        {
+            get
+            {
+                return new TypeMeasureOptions() { WordSpacing = null, CharacterSpacing = null, BreakOnWordBoundaries = false };
+            }
+        }
+
+        /// <summary>
+        /// Returns the default options for measuring text but foring breaks on words.
+        /// </summary>
+        public static TypeMeasureOptions BreakOnWords
+        {
+            get
+            {
+                return new TypeMeasureOptions() { WordSpacing = null, CharacterSpacing = null, BreakOnWordBoundaries = true };
+            }
         }
     }
 }

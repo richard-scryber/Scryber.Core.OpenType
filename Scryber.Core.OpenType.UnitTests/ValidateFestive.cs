@@ -17,7 +17,7 @@ namespace Scryber.OpenType.UnitTests
         public const FontSelection Selections = (FontSelection)385;
 
         public const string RootUrl = "https://raw.githubusercontent.com/richard-scryber/Scryber.Core.OpenType/main/Scryber.Core.OpenType.UnitTests/";
-        public const string UrlPath = "unsupported/fonts/Festive.woff2";
+        public const string UrlPath = "fonts/unsupported/Festive.woff2";
 
 
         //public static void AssertInfo(ITypefaceInfo info, string source, int testIndex)

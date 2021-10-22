@@ -56,7 +56,7 @@ namespace Scryber.OpenType.UnitTests
                 var path = System.Environment.CurrentDirectory;
                 path = Path.Combine(path, FailingPartialFilePath);
 
-                Assert.ThrowsException<FileNotFoundException>(() =>
+                Assert.ThrowsException<TypefaceReadException>(() =>
                 {
                     var info = reader.ReadTypeface(path);
                 });
@@ -74,7 +74,7 @@ namespace Scryber.OpenType.UnitTests
                 path = Path.Combine(path, FailingPartialFilePath);
                 var fi = new FileInfo(path);
 
-                Assert.ThrowsException<FileNotFoundException>(() =>
+                Assert.ThrowsException<TypefaceReadException>(() =>
                 {
                     var info = reader.ReadTypeface(path);
                 });
@@ -93,7 +93,7 @@ namespace Scryber.OpenType.UnitTests
             {
                 path = FailingPartialFilePath;
 
-                Assert.ThrowsException<FileNotFoundException>(() =>
+                Assert.ThrowsException<TypefaceReadException>(() =>
                 {
                     var info = reader.ReadTypeface(path);
                 });

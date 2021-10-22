@@ -115,17 +115,17 @@ namespace Scryber.OpenType.TTF
         // methods
         //
 
-        public IFontMetrics GetMetrics()
+        public IFontMetrics GetMetrics(TypeMeasureOptions options)
         {
-            return GetMetrics(CMapEncoding.WindowsUnicode);
+            return GetMetrics(CMapEncoding.WindowsUnicode, options);
         }
 
-        public virtual IFontMetrics GetMetrics(CMapEncoding? encoding)
+        public virtual IFontMetrics GetMetrics(CMapEncoding? encoding, TypeMeasureOptions options)
         {
             if (!encoding.HasValue)
                 encoding = CMapEncoding.WindowsUnicode;
 
-            return TTFStringMeasurer.Create(this, encoding.Value);
+            return TTFStringMeasurer.Create(this, encoding.Value, options);
         }
 
         public virtual byte[] GetFileData(DataFormat format)

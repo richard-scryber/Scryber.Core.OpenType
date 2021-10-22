@@ -27,7 +27,7 @@ namespace Scryber.OpenType.UnitTests
             }
         }
 
-        [TestMethod("2. Helvetica Regular font from a url and font index")]
+        [TestMethod("2. Async Helvetica Regular font from a url and font index")]
         public async Task ValidGetFontHelveticaUrlAndIndex()
         {
             var path = new Uri(ValidateHelvetica.RootUrl);
@@ -43,7 +43,7 @@ namespace Scryber.OpenType.UnitTests
             }
         }
 
-        [TestMethod("3. Helvetica Regular font from info file and font index")]
+        [TestMethod("3. Async Helvetica Regular font from info file and font index")]
         public async Task ValidGetFontHelveticaFileInfoAndIndex()
         {
             var path = new DirectoryInfo(System.Environment.CurrentDirectory);
@@ -66,7 +66,7 @@ namespace Scryber.OpenType.UnitTests
 
 
 
-        [TestMethod("4. Helvetica Regular font from a info url and font index")]
+        [TestMethod("4. Async Helvetica Regular font from a info url and font index")]
         public async Task ValidGetFontHelveticaUrlInfoAndIndex()
         {
             var path = new Uri(ValidateHelvetica.RootUrl);
@@ -86,7 +86,7 @@ namespace Scryber.OpenType.UnitTests
 
         
 
-        [TestMethod("5. Gill sans Bold font from a file path to the collection")]
+        [TestMethod("5. Async Gill sans Bold font from a file path to the collection")]
         public async Task ValidGetFontGillSansBold()
         {
             var path = new DirectoryInfo(System.Environment.CurrentDirectory);
@@ -103,7 +103,7 @@ namespace Scryber.OpenType.UnitTests
             }
         }
 
-        [TestMethod("6. Gill sans SemiBoldItalic font from a file path to the collection")]
+        [TestMethod("6. Async Gill sans SemiBoldItalic font from a file path to the collection")]
         public async Task ValidGetFontGillSansSemiBoldItalic()
         {
             var path = new DirectoryInfo(System.Environment.CurrentDirectory);
@@ -120,7 +120,7 @@ namespace Scryber.OpenType.UnitTests
             }
         }
 
-        [TestMethod("7. Gill sans SemiBoldItalic font from info and reference")]
+        [TestMethod("7. Async Gill sans SemiBoldItalic font from info and reference")]
         public async Task ValidGetFontGillSansBoldInfoAndRef()
         {
             var path = new DirectoryInfo(System.Environment.CurrentDirectory);
@@ -144,7 +144,7 @@ namespace Scryber.OpenType.UnitTests
             }
         }
 
-        [TestMethod("8. Helvetica Regular font from a url and reference")]
+        [TestMethod("8. Async Helvetica Regular font from a url and reference")]
         public async Task ValidGetFontHelveticaUrlAndReference()
         {
             var path = new Uri(ValidateHelvetica.RootUrl);
@@ -165,7 +165,7 @@ namespace Scryber.OpenType.UnitTests
         }
 
 
-        [TestMethod("9. Gill sans SemiBoldItalic font from a file path and reference")]
+        [TestMethod("9. Async Gill sans SemiBoldItalic font from a file path and reference")]
         public async Task ValidGetFontGillSansSemiBoldItalicFileInfoAndReference()
         {
             var path = new DirectoryInfo(System.Environment.CurrentDirectory);

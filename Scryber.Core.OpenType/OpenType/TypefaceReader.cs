@@ -58,7 +58,7 @@ namespace Scryber.OpenType
         #region public TypefaceReader()
 
         /// <summary>
-        /// Creates a new default Typeface reader
+        /// Creates a new default Typeface reader to read typefaces and get font programs
         /// </summary>
         public TypefaceReader()
             : this(new UnRootedStreamLoader())

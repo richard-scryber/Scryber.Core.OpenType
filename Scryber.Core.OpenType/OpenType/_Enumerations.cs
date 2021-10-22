@@ -61,4 +61,24 @@ namespace Scryber.OpenType
         Woff2 = 5,
         Other = 100
     }
+
+    /// <summary>
+    /// Defines the metrics to use for measurement of lines, ascenders and descenders within a true type font.
+    /// </summary>
+    public enum FontUnitType : int
+    {
+        /// <summary>
+        /// Defers control to the font program, where version 4 of the OS/2 table can
+        /// dictate to use typographic metrics in the fsSelection. Otherwise it is the Head metrics
+        /// </summary>
+        UseFontPreference = 0,
+        /// <summary>
+        /// Explicitly dictates the use of the metrics from the head table for the Ascender, Descender and LineGap
+        /// </summary>
+        UseHeadMetrics,
+        /// <summary>
+        /// Explicitly dictates the use of the metrics from the oS2 typographic values for Ascender, Descnder and LineGap.
+        /// </summary>
+        UseTypographicMetrics
+    }
 }

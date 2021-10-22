@@ -150,7 +150,9 @@ namespace Scryber.OpenType.SubTables
     {
         TrueType15 = 0,
         TrueType166 = 1,
-        OpenType12 = 2
+        OpenType12 = 2,
+        OpenType14 = 3,
+        OpenType15 = 4
     }
 
     

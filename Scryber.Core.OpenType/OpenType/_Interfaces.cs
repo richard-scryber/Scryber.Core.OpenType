@@ -113,7 +113,7 @@ namespace Scryber.OpenType
         /// Returns the standard font metrics for this font along with a measurement option.
         /// </summary>
         /// <returns></returns>
-        IFontMetrics GetMetrics();
+        IFontMetrics GetMetrics(TypeMeasureOptions options);
 
     }
 
@@ -149,7 +149,7 @@ namespace Scryber.OpenType
         /// <summary>
         /// Gets the width of a lowercase x in Font Units (the basic width of a character).
         /// </summary>
-        int ExWidthFU { get; }
+        int xAvgWidthFU { get; }
 
 
         /// <summary>
@@ -169,7 +169,7 @@ namespace Scryber.OpenType
         /// <param name="maxWidth">The maximum allowed width for the characters in the proportional size</param>
         /// <param name="options">The word breaking and spacing options for the measurement</param>
         /// <returns></returns>
-        LineSize Measure(string chars, int startOffset, double emSize, double maxWidth, TypeMeasureOptions options);
+        LineSize MeasureLine(string chars, int startOffset, double emSize, double maxWidth, TypeMeasureOptions options);
     }
 
 }

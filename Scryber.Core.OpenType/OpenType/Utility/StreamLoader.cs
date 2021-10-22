@@ -111,7 +111,7 @@ namespace Scryber.OpenType.Utility
             file = EnsureAbsolute(file);
 
             if (!file.Exists)
-                throw new FileNotFoundException("The file at path " + file.FullName + " could not be found.");
+                throw new TypefaceReadException("The file at path " + file.FullName + " could not be found.");
 
             Stream reader = file.OpenRead();
 
