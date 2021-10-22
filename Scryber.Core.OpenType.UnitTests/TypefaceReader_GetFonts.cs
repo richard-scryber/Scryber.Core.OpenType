@@ -172,7 +172,7 @@ namespace Scryber.OpenType.UnitTests
 
                 //We are not currently supported in Woff2
 
-                Assert.ThrowsException<NotSupportedException>(() =>
+                Assert.ThrowsException<TypefaceReadException>(() =>
                 {
                     var faces = reader.GetFonts(file);
                 });

@@ -19,9 +19,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="fonts\" />
+    <None Remove=".DS_Store" />
+    <None Remove="fonts\unsupported\" />
+    <None Remove="fonts\subfolder\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="fonts\" />
+    <Folder Include="fonts\unsupported\" />
+    <Folder Include="fonts\subfolder\" />
   </ItemGroup>
   <ItemGroup>
     <None Update="fonts\Helvetica.ttf">
@@ -42,7 +47,10 @@
     <None Update="fonts\OpenSansBlack.woff">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="fonts\Festive.woff2">
+    <None Update="fonts\unsupported\Festive.woff2">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="fonts\subfolder\Roboto.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

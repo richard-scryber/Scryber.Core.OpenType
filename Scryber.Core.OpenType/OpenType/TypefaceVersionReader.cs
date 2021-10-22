@@ -99,7 +99,7 @@ namespace Scryber.OpenType
         /// <param name="vers">Set to the version reader if known</param>
         /// <returns>True if the version is known, otherwise false</returns>
         /// <remarks>This will check the current reader for a known version and move the position on 4 bytes</remarks>
-        public static bool TryGetVersion(BigEndianReader reader, out TypefaceVersionReader vers)
+        public static bool TryGetVersion(BigEndianReader reader, out TypefaceVersionReader vers, bool thrownOnUnsupported = false)
         {
             vers = null;
             byte[] data = reader.Read(4);
@@ -122,8 +122,8 @@ namespace Scryber.OpenType
                 vers = new Woff.WoffVersionReader(new string(chars), data);
 
             else if (chars[0] == 'w' && chars[1] == 'O' && chars[2] == 'F' && chars[3] == '2')   //wOF2
-                //vers = new Woff2.Woff2VersionReader(new string(chars), data);
-                throw new NotSupportedException("The Woff2 format is not currently supported.");
+                vers = null;// new Woff2.Woff2VersionReader(new string(chars), data);
+                //throw new NotSupportedException("The Woff2 format is not currently supported.");
             else                                                                                 //1.0
             {
                 BigEnd16 wrd1 = new BigEnd16(data, 0);

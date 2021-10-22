@@ -136,7 +136,7 @@ namespace Scryber.OpenType.UnitTests
 
                 //We are not currently supported in Woff2
 
-                await Assert.ThrowsExceptionAsync<NotSupportedException>(async () =>
+                await Assert.ThrowsExceptionAsync<TypefaceReadException>(async () =>
                 {
                     var faces = await reader.GetFirstFontAsync(file);
                 });

@@ -183,7 +183,7 @@ namespace Scryber.OpenType
         /// Reads a summary of all the typeface files in the specified directory.
         /// </summary>
         /// <param name="directory">The directory to scan for typeface files (children will not be scanned unless the includeSubdirectories is true)</param>
-        /// <param name="matchExtension">An optional file match pattern to look for files with e.g. *.ttf|*.otf. Default is empty / null so all files will be checked</param>
+        /// <param name="matchExtension">An optional file match pattern to look for files with e.g. *.ttf|*.otf. Default is empty / null so all files will be checked. The pipe separator can be used for multiple matches</param>
         /// <param name="includeSubdirectories">An optional flag to also look for files in a subdirectory. Default is false</param>
         /// <param name="registerErrors">An optional flag to include in the results any read errors for matched files. Default is false</param>
         /// <returns>An array of all the Typefaces found in the files with References to their inner font variation(s)</returns>
@@ -1549,16 +1549,16 @@ namespace Scryber.OpenType
             {
                 TypefaceVersionReader version;
                 if (!TypefaceVersionReader.TryGetVersion(reader, out version))
-                    throw new TypefaceReadException("Could not identify the version of the font the source " + (source ?? ""));
+                    throw new TypefaceReadException("Could not identify the version of the font for the source " + (source ?? ""));
 
                 else
                 {
                     var info = version.ReadTypefaceInfoAfterVersion(reader, source);
                     if (null == info)
-                        throw new TypefaceReadException("Could not extract the information for the font source " + (source ?? ""));
+                        throw new TypefaceReadException("Could not extract the information for the font from the source " + (source ?? ""));
 
                     else if (!string.IsNullOrEmpty(info.ErrorMessage))
-                        throw new TypefaceReadException("Could not extract the information for the font source " + (source ?? "") + ": " + info.ErrorMessage);
+                        throw new TypefaceReadException("Could not extract the information for the font from the source " + (source ?? "") + ": " + info.ErrorMessage);
 
                     return info;
                 }
