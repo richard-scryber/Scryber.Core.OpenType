@@ -41,5 +41,11 @@ namespace Scryber.OpenType
             this.CharsFitted = charsfitted;
             this.OnWordBoudary = isWordbreak;
         }
+
+
+        public override string ToString()
+        {
+            return $"Size: {this.RequiredWidth} x {this.RequiredHeight}";
+        }
     }
 }

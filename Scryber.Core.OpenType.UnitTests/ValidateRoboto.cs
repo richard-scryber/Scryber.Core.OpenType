@@ -17,6 +17,22 @@ namespace Scryber.OpenType.UnitTests
         public const string RootUrl = "https://raw.githubusercontent.com/richard-scryber/Scryber.Core.OpenType/main/Scryber.Core.OpenType.UnitTests/";
         public const string UrlPath = "fonts/Roboto.ttf";
 
+        //metrics
+        public const int FontAscender = 1900;
+        public const int FontDescender = -500;
+        public const int FontLineGap = 0;
+        public const int FontUnitsPerEm = 2048;
+        public const int FontXWidth = 1158;
+
+        public static void AssertMetrics(IFontMetrics metrics)
+        {
+            Assert.AreEqual(FontAscender, metrics.AscenderHeightFU);
+            Assert.AreEqual(FontDescender, metrics.DescenderHeightFU);
+            Assert.AreEqual(FontLineGap, metrics.LineSpaceingFU);
+            Assert.AreEqual(FontUnitsPerEm, metrics.FUnitsPerEm);
+            Assert.AreEqual(FontXWidth, metrics.xAvgWidthFU);
+            Assert.IsFalse(metrics.Vertical);
+        }
 
         public static void AssertInfo(ITypefaceInfo info, string source, int testIndex)
         {

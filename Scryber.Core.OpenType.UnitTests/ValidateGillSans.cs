@@ -42,6 +42,24 @@ namespace Scryber.OpenType.UnitTests
 
         public const int BoldRegularIndex = 2;
         public const int SemiBoldItalicIndex = 5;
+        public const int BlackRegularIndex = 6;
+
+        //metrics for black
+        public const int BlackFontAscender = 2036;
+        public const int BlackFontDescender = -516;
+        public const int BlackFontLineGap = 0;
+        public const int BlackFontUnitsPerEm = 2048;
+        public const int BlackFontXWidth = 1599;
+
+        public static void AssertBlackMetrics(IFontMetrics metrics)
+        {
+            Assert.AreEqual(BlackFontAscender, metrics.AscenderHeightFU);
+            Assert.AreEqual(BlackFontDescender, metrics.DescenderHeightFU);
+            Assert.AreEqual(BlackFontLineGap, metrics.LineSpaceingFU);
+            Assert.AreEqual(BlackFontUnitsPerEm, metrics.FUnitsPerEm);
+            Assert.AreEqual(BlackFontXWidth, metrics.xAvgWidthFU);
+            Assert.IsFalse(metrics.Vertical);
+        }
 
         public static void AssertInfo(ITypefaceInfo info, string source, int testIndex)
         {
