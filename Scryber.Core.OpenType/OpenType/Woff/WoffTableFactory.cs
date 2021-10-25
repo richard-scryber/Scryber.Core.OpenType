@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
+#if !NET6_0
 using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
+#endif
 using Scryber.OpenType.TTF;
 
 namespace Scryber.OpenType.Woff
@@ -64,18 +66,34 @@ namespace Scryber.OpenType.Woff
 
         private int DecompressTable(MemoryStream output, BigEndianReader reader, WoffTableEntry table, uint length)
         {
+            int pos = (int)output.Position;
+
             using (var streamIn = new MemoryStream(reader.Read((int)table.CompressedLength)))
             {
-                int pos = (int)output.Position;
-                InflaterInputStream decompressor = new InflaterInputStream(streamIn);
-                decompressor.CopyTo(output);
-                int len = (int)(output.Position - pos);
-                if (len != length)
-                    return -1;
-                else
-                    return len;
+
+#if NET6_0
+
+
+                using (var compress = new System.IO.Compression.ZLibStream(streamIn, System.IO.Compression.CompressionMode.Decompress))
+                {
+                    compress.CopyTo(output);
+                }
+
+
+#else
+            
+                using(InflaterInputStream decompressor = new InflaterInputStream(streamIn))
+                {
+                    decompressor.CopyTo(output);
+                }
+#endif
             }
 
+            int len = (int)(output.Position - pos);
+            if (len != length)
+                return -1;
+            else
+                return len;
         }
     }
 }

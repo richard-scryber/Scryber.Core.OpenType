@@ -13,6 +13,11 @@ using System.IO;
 
 namespace Scryber.Core.OpenType.Tests
 {
+
+    /// <summary>
+    /// This is just a test programme to check against other and legacy frameworks for
+    /// performance and measurement validation.
+    /// </summary>
     class Program
     {
         static bool StopExecution = false;
