@@ -1,7 +1,7 @@
 ﻿<h1 align='center'>
     <img height='150' src='https://raw.githubusercontent.com/richard-scryber/scryber.core/master/ScyberLogo2_alpha_small.png'/>
     <br/>
-    <span style='font-weight:900'> scryber.core</span> <span style='font-weight:300'>opentype</span>
+    <span style='font-weight:900'> scryber.core</span><i style='font-weight:300'>.opentype</i>
 </h1>
 
 

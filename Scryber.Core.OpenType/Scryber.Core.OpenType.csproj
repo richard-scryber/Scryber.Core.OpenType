@@ -18,12 +18,15 @@
 
     There is a change in usage to the Scryber.OpenType.TypefaceReader along with returning a LineSize struct, rather than a System.Drawing.SizeF struct.
 
-    This is the base type for reading OpenType, TTF and TTC font files used in scryber, but is independent from any PDF creation requirements.</PackageReleaseNotes>
+    This is the base type for reading OpenType, TTF and TTC font files used in scryber, but is independent from any PDF creation requirements.
+
+See the read me at https://github.com/richard-scryber/Scryber.Core.OpenType for more usage information.</PackageReleaseNotes>
     <Summary>The OpenType font reading (and writing) library used by Scryber.</Summary>
     <PackageTags>Scryber; PDF;</PackageTags>
     <Title>Scryber.Core.OpenType</Title>
     <PackageId>Scryber.Core.OpenType</PackageId>
-    <PackageLicenseUrl>https://opensource.org/licenses/LGPL-3.0</PackageLicenseUrl>
+    <!--<PackageLicenseUrl>https://opensource.org/licenses/LGPL-3.0</PackageLicenseUrl>-->
+    <PackageLicenseFile>License.txt</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
@@ -50,6 +53,9 @@
     <Folder Include="OpenType\TTC\" />
     <Folder Include="OpenType\OTTO\" />
     <Folder Include="OpenType\Woff2\Numerics\" />
+  </ItemGroup>
+  <ItemGroup>
+      <None Include="License.txt" Pack="true" Visible="false" PackagePath="" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <PackageReference Include="SharpZipLib" Version="1.3.3" />
