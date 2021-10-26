@@ -84,12 +84,15 @@ namespace Scryber.OpenType.TTF
 
     public class TrueTypeTableEntryList : System.Collections.ObjectModel.KeyedCollection<string, TrueTypeTableEntry>
     {
+        public IEnumerable<string> TableKeys
+        {
+            get { return this.Count == 0 ? new string[] { } : this.Dictionary.Keys; }
+        }
+
         public TrueTypeTableEntryList()
             : base()
         {
         }
-
-        
 
         public TrueTypeTableEntryList(IEnumerable<TrueTypeTableEntry> items)
             : this()

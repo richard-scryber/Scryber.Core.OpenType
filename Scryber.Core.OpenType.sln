@@ -5,8 +5,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scryber.Core.OpenType", "Sc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scryber.Core.OpenType.Tests", "Scryber.Core.OpenType.Tests\Scryber.Core.OpenType.Tests.csproj", "{E701BEDF-2EF0-4E62-8AF1-4400C4079E05}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Typography_Ref", "Typography_Ref", "{57F3300B-D4D0-4758-A964-8CB073C6B630}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scryber.Core.OpenType.UnitTests", "Scryber.Core.OpenType.UnitTests\Scryber.Core.OpenType.UnitTests.csproj", "{29DA3CC5-BC4E-4971-9323-3691C3AEFA3C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B02F070F-7AA9-43BD-9B75-3D9CA85292D6}"

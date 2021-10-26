@@ -89,8 +89,9 @@ namespace Scryber.OpenType.TTC
                 {
                     var info = innerVers.ReadTypefaceInfoAfterVersion(reader, source);
                     if (info is Utility.SingleTypefaceInfo sti)
+                    {
                         sti.OffsetInFile = header.FontOffsets[f];
-
+                    }
                     if (null != info && info.FontCount == 1)
                         found.Add(info.Fonts[0]);
                 }

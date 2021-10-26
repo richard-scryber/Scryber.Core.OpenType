@@ -24,7 +24,7 @@ using Scryber.OpenType.SubTables;
 
 namespace Scryber.OpenType.TTF
 {
-    public class TrueTypeFile : ITypefaceFont
+    public class TrueTypeFile : IOpenTypeFont
     {
         public DataFormat SourceFormat
         {
@@ -55,6 +55,16 @@ namespace Scryber.OpenType.TTF
                     _tables = new TTFTableSet(this.Directories);
                 return _tables;
             }
+        }
+
+        public int TableCount
+        {
+            get { return this.Directories.Count; }
+        }
+
+        public IEnumerable<string> TableKeys
+        {
+            get { return this.Directories.TableKeys; }
         }
 
         private byte[] _alldata;
@@ -162,6 +172,52 @@ namespace Scryber.OpenType.TTF
             return null != tbl;
         }
 
+
+
+        public bool TryGetTable(string name, out TrueTypeFontTable table)
+        {
+            if (null == this.Tables)
+            {
+                table = null;
+                return false;
+            }
+            else
+                return this.Tables.TryGetTable(name, out table);
+        }
+
+        bool IOpenTypeFont.TryGetTable(string name, out IOpenTypeFontTable table)
+        {
+            TrueTypeFontTable found;
+            if(this.TryGetTable(name, out found))
+            {
+                table = found;
+                return true;
+            }
+            else
+            {
+                table = null;
+                return false;
+            }
+
+           
+        }
+
+        public bool TryGetTable<T>(string name, out T table) where T : IOpenTypeFontTable
+        {
+            TrueTypeFontTable found;
+            bool success =  this.TryGetTable(name, out found);
+
+            if (success && found is T match)
+            {
+                table = match;
+                return success;
+            }
+            else
+            {
+                table = default;
+                return false;
+            }
+        }
 
         //
         // reading methods
@@ -430,12 +486,15 @@ namespace Scryber.OpenType.TTF
             return "Typeface " + this.FamilyName + " (weight: " + this.FontWeight.ToString() + ", selection: " + this.Selections.ToString() + ", width: " + this.FontWidth.ToString() + ")";
         }
 
+
         public static bool CanRead(string path)
         {
             System.IO.FileInfo fi = new System.IO.FileInfo(path);
 
             return CanRead(fi);
         }
+
+
         public static bool CanRead(System.IO.FileInfo fi)
         {
             if (fi.Exists == false)

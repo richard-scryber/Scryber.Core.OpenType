@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using Scryber.OpenType.OTTO;
 
 namespace Scryber.OpenType
@@ -115,6 +116,52 @@ namespace Scryber.OpenType
         /// <returns></returns>
         IFontMetrics GetMetrics(TypeMeasureOptions options);
 
+    }
+
+
+    public interface IOpenTypeFont : ITypefaceFont
+    {
+        /// <summary>
+        /// Gets the total number of tables in the opentype font
+        /// </summary>
+        int TableCount { get; }
+
+        /// <summary>
+        /// Gets all the keys (4 character names) in the open type font programme
+        /// </summary>
+        IEnumerable<string> TableKeys { get; }
+
+
+        /// <summary>
+        /// Extracts the generic opentype table from the font file.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="table"></param>
+        /// <returns></returns>
+        bool TryGetTable(string name, out IOpenTypeFontTable table);
+
+        /// <summary>
+        /// Extracts the explicit decoded open type table from the font file.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="table"></param>
+        /// <returns></returns>
+        bool TryGetTable<T>(string name, out T table) where T : IOpenTypeFontTable;
+
+    }
+
+
+    public interface IOpenTypeFontTable
+    {
+        /// <summary>
+        /// Gets the offset in the data for the table
+        /// </summary>
+        long FileOffset { get; }
+
+        /// <summary>
+        /// Gets the version of the data for a font table.
+        /// </summary>
+        Version TableVersion { get; }
     }
 
 

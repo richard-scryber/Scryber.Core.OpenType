@@ -138,7 +138,6 @@ namespace Scryber.OpenType
             return vers != null;
         }
 
-
         private static char[] ConvertToChars(byte[] data, int count)
         {
             char[] chars = new char[count];
@@ -149,6 +148,7 @@ namespace Scryber.OpenType
             }
             return chars;
         }
+
 
     }
 

@@ -1296,7 +1296,7 @@ namespace Scryber.OpenType
         //
 
 
-        #region public async Task<ITypefaceFont> GetFontAsyncGetFont(ITypefaceInfo forInfo, int fontIndex)
+        #region public async Task<ITypefaceFont> GetFontAsync(ITypefaceInfo forInfo, int fontIndex)
 
         /// <summary>
         /// Gets the font program data at the specified index in the typeface information returned from the ReadTypeface method(s)

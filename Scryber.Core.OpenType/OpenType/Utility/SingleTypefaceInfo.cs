@@ -37,6 +37,7 @@ namespace Scryber.OpenType.Utility
 
         public long OffsetInFile { get; internal set; }
 
+        
         public SingleTypefaceInfo(string path, DataFormat format, string family, FontRestrictions restrictions, WeightClass weight, WidthClass width, FontSelection selection, long offset)
         {
             this.Source = path;

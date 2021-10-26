@@ -22,7 +22,7 @@ using System.Text;
 
 namespace Scryber.OpenType.TTF
 {
-    public abstract class TrueTypeFontTable
+    public abstract class TrueTypeFontTable : IOpenTypeFontTable
     {
         private long _offset;
         public long FileOffset
