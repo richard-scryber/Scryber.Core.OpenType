@@ -64,11 +64,17 @@ namespace Scryber.OpenType.UnitTests
                 Assert.AreEqual(77.17, Math.Round(size.RequiredWidth,2), "The width of the restricted string was not as statically calculated");
                 Assert.AreEqual(12.0, size.RequiredHeight, "The height of the string was not as statically calculated");
 
+                //check 4
+                //set the offset to last fitted and measure the rest
+                offset = size.CharsFitted;
+                size = metrics.MeasureLine(words, offset, fontSize, available, options);
+                Assert.AreEqual(words.Length - offset, size.CharsFitted, "Expected to fit all the remaining characters on the next measure (line)");
+
             }
         }
 
         [TestMethod("2. Get Metrics for Roboto")]
-        public void GetRobotoaMetrics()
+        public void GetRobotoMetrics()
         {
 
             var path = new FileInfo(Path.Combine(System.Environment.CurrentDirectory, ValidateRoboto.UrlPath));
@@ -183,6 +189,7 @@ namespace Scryber.OpenType.UnitTests
 
             }
         }
+
 
     }
 }

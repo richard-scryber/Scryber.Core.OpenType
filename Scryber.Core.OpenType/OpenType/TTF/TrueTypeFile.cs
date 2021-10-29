@@ -413,7 +413,7 @@ namespace Scryber.OpenType.TTF
             len = len * emsize;
             len = len / (double)head.UnitsPerEm;
             double h = ((double)(os2.TypoAscender - os2.TypoDescender + os2.TypoLineGap) / (double)head.UnitsPerEm) * emsize;
-            return new LineSize(len, h, charsfitted, isboundary);
+            return new LineSize(len, h, charsfitted, startOffset, isboundary);
         }
 
 
@@ -478,7 +478,7 @@ namespace Scryber.OpenType.TTF
             len = len / (double)head.UnitsPerEm;
             len = len * emsize;
             double h = ((double)(os2.TypoAscender - os2.TypoDescender + os2.TypoLineGap) / (double)head.UnitsPerEm) * emsize;
-            return new LineSize((float)len, (float)h, charsfitted, isboundary);
+            return new LineSize((float)len, (float)h, charsfitted, startOffset, isboundary);
         }
 
         public override string ToString()

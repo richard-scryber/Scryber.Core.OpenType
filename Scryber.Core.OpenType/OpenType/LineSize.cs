@@ -22,6 +22,13 @@ namespace Scryber.OpenType
         public int CharsFitted { get; private set; }
 
         /// <summary>
+        /// Gets the index of the first character measured. This will be the startOffset of the measure call,
+        /// or the first non white space character after start offset if the Measure options
+        /// were to IgnoreStartingWhiteSpace.
+        /// </summary>
+        public int FirstCharacter { get; private set; }
+
+        /// <summary>
         /// If true then the characters have been split on a word boundary.
         /// </summary>
         public bool OnWordBoudary { get; set; }
@@ -34,12 +41,13 @@ namespace Scryber.OpenType
         /// <param name="height"></param>
         /// <param name="charsfitted"></param>
         /// <param name="isWordbreak"></param>
-        public LineSize(double width, double height, int charsfitted, bool isWordbreak)
+        public LineSize(double width, double height, int charsfitted, int startIndex, bool isWordbreak)
         {
             this.RequiredWidth = width;
             this.RequiredHeight = height;
             this.CharsFitted = charsfitted;
             this.OnWordBoudary = isWordbreak;
+            this.FirstCharacter = startIndex;
         }
 
 

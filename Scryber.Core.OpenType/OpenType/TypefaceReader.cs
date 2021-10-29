@@ -2,12 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
-#if NET48
-using System.Net;
-#else
 using System.Net.Http;
-#endif
+
 
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -81,37 +77,6 @@ namespace Scryber.OpenType
 
         #endregion
 
-#if NET48
-
-        #region public TypefaceReader(WebClient client)
-
-        /// <summary>
-        /// Initializes a new TypefaceReader without a root url, but with a WebClient that will be used for requests.
-        /// </summary>
-        /// <param name="client">The web client to use. If provided and not null then it is the creators responsibility to dispose of it.</param>
-        public TypefaceReader(WebClient web)
-            : this(new UnRootedStreamLoader(web))
-        {
-
-        }
-
-        #endregion
-
-        #region public TypefaceReader(Uri baseUri, WebClient client)
-
-        /// <summary>
-        /// Initializes a new TypefaceReader with a specific url as the root
-        /// for any Uri requests, along with an WebClient to use for requests.
-        /// </summary>
-        /// <param name="baseUri">The baseUri to make relative requests from. Must be an absolute Url</param>
-        /// <param name="client">The web client to use. If provided then it is the creators responsibility to dispose of it.</param>
-        public TypefaceReader(Uri baseUri, WebClient client)
-            : this(new RootedUriStreamLoader(baseUri, client))
-        {
-        }
-
-        #endregion
-#else
 
         #region public TypefaceReader(HttpClient client)
 
@@ -141,7 +106,7 @@ namespace Scryber.OpenType
 
         #endregion
 
-#endif
+
 
         #region public TypefaceReader(DirectoryInfo baseDirectory)
 

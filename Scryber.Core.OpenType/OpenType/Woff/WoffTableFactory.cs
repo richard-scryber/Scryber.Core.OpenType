@@ -73,13 +73,10 @@ namespace Scryber.OpenType.Woff
 
 #if NET6_0
 
-
                 using (var compress = new System.IO.Compression.ZLibStream(streamIn, System.IO.Compression.CompressionMode.Decompress))
                 {
                     compress.CopyTo(output);
                 }
-
-
 #else
             
                 using(InflaterInputStream decompressor = new InflaterInputStream(streamIn))

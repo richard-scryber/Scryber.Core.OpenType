@@ -4,18 +4,9 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
-
-#if NET48
-
-using System.Net;
-using http = System.Net.WebClient;
-
-#else
-
 using System.Net.Http;
 using http = System.Net.Http.HttpClient;
 
-#endif
 
 namespace Scryber.OpenType.Utility
 {
@@ -252,16 +243,12 @@ namespace Scryber.OpenType.Utility
             Stream stream;
 
             //In old school .net use the DownloadData with a web client
-#if NET48
-            byte[] data = client.DownloadData(uri);
-            stream = new System.IO.MemoryStream(data);
-            //No need to check for seek.
-#else
+
             stream = client.GetStreamAsync(uri).Result;
 
             if (ensureSeekable && !stream.CanSeek)
                 stream = CopyToSeekableStream(stream, true);
-#endif
+
             return stream;
         }
 
@@ -336,17 +323,12 @@ namespace Scryber.OpenType.Utility
 
             Stream stream;
 
-            //In old school .net use the DownloadData with a web client
-#if NET48
-            byte[] data = await client.DownloadDataTaskAsync(uri);
-            stream = new System.IO.MemoryStream(data);
 
-#else
             stream = await client.GetStreamAsync(uri);
 
             if (ensureSeekable && !stream.CanSeek)
                 stream = CopyToSeekableStream(stream, true);
-#endif
+
             return stream;
         }
 

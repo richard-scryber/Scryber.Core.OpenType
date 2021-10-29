@@ -111,19 +111,11 @@ namespace Scryber.OpenType.UnitTests
             using (var reader = new TypefaceReader())
             {
                 path = path + FailingUrlPath;
-#if NET48
 
-                Assert.ThrowsException<System.Net.WebException>(() =>
-                {
-                    var info = reader.ReadTypeface(path);
-                });
-
-#else 
                 Assert.ThrowsException<AggregateException>(() =>
                 {
                     var info = reader.ReadTypeface(path);
                 });
-#endif
 
             }
 
@@ -139,19 +131,12 @@ namespace Scryber.OpenType.UnitTests
             using (reader = new TypefaceReader(new Uri(path)))
             {
                 path = FailingUrlPath;
-#if NET48
 
-                Assert.ThrowsException<System.Net.WebException>(() =>
-                {
-                    var info = reader.ReadTypeface(path);
-                });
-
-#else 
                 Assert.ThrowsException<AggregateException>(() =>
                 {
                     var info = reader.ReadTypeface(path);
                 });
-#endif
+
                 loader = reader.Loader;
             }
             //check clean up
@@ -162,9 +147,7 @@ namespace Scryber.OpenType.UnitTests
         [TestMethod("7. Fail load Info from base + partial + http")]
         public void FailLoadInfoFromPartialUrlWithHttp()
         {
-#if NET48
-            Assert.Inconclusive("Cannot test this in .Net 4.8");
-#else
+
             var path = RootUrl;
             TypefaceReader reader;
             StreamLoader loader;
@@ -198,7 +181,6 @@ namespace Scryber.OpenType.UnitTests
 
             }
 
-#endif
 
         }
 
@@ -206,9 +188,7 @@ namespace Scryber.OpenType.UnitTests
         [TestMethod("8. Fail load with just http client")]
         public void FailLoadInfoWithHttp()
         {
-#if NET48
-            Assert.Inconclusive("Cannot test this in .Net 4.8");
-#else
+
             var path = RootUrl;
             TypefaceReader reader;
             StreamLoader loader;
@@ -243,7 +223,6 @@ namespace Scryber.OpenType.UnitTests
 
             }
 
-#endif
 
         }
 

@@ -509,14 +509,10 @@ namespace Scryber.OpenType.TTF
                 }
 
                 long startStore = nt.FileOffset + nt.StringOffset;
-#if NETSTANDARD1_3
-                int currlang = 1033;
-                int parentlang = 2057;
-#else
+
                 int currlang = System.Globalization.CultureInfo.CurrentCulture.LCID;
                 int parentlang = System.Globalization.CultureInfo.CurrentCulture.Parent != null ?
                     System.Globalization.CultureInfo.CurrentCulture.Parent.LCID : 0;
-#endif
 
                 foreach (NameRecord rec in records)
                 {

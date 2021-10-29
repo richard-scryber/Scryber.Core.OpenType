@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net5.0;netcoreapp3.1;netstandard2.0;netstandard2.1;net48</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netstandard2.1;net5.0</TargetFrameworks>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <RootNamespace>Scryber</RootNamespace>
@@ -14,7 +14,7 @@
     <PackageReleaseNotes>Release for the 6.0.0-alpha of the core engine.
 
     Now supports the otf, ttf, ttc and woff file formats for font reading and measuring.
-    Compatible with net standard 2.0 and 2.1, dot net 4.8, along with dot net core 3.1, 5.0 and 6.0 RC1
+    Compatible with net standard 2.0 and 2.1, dot net 4.8, along with 6.0 RC1 checks.
 
     There is a change in usage to the Scryber.OpenType.TypefaceReader along with returning a LineSize struct, rather than a System.Drawing.SizeF struct.
 

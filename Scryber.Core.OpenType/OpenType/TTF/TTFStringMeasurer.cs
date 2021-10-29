@@ -93,7 +93,7 @@ namespace Scryber.OpenType.TTF
             int lastWordLen = 0;
             int lastWordCount = 0;
 
-            for (int i = 0; i < chars.Length; i++)
+            for (int i = startOffset; i < chars.Length; i++)
             {
                 char c = chars[i];
 
@@ -150,17 +150,32 @@ namespace Scryber.OpenType.TTF
         {
             int fitted;
 
+            double h = this.LineHeightFU;
+            double units = (double)_unitsPerEm;
+            double lineh = (h * emSize) / units;
+
+            if (options.IgnoreStartingWhiteSpace)
+            {
+                while (char.IsWhiteSpace(chars, startOffset) && chars.Length > startOffset)
+                {
+                    startOffset++;
+
+                    //Gone past the end of the string so return 0
+                    if (startOffset >= chars.Length)
+                    {
+                        return new LineSize(0, lineh, 0, startOffset, false);
+                    }
+                }
+            }
+
             //If we have spacing, we cannot take advantage of caching, so fall back to the main font file measure
             if (options.WordSpacing.HasValue || options.CharacterSpacing.HasValue)
                 return _fontfile.MeasureString(this._cMapEncoding, chars, startOffset, emSize, maxWidth, options.WordSpacing, options.CharacterSpacing.HasValue ? options.CharacterSpacing.Value : TrueTypeFile.NoCharacterSpace, TrueTypeFile.NoHorizontalScale, false, options.BreakOnWordBoundaries, out fitted);
             else
             {
                 double required = this.MeasureChars(chars, startOffset, emSize, maxWidth, options.BreakOnWordBoundaries, out fitted);
-                double h = this.LineHeightFU;
-                double units = (double)_unitsPerEm;
-                double lineh = (h * emSize) / units;
 
-                return new LineSize(required, lineh, fitted, (fitted < chars.Length) && options.BreakOnWordBoundaries);
+                return new LineSize(required, lineh, fitted, startOffset, (fitted < chars.Length) && options.BreakOnWordBoundaries);
             }
         }
 

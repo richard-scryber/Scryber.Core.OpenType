@@ -137,9 +137,6 @@ namespace Scryber.OpenType.UnitTests
         [TestMethod("7. Read Typeface Info from base + partial + http")]
         public void LoadInfoFromPartialUrlWithHttp()
         {
-#if NET48
-            Assert.Inconclusive("Cannot test this in .Net 4.8");
-#else
             var path = RootUrl;
             TypefaceReader reader;
             StreamLoader loader;
@@ -170,7 +167,6 @@ namespace Scryber.OpenType.UnitTests
 
             }
 
-#endif
 
         }
 
@@ -178,9 +174,6 @@ namespace Scryber.OpenType.UnitTests
         [TestMethod("8. Read Typeface Info with just http client")]
         public void LoadInfoWithHttp()
         {
-#if NET48
-            Assert.Inconclusive("Cannot test this in .Net 4.8");
-#else
             TypefaceReader reader;
             StreamLoader loader;
             using (var http = new System.Net.Http.HttpClient())
@@ -210,8 +203,6 @@ namespace Scryber.OpenType.UnitTests
                 Assert.IsTrue(data.StartsWith("<Project "));
 
             }
-
-#endif
 
         }
 

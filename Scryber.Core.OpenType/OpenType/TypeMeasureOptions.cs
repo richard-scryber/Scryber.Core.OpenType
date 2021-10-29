@@ -26,10 +26,18 @@ namespace Scryber.OpenType
         /// </summary>
         public FontUnitType FontUnits { get; set; }
 
+        /// <summary>
+        /// If true then any whitespace at the start of the string to measure will be ignored and the returning
+        /// FirstCharacter in the line size will be the size of the string after any prepended white space.
+        /// </summary>
+        public bool IgnoreStartingWhiteSpace { get; set; }
+
+
         public TypeMeasureOptions()
         {
             FontUnits = FontUnitType.UseFontPreference;
             BreakOnWordBoundaries = false;
+            IgnoreStartingWhiteSpace = false;
         }
 
 

@@ -82,9 +82,6 @@ namespace Scryber.OpenType.UnitTests
         public void TryLoadFromUrlStream()
         {
 
-#if NET48
-            Assert.Inconclusive("Cannot test this in .Net 4.8");
-#else
             ITypefaceInfo info;
             bool result;
 
@@ -110,17 +107,12 @@ namespace Scryber.OpenType.UnitTests
                     ValidateHelvetica.AssertInfo(info, path, 3);
                 }
             }
-
-#endif
         }
 
         [TestMethod("4. Try and fail to load from a url stream")]
         public void TryFailLoadFromUrlStream()
         {
 
-#if NET48
-            Assert.Inconclusive("Cannot test this in .Net 4.8");
-#else
             ITypefaceInfo info;
             bool result;
 
@@ -144,8 +136,6 @@ namespace Scryber.OpenType.UnitTests
                     
                 }
             }
-
-#endif
         }
 
 

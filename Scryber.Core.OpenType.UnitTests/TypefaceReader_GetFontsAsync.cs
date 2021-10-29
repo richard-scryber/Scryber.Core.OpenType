@@ -92,9 +92,7 @@ namespace Scryber.OpenType.UnitTests
         [TestMethod("5. Failing async Helvetica font from an INVALID relative url")]
         public async Task FailGetFontsAsyncFromRelativeUrl()
         {
-#if NET48
-            Assert.Inconclusive("Cannot test for HttpRequestException with 4.8");
-#else
+
             var path = new Uri(ValidateHelvetica.RootUrl);
 
             //Set the base url
@@ -111,8 +109,6 @@ namespace Scryber.OpenType.UnitTests
                     ValidateGillSans.AssertTypefaces(faces.ToArray());
                 });
             }
-
-#endif
 
         }
 
