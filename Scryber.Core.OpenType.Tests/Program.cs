@@ -1,7 +1,7 @@
 ﻿//#define UseOpenFont
 //#define Performance
 #define UseLocal
-#define Legacy
+//#define Legacy
 
 using System;
 using System.Threading.Tasks;
@@ -276,11 +276,13 @@ namespace Scryber.Core.OpenType.Tests
         }
 
         const int maxRepeat = 100000;
+        
+#if Legacy
+
+        
 
         static void MeasureStringsUsual(TTFFile file)
         {
-            
-
 
             for(var repeat = 0; repeat < maxRepeat; repeat++)
             {
@@ -321,6 +323,8 @@ namespace Scryber.Core.OpenType.Tests
 
 
         }
+
+#endif
 
         static bool ExitClean(string message, bool error = true)
         {

@@ -195,8 +195,9 @@ namespace Scryber.OpenType.Woff2
                 float yscale = 1;
 
                 bool useMatrix = false;
-                //-----------------------------------------
                 bool hasScale = false;
+                //-----------------------------------------
+
                 if (HasCompositeFlag(flags, CompositeGlyphFlags.WE_HAVE_A_SCALE))
                 {
                     //If the bit WE_HAVE_A_SCALE is set,
@@ -236,8 +237,14 @@ namespace Scryber.OpenType.Woff2
 
                 }
 
+                if (useMatrix || hasScale)
+                {
+                    //This is to be implemented in WOFF2
+                }
+
             } while (HasCompositeFlag(flags, CompositeGlyphFlags.MORE_COMPONENTS));
 
+            
             //
             return HasCompositeFlag(flags, CompositeGlyphFlags.WE_HAVE_INSTRUCTIONS);
         }

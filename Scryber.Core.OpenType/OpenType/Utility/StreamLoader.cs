@@ -69,6 +69,9 @@ namespace Scryber.OpenType.Utility
         /// <returns>A stream from the data loaded at the specified path</returns>
         public abstract Stream GetStream(string path, bool ensureSeekable);
 
+
+        #pragma warning disable 1998
+
         /// <summary>
         /// Asynchronously returns a stream from the relative or absolute path.
         /// If relative then the loader must have a eaither a base directory or Url
@@ -78,8 +81,11 @@ namespace Scryber.OpenType.Utility
         /// <returns>A stream from the data loaded at the specified path</returns>
         public virtual async Task<Stream> GetStreamAsync(string path, bool ensureSeekable)
         {
+            //Inheritors should override this to make anything that can be async, to be async
             return GetStream(path, ensureSeekable);
         }
+
+        #pragma warning restore 1998
 
         //
         // File Implementation methods
@@ -116,8 +122,10 @@ namespace Scryber.OpenType.Utility
 
         #region public virtual async Task<Stream> GetStreamAsync(FileInfo file, bool ensureSeekable) + 1 Overload
 
+        #pragma warning disable 1998
+
         /// <summary>
-        /// Loads a stream asyncronously from a rooted file path, optionally making sure it is a seekable stream
+        /// Loads a stream asyncronously from a rooted file path, optionally making sure it is a seekable stream (it is not async, but supports it)
         /// </summary>
         /// <param name="file">The file to load - cannot be null and must exist</param>
         /// <param name="ensureSeekable">If true then the returning stream will alwasy been seekable (can set position)</param>
@@ -127,6 +135,8 @@ namespace Scryber.OpenType.Utility
             //No async support, but added for completeness of abstraction
             return GetStream(file, ensureSeekable);
         }
+
+        #pragma warning restore 1998
 
         #endregion
 

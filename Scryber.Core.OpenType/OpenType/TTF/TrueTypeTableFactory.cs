@@ -54,10 +54,10 @@ namespace Scryber.OpenType.TTF
             return ReadTable(dir, list, reader);
         }
 
-        public TrueTypeFontTable ReadTable(TrueTypeTableEntry entry, TTFFile file, BigEndianReader reader)
-        {
-            return this.ReadTable(entry, file.Directories, reader);
-        }
+        // public TrueTypeFontTable ReadTable(TrueTypeTableEntry entry, TTFFile file, BigEndianReader reader)
+        // {
+        //     return this.ReadTable(entry, file.Directories, reader);
+        // }
 
 
         public TrueTypeFontTable ReadTable(TrueTypeTableEntry directory, TTF.TrueTypeFile file, BigEndianReader reader)

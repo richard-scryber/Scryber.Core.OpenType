@@ -126,21 +126,21 @@ namespace Scryber.OpenType.UnitTests
         [TestMethod("8. Festive Woff2 typeface NOT SUPPORTED")]
         public void ValidGetTypefacesFestiveFile()
         {
-            var path = new DirectoryInfo(System.Environment.CurrentDirectory);
+            // var path = new DirectoryInfo(System.Environment.CurrentDirectory);
              
-            using (var reader = new TypefaceReader(path))
-            {
-                var file = new FileInfo(ValidateFestive.UrlPath);
+            // using (var reader = new TypefaceReader(path))
+            // {
+            //     var file = new FileInfo(ValidateFestive.UrlPath);
 
-                //We are not currently supported in Woff2
+            //     //We are not currently supported in Woff2
 
-                Assert.ThrowsException<TypefaceReadException>(() =>
-                {
-                    var faces = reader.GetFirstFont(file);
-                });
+            //     Assert.ThrowsException<TypefaceReadException>(() =>
+            //     {
+            //         var faces = reader.GetFirstFont(file);
+            //     });
                 
                 
-            }
+            // }
 
             Assert.Inconclusive("The Woff2 format needs to be implemented in the OpenType library");
         }

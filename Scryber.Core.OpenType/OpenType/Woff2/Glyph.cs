@@ -14,7 +14,8 @@ namespace Scryber.OpenType.Woff2
         /// <summary>
         /// glyph info has only essential layout detail (this is our extension)
         /// </summary>
-        readonly bool _onlyLayoutEssMode;
+        //readonly bool _onlyLayoutEssMode; Not currently used
+
         bool _hasOrgAdvWidth;       //FOUND in all mode
 
         internal Glyph(
