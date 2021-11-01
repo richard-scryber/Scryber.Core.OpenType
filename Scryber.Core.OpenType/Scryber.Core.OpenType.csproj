@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netstandard2.1;net5.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net5.0</TargetFrameworks>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <RootNamespace>Scryber</RootNamespace>
-    <PackageVersion>6.0.0-alpha</PackageVersion>
+    <PackageVersion>6.0.0-alpha.2</PackageVersion>
     <Authors>richard@scryber.co.uk</Authors>
     <Description>The Open Type font file package needed to read otf, ttf, ttc and woff files.</Description>
     <Copyright>Scryber Collective Ltd 2020</Copyright>
@@ -14,7 +14,7 @@
     <PackageReleaseNotes>Release for the 6.0.0-alpha of the core engine.
 
     Now supports the otf, ttf, ttc and woff file formats for font reading and measuring.
-    Compatible with net standard 2.0 and 2.1, dot net 4.8, along with 6.0 RC1 checks.
+    Compatible with net standard 2.0 and net 5, along with 6.0 RC1 checks.
 
     There is a change in usage to the Scryber.OpenType.TypefaceReader along with returning a LineSize struct, rather than a System.Drawing.SizeF struct.
 
@@ -57,13 +57,7 @@ See the read me at https://github.com/richard-scryber/Scryber.Core.OpenType for 
   <ItemGroup>
       <None Include="License.txt" Pack="true" Visible="false" PackagePath="" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
-    <PackageReference Include="SharpZipLib" Version="1.3.3" />
-  </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="SharpZipLib" Version="1.3.3" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
     <PackageReference Include="SharpZipLib" Version="1.3.3" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">

@@ -15,7 +15,7 @@ namespace Scryber.OpenType.TTF
         private List<HMetric> _metrics;
         private int _unitsPerEm;
         private TypeMeasureOptions _options;
-        private bool _useTypo;
+        private bool _fontUseTypo;
         private TrueTypeFile _fontfile;
         private CMapEncoding _cMapEncoding;
         private HorizontalHeader _hheader;
@@ -32,23 +32,38 @@ namespace Scryber.OpenType.TTF
         /// <summary>
         /// Gets the ascender height of this font in FontUnits 
         /// </summary>
-        public int AscenderHeightFU { get { return this._useTypo ? _os2.TypoAscender : _hheader.Ascender; }  }
+        public int AscenderHeightFU { get { return this.UseTypoMeasures ? _os2.TypoAscender : _hheader.Ascender; }  }
 
         /// <summary>
         /// Gets the descenter height of this font in FontUnits
         /// </summary>
-        public int DescenderHeightFU { get { return this._useTypo ? _os2.TypoDescender : _hheader.Descender; } }
+        public int DescenderHeightFU { get { return this.UseTypoMeasures ? _os2.TypoDescender : _hheader.Descender; } }
 
         /// <summary>
         /// Gets the standard spacing between a descender and the next
         /// asender in Font Units
         /// </summary>
-        public int LineSpaceingFU { get { return this._useTypo ? _os2.TypoLineGap : _hheader.LineGap; } }
+        public int LineSpaceingFU { get { return this.UseTypoMeasures ? _os2.TypoLineGap : _hheader.LineGap; } }
 
         /// <summary>
         /// Gets the default line height (Ascender, Descender and Spacing) in font units.
         /// </summary>
         public int LineHeightFU { get { return this.LineSpaceingFU + this.AscenderHeightFU - this.DescenderHeightFU; } }
+
+        /// <summary>
+        /// Returns true if this String Measurer should use the Typographic font measurements.
+        /// </summary>
+        public bool UseTypoMeasures
+        {
+            get
+            { if (this._options.FontUnits == FontUnitType.UseFontPreference)
+                    return this._fontUseTypo;
+                else if (this._options.FontUnits == FontUnitType.UseHeadMetrics)
+                    return false;
+                else
+                    return true;
+            }
+        }
 
         /// <summary>
         /// Gets the width of a lowercase x in Font Units
@@ -71,13 +86,8 @@ namespace Scryber.OpenType.TTF
             this._metrics = metrics;
             this._lookup = new Dictionary<char, HMetric>();
             this._options = options;
-            if (options.FontUnits == FontUnitType.UseFontPreference)
-                this._useTypo = (oS2.Version >= OS2TableVersion.OpenType15) && ((oS2.Selection & FontSelection.UseTypographicSizes) > 0);
-            else if (options.FontUnits == FontUnitType.UseHeadMetrics)
-                this._useTypo = false;
-            else
-                this._useTypo = true;
-
+            this._fontUseTypo = (oS2.Version >= OS2TableVersion.OpenType15) && ((oS2.Selection & FontSelection.UseTypographicSizes) > 0);
+            
             this._hheader = hheader;
             this._fontfile = font;
             this._cMapEncoding = encoding;

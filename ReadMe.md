@@ -26,11 +26,8 @@ The easiest way is to add the Nuget package [Scryber.Core.OpenType](https://www.
 This will add the latest version (6.0.0-alpha at the time of writing) and supports the following frameworks
 
 * .NET Standard 2.0
-* .NET Standard 2.1
-* .NET Core 3.1
 * .NET 5.0
-* .NET 6.0 (RC1)
-* .NET Framework 4.8
+
 
 
 # Supported Typeface Formats

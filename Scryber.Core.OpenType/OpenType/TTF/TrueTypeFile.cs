@@ -320,7 +320,7 @@ namespace Scryber.OpenType.TTF
         /// <param name="wordboundary">If True the measuring will stop at a boundary to a word rather than character.</param>
         /// <param name="charsfitted">Set to the number of characters that can be renered at this size within the width.</param>
         /// <returns></returns>
-        public LineSize MeasureString(CMapEncoding encoding, string s, int startOffset, double emsize, double availablePts, double? wordspacePts, double charspacePts, double hscale, bool vertical, bool wordboundary, out int charsfitted)
+        public LineSize MeasureString(CMapEncoding encoding, string s, int startOffset, double emsize, double availablePts, double? wordspacePts, double charspacePts, double hscale, bool vertical, bool wordboundary, out int charsfitted, FontUnitType useUnits = FontUnitType.UseFontPreference)
         {
             HorizontalMetrics table = this.Directories["hmtx"].Table as HorizontalMetrics;
             CMAPTable cmap = this.Directories["cmap"].Table as CMAPTable;
@@ -412,12 +412,12 @@ namespace Scryber.OpenType.TTF
 
             len = len * emsize;
             len = len / (double)head.UnitsPerEm;
-            double h = ((double)(os2.TypoAscender - os2.TypoDescender + os2.TypoLineGap) / (double)head.UnitsPerEm) * emsize;
+            double h = GetLineHeight(useUnits, os2, hhead, head, emsize); 
             return new LineSize(len, h, charsfitted, startOffset, isboundary);
         }
 
 
-        public LineSize MeasureString(CMapEncoding encoding, string s, int startOffset, double emsize, double available, bool wordboundary, out int charsfitted)
+        public LineSize MeasureString(CMapEncoding encoding, string s, int startOffset, double emsize, double available, bool wordboundary, out int charsfitted, FontUnitType useUnits = FontUnitType.UseFontPreference)
         {
             HorizontalMetrics table = this.Directories["hmtx"].Table as HorizontalMetrics;
             CMAPTable cmap = this.Directories["cmap"].Table as CMAPTable;
@@ -477,8 +477,31 @@ namespace Scryber.OpenType.TTF
             
             len = len / (double)head.UnitsPerEm;
             len = len * emsize;
-            double h = ((double)(os2.TypoAscender - os2.TypoDescender + os2.TypoLineGap) / (double)head.UnitsPerEm) * emsize;
+            double h = GetLineHeight(useUnits, os2, hhead, head, emsize);
             return new LineSize((float)len, (float)h, charsfitted, startOffset, isboundary);
+        }
+
+        protected double GetLineHeight(FontUnitType units, OS2Table os2, HorizontalHeader hhead, FontHeader header, double emsize)
+        {
+            double h;
+            bool useTypo;
+            if (units == FontUnitType.UseFontPreference)
+            {
+                useTypo = (os2.Version >= OS2TableVersion.OpenType15) && ((os2.Selection & FontSelection.UseTypographicSizes) > 0);
+            }
+            else if (units == FontUnitType.UseHeadMetrics)
+                useTypo = false;
+            else if (null == os2)
+                useTypo = false;
+            else
+                useTypo = true;
+
+            if (useTypo)
+                h = ((double)(os2.TypoAscender - os2.TypoDescender + os2.TypoLineGap) / ((double)header.UnitsPerEm) * emsize);
+            else
+                h = ((double)(hhead.Ascender - hhead.Descender + hhead.LineGap) / ((double)header.UnitsPerEm) * emsize);
+
+            return h;
         }
 
         public override string ToString()

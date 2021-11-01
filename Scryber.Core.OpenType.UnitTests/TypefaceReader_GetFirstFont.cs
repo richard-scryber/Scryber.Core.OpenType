@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Scryber.OpenType.UnitTests
 {
     [TestClass()]
+    [TestCategory("Get First Font")]
     public class TypefaceReader_GetFirstFont
     {
 
