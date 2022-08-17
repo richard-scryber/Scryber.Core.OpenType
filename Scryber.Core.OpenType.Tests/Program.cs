@@ -26,6 +26,7 @@ namespace Scryber.Core.OpenType.Tests
         {
             var fonts = new[]
             {
+                new { Name = "Courier TTC",         Include = false, LocalPath = "./fonts/Courier.ttc",  RemotePath = "https://invalidurl"}, //this is breaking as the ttc file has no OS/2 table
                 new { Name = "Hachi Maru Pop",      Include = true, LocalPath = "./fonts/HachiMaruPop.ttf",  RemotePath = "https://fonts.gstatic.com/s/hachimarupop/v2/HI_TiYoRLqpLrEiMAuO9Ysfz7rW1.ttf"},
                 new { Name = "Roboto",              Include = true, LocalPath = "./fonts/Roboto.ttf", RemotePath = "https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Me5Q.ttf"},
                 new { Name = "Open Sans Black TTF", Include = false, LocalPath = "./fonts/Open Sans Black.ttf", RemotePath = "https://fonts.gstatic.com/s/opensans/v26/memQYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWq8tWZ0Pw86hd0Rk0ZjaVc.ttf"},
@@ -33,7 +34,7 @@ namespace Scryber.Core.OpenType.Tests
                 new { Name = "Helvetica",           Include = true, LocalPath = "./fonts/Helvetica.ttf", RemotePath = "https://raw.githubusercontent.com/richard-scryber/scryber.core/svgParsing/Scryber.Drawing/Text/_FontResources/Helvetica/Helvetica.ttf"},
                 new { Name = "Gill Sans ttc",       Include = true, LocalPath = "./fonts/GillSans.ttc", RemotePath = "https://raw.githubusercontent.com/richard-scryber/scryber.core.opentype/master/Scryber.Core.OpenType.Tests/fonts/GillSans.ttc"},
                 new { Name = "Open Sans Black Wof", Include = false, LocalPath = "./fonts/OpenSansBlack.woff", RemotePath = "https://fonts.gstatic.com/s/opensans/v26/memQYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWq8tWZ0Pw86hd0Rk0ZjWVAexoMUdjFXmQ.woff"},
-                new { Name = "Open Sans Light TTF", Include = true, LocalPath = "./fonts/OpenSans-Light.ttf", RemotePath = "https://fonts.gstatic.com/s/opensans/v26/memQYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWq8tWZ0Pw86hd0Rk0ZjaVc.ttf"},
+                new { Name = "Open Sans Light TTF", Include = true, LocalPath = "./fonts/OpenSans-Light.ttf", RemotePath = "https://invalidurl"},
                 new { Name = "Noto TC",             Include = true,  LocalPath = "./fonts/NotoTC.otf", RemotePath = "https://fonts.gstatic.com/s/notosanstc/v20/-nF7OG829Oofr2wohFbTp9iFOQ.otf"},
                 new { Name = "Festive",             Include = false, LocalPath = "./fonts/Festive.woff2", RemotePath = "https://fonts.gstatic.com/s/festive/v1/cY9Ffj6KX1xcoDWhJt_qyvPQgah_Lw.woff2"}
             };
