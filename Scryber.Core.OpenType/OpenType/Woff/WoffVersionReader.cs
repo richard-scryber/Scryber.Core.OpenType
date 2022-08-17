@@ -79,7 +79,7 @@ namespace Scryber.OpenType.Woff
             list.Sort(delegate (WoffTableEntry one, WoffTableEntry two) { return one.Offset.CompareTo(two.Offset); });
 
             var entries = new WoffTableEntryList(list);
-            var file = new WoffFontFile(header, entries);
+            var file = new WoffFontFile(header, entries, (int)startOffset);
 
             var factory = this.GetTableFactory();
 

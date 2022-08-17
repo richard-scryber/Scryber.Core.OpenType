@@ -35,6 +35,11 @@ namespace Scryber.OpenType
         /// Gets the standard ont selections (e.g. Bold, Italic, Striketrhough) of the font.
         /// </summary>
         FontSelection Selections { get; }
+
+        /// <summary>
+        /// Gets the offset of this font in the read source
+        /// </summary>
+        long OffsetInFile { get; }
     }
 
 

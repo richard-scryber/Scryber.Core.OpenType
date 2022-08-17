@@ -10,8 +10,8 @@ namespace Scryber.OpenType.Woff
         private byte[] _convertedTTF;
         private const byte Zero = (byte)0;
 
-        public WoffFontFile(TypefaceHeader header, WoffTableEntryList entries)
-            : base(header, entries)
+        public WoffFontFile(TypefaceHeader header, WoffTableEntryList entries, int offset)
+            : base(header, entries, offset)
         {
         }
 

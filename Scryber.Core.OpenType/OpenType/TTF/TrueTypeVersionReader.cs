@@ -156,7 +156,7 @@ namespace Scryber.OpenType.TTF
         {
             var entries = new TrueTypeTableEntryList(dirs);
 
-            TrueTypeFile file = new TrueTypeFile(header, entries);
+            TrueTypeFile file = new TrueTypeFile(header, entries, (int)startOffset);
 
             TrueTypeTableFactory factory = this.GetTableFactory();
 

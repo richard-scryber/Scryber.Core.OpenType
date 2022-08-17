@@ -93,6 +93,13 @@ namespace Scryber.OpenType.TTF
             get { return _ref; }
         }
 
+        private long _offset;
+
+        public long OffsetInFile
+        {
+            get { return this._offset; }
+        }
+
 
         public string FamilyName { get { return _ref?.FamilyName; } }
 
@@ -104,6 +111,8 @@ namespace Scryber.OpenType.TTF
 
         public FontSelection Selections { get { return _ref == null ? ((FontSelection)(0)) : _ref.Selections; } }
 
+
+
         //
         // ctors
         //
@@ -111,14 +120,16 @@ namespace Scryber.OpenType.TTF
         public TrueTypeFile(byte[] data, int headOffset)
             : base()
         {
+            this._offset = headOffset;
             this._path = string.Empty;
             this.Read(data, headOffset);
         }
 
-        public TrueTypeFile(TypefaceHeader header, TrueTypeTableEntryList entries)
+        public TrueTypeFile(TypefaceHeader header, TrueTypeTableEntryList entries, int headOffset)
         {
             this._head = header ?? throw new ArgumentNullException(nameof(header));
             this._dirs = entries ?? throw new ArgumentNullException(nameof(entries));
+            this._offset = headOffset;
         }
 
         //

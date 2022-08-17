@@ -1435,6 +1435,8 @@ namespace Scryber.OpenType
         /// <returns></returns>
         protected virtual ITypefaceFont DoGetFont(Stream seekableStream, string source, IFontInfo theReference)
         {
+            if (theReference is Utility.SingleTypefaceInfo sti)
+                seekableStream.Position = sti.OffsetInFile;
 
             using (var reader = new BigEndianReader(seekableStream))
             {

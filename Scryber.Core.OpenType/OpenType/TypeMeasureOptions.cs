@@ -16,6 +16,17 @@ namespace Scryber.OpenType
         /// </summary>
         public double? WordSpacing { get; set; }
 
+
+        /// <summary>
+        /// Gets or sets the scaling horizontally of each of the characters
+        /// </summary>
+        public double? HorizontalScale { get; set; }
+
+        /// <summary>
+        /// If true then the characters should be laid out vertically.
+        /// </summary>
+        public bool Vertical { get; set; }
+
         /// <summary>
         /// If true then the closest word will be returned as the required size, rather than all the maximum characters.
         /// </summary>
