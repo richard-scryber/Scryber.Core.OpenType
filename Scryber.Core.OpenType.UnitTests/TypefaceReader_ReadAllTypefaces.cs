@@ -36,7 +36,7 @@ namespace Scryber.OpenType.UnitTests
 
                 var all = reader.ReadAllTypefaces(dir);
 
-                Assert.AreEqual(7, all.Length);
+                Assert.AreEqual(8, all.Length);
             }
 
         }
@@ -57,8 +57,8 @@ namespace Scryber.OpenType.UnitTests
 
                 var all = reader.ReadAllTypefaces(dir, match);
 
-                //only 3 fonts match the pattern
-                int expected = 3;
+                //only 4 fonts match the pattern
+                int expected = 4;
                 Assert.AreEqual(expected, all.Length);
             }
 
@@ -81,8 +81,8 @@ namespace Scryber.OpenType.UnitTests
 
                 var all = reader.ReadAllTypefaces(dir, match);
 
-                //4 fonts match the pattern(s)
-                int expected = 4;
+                //5 fonts match the pattern(s)
+                int expected = 5;
                 Assert.AreEqual(expected, all.Length);
             }
 
@@ -105,9 +105,9 @@ namespace Scryber.OpenType.UnitTests
 
                 var all = reader.ReadAllTypefaces(dir, match, includeSubs);
 
-                //4 fonts match the pattern(s) in the root
+                //5 fonts match the pattern(s) in the root
                 //+1 in the subfolder
-                int expected = 5;
+                int expected = 6;
                 Assert.AreEqual(expected, all.Length);
             }
 
@@ -158,10 +158,10 @@ namespace Scryber.OpenType.UnitTests
 
                 var all = reader.ReadAllTypefaces(dir, match, includeSubs, captureErrors);
 
-                //7 fonts match the pattern(s) in the root
+                //8 fonts match the pattern(s) in the root
                 //+1 in the subfolder
                 //+1 unsupported
-                int expected = 9;
+                int expected = 10;
                 Assert.AreEqual(expected, all.Length);
 
                 var error = "unsupported/Festive.woff2";
@@ -197,8 +197,8 @@ namespace Scryber.OpenType.UnitTests
 
                 var all = reader.ReadAllTypefaces(paths);
 
-                //4 fonts match the pattern(s) in the root
-                //+1 in the subfolder
+                
+                //3 explicit fonts
                 int expected = 3;
                 Assert.AreEqual(expected, all.Length);
             }
@@ -219,8 +219,7 @@ namespace Scryber.OpenType.UnitTests
 
                 var all = reader.ReadAllTypefaces(uris);
 
-                //4 fonts match the pattern(s) in the root
-                //+1 in the subfolder
+                //3 explicit fonts
                 int expected = 3;
                 Assert.AreEqual(expected, all.Length);
             }
