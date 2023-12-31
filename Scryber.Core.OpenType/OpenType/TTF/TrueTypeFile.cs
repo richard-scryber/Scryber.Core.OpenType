@@ -368,7 +368,7 @@ namespace Scryber.OpenType.TTF
             for (int i = startOffset; i < s.Length; i++)
             {
                 char c = s[i];
-                if (char.IsWhiteSpace(c))
+                if (IsBreakableSpace(c))
                 {
                     lastwordlen = len;
                     lastwordcount = charsfitted;
@@ -452,7 +452,7 @@ namespace Scryber.OpenType.TTF
             for (int i = startOffset; i < s.Length; i++)
             {
                 char c = s[i];
-                if (char.IsWhiteSpace(c))
+                if (IsBreakableSpace(c))
                 {
                     lastwordlen = len;
                     lastwordcount = charsfitted;
@@ -491,6 +491,17 @@ namespace Scryber.OpenType.TTF
             double h = GetLineHeight(useUnits, os2, hhead, head, emsize);
             return new LineSize((float)len, (float)h, charsfitted, startOffset, isboundary);
         }
+
+        protected const char NonBreakingSpaceChar = (char)160;
+
+        protected static bool IsBreakableSpace(char c)
+        {
+            if (c == NonBreakingSpaceChar)
+                return false;
+            else
+                return char.IsWhiteSpace(c);
+        }
+
 
         protected double GetLineHeight(FontUnitType units, OS2Table os2, HorizontalHeader hhead, FontHeader header, double emsize)
         {
