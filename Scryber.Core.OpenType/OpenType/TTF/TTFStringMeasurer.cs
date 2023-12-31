@@ -107,7 +107,7 @@ namespace Scryber.OpenType.TTF
             {
                 char c = chars[i];
 
-                if(char.IsWhiteSpace(c))
+                if(IsBreakableSpace(c))
                 {
                     lastWordLen = measured;
                     lastWordCount = count;
@@ -166,7 +166,7 @@ namespace Scryber.OpenType.TTF
 
             if (options.IgnoreStartingWhiteSpace)
             {
-                while (char.IsWhiteSpace(chars, startOffset) && chars.Length > startOffset)
+                while (IsBreakableSpace(chars, startOffset) && chars.Length > startOffset)
                 {
                     startOffset++;
 
@@ -185,8 +185,23 @@ namespace Scryber.OpenType.TTF
             {
                 double required = this.MeasureChars(chars, startOffset, emSize, maxWidth, options.BreakOnWordBoundaries, out fitted);
 
-                return new LineSize(required, lineh, fitted, startOffset, (fitted < chars.Length) && options.BreakOnWordBoundaries);
+                return new LineSize(required, lineh, fitted, startOffset, ((fitted + startOffset) < chars.Length) && options.BreakOnWordBoundaries);
             }
+        }
+
+        private const char NonBreakingSpace = (char)160;
+
+        public static bool IsBreakableSpace(string chars, int offset)
+        {
+            return IsBreakableSpace(chars[offset]);
+        }
+
+        public static bool IsBreakableSpace(char c)
+        {
+            if (c == NonBreakingSpace)
+                return false;
+            else
+                return char.IsWhiteSpace(c);
         }
 
 

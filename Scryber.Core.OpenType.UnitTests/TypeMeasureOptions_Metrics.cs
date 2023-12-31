@@ -7,13 +7,19 @@ namespace Scryber.OpenType.UnitTests
     [TestClass]
     public class TypeMeasureOptions_Metrics
     {
+        private const char NBSP = (char)160;
 
         private const string TextToMeasure = "This is the text to measure";
+
+        //can only break on the space between 'this' and 'is'
+        private static string TextWithoutSomeBreaks = "This is" + NBSP + "the text" + NBSP + "to measure";
+
         private static FileInfo path = new FileInfo(Path.Combine(System.Environment.CurrentDirectory, ValidateHelvetica.UrlPath));
         private static double fontSize = 12.0;
         private static double availableWidth = 1000; //fit all characters
         private static double smallWidth = 90.0;
-       
+        private static double smallerWidth = 50.0;
+
 
         [TestMethod("1. Default options")]
         public void TypeMeasureOptions_Default()
@@ -92,7 +98,7 @@ namespace Scryber.OpenType.UnitTests
 
 
                 //Check the smaller size
-
+                //
                 // "This is the text"
                 // " to measure"
 
@@ -111,7 +117,166 @@ namespace Scryber.OpenType.UnitTests
             }
         }
 
-        [TestMethod("3. Ignoring the white space at the start")]
+        [TestMethod("9. Break on words options")]
+        public void TypeMeasureOptions_NonBreakSpaceOnWords()
+        {
+
+            var options = TypeMeasureOptions.BreakOnWords;
+
+            Assert.IsFalse(options.CharacterSpacing.HasValue);
+            Assert.IsFalse(options.WordSpacing.HasValue);
+
+            Assert.IsTrue(options.BreakOnWordBoundaries, "The static break on words should have this flag as true");
+            Assert.IsFalse(options.IgnoreStartingWhiteSpace);
+            Assert.AreEqual(FontUnitType.UseFontPreference, options.FontUnits);
+
+
+            using (var reader = new TypefaceReader())
+            {
+                ITypefaceFont font = reader.GetFirstFont(path);
+
+                Assert.IsNotNull(font);
+                Assert.IsTrue(font.FamilyName == ValidateHelvetica.FamilyName);
+
+                var metrics = font.GetMetrics(options);
+                Assert.IsNotNull(metrics);
+
+                //Use the text with non-breaking spaces
+                var txt = TextWithoutSomeBreaks;
+                //should all still fit on the full width
+                var size = metrics.MeasureLine(txt, 0, fontSize, availableWidth, options);
+
+                Assert.AreEqual(txt.Length, size.CharsFitted, "Should have fitted all the characters");
+                Assert.IsFalse(size.OnWordBoudary, "Should not be breaking on a word boundary, as eveything fitted");
+                Assert.AreEqual(12.0, size.RequiredHeight, "Helvetica font preferences should use the font header size, rather than typographic.");
+
+
+                //Check the smaller size
+                //Without nbsp we would get
+                // "This is the text"
+                // " to measure"
+
+                // With breaking spaces - cannot split after 'text' so back to 'the'
+                // This is&nbsp;the text&nbsp;to measure
+
+                // "This is the"
+                // "text to measure"
+
+
+                size = metrics.MeasureLine(txt, 0, fontSize, smallWidth, options);
+
+                Assert.AreEqual(11, size.CharsFitted, "Can only fit 16 chars on smaller width with word break");
+                Assert.IsTrue(size.OnWordBoudary, "Breaking on word boundary should be true");
+                Assert.AreEqual(12.0, size.RequiredHeight, "Helvetica font preferences should use the font header size, rather than typographic.");
+
+                //Check the remaining text
+                size = metrics.MeasureLine(txt, size.CharsFitted, fontSize, smallWidth, options);
+
+                //for the second check ignore the starting space
+                options.IgnoreStartingWhiteSpace = true;
+
+                Assert.AreEqual(11, size.FirstCharacter, "The first character should be the space at index 11");
+                Assert.AreEqual(16, size.CharsFitted);
+                Assert.IsFalse(size.OnWordBoudary);
+                Assert.AreEqual(12.0, size.RequiredHeight, "Helvetica font preferences should use the font header size, rather than typographic.");
+
+                Assert.AreEqual(TextToMeasure.Length - size.FirstCharacter, size.CharsFitted, "Should have been able to fit the remaining text");
+
+            }
+        }
+
+        [TestMethod("10. Non-breaking space (smaller width)")]
+        public void TypeMeasureOptions_NonBreakingSpaceOnWordsSamller()
+        {
+            var options = TypeMeasureOptions.BreakOnWords;
+
+            Assert.IsFalse(options.CharacterSpacing.HasValue);
+            Assert.IsFalse(options.WordSpacing.HasValue);
+
+            Assert.IsTrue(options.BreakOnWordBoundaries, "The static break on words should have this flag as true");
+            Assert.IsFalse(options.IgnoreStartingWhiteSpace);
+            Assert.AreEqual(FontUnitType.UseFontPreference, options.FontUnits);
+
+
+            using (var reader = new TypefaceReader())
+            {
+                ITypefaceFont font = reader.GetFirstFont(path);
+
+                Assert.IsNotNull(font);
+                Assert.IsTrue(font.FamilyName == ValidateHelvetica.FamilyName);
+
+                var metrics = font.GetMetrics(options);
+                Assert.IsNotNull(metrics);
+
+                //Use the text with non-breaking spaces
+                var txt = TextWithoutSomeBreaks;
+                //should all still fit on the full width
+                var size = metrics.MeasureLine(txt, 0, fontSize, availableWidth, options);
+
+                Assert.AreEqual(txt.Length, size.CharsFitted, "Should have fitted all the characters");
+                Assert.IsFalse(size.OnWordBoudary, "Should not be breaking on a word boundary, as eveything fitted");
+                Assert.AreEqual(12.0, size.RequiredHeight, "Helvetica font preferences should use the font header size, rather than typographic.");
+
+
+                //Check the smallest size
+                //Without nbsp we would get
+                // "This is"
+                // "the text"
+                // "to measure"
+
+                // With breaking spaces - cannot split after 'text' so back to 'the'
+                // This is&nbsp;the text&nbsp;to measure
+
+                // "This"
+                // "is the"
+                // "text to"
+                // "measure"
+
+                size = metrics.MeasureLine(txt, 0, fontSize, smallerWidth, options);
+
+                // "this"
+                Assert.AreEqual(4, size.CharsFitted, "Can only fit 16 chars on smaller width with word break");
+                Assert.IsTrue(size.OnWordBoudary, "Breaking on word boundary should be true");
+                Assert.AreEqual(12.0, size.RequiredHeight, "Helvetica font preferences should use the font header size, rather than typographic.");
+
+                //Check the remaining text
+
+                //for the second check ignore the starting space
+                options.IgnoreStartingWhiteSpace = true;
+
+                size = metrics.MeasureLine(txt, size.CharsFitted, fontSize, smallerWidth, options);
+
+                // "is the"
+                Assert.AreEqual(5, size.FirstCharacter, "The first character should be the space at index 5");
+                Assert.AreEqual(6, size.CharsFitted);
+                Assert.IsTrue(size.OnWordBoudary);
+                Assert.AreEqual(12.0, size.RequiredHeight, "Helvetica font preferences should use the font header size, rather than typographic.");
+
+
+                size = metrics.MeasureLine(txt, size.FirstCharacter + size.CharsFitted, fontSize, smallerWidth, options);
+
+                // "text to"
+                Assert.AreEqual(12, size.FirstCharacter, "The first character should be the space at index 5");
+                Assert.AreEqual(7, size.CharsFitted);
+                Assert.IsTrue(size.OnWordBoudary);
+                Assert.AreEqual(12.0, size.RequiredHeight, "Helvetica font preferences should use the font header size, rather than typographic.");
+
+
+                size = metrics.MeasureLine(txt, size.FirstCharacter + size.CharsFitted, fontSize, smallerWidth, options);
+
+                // "measure"
+                Assert.AreEqual(20, size.FirstCharacter, "The first character should be the space at index 5");
+                Assert.AreEqual(7, size.CharsFitted);
+                Assert.IsFalse(size.OnWordBoudary);
+                Assert.AreEqual(12.0, size.RequiredHeight, "Helvetica font preferences should use the font header size, rather than typographic.");
+
+
+                Assert.AreEqual(TextToMeasure.Length - size.FirstCharacter, size.CharsFitted, "Should have been able to fit the remaining text");
+
+            }
+        }
+
+            [TestMethod("3. Ignoring the white space at the start")]
         public void TypeMeasureOptions_IgnoreStartingWhitespace()
         {
 
