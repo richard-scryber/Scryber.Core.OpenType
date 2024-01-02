@@ -32,6 +32,12 @@ namespace Scryber.OpenType
         /// </summary>
         public bool BreakOnWordBoundaries { get; set; }
 
+
+        /// <summary>
+        /// If true (default) then the closest hyphen will be returned as the required size, if present, rather than the closest word (or maximum characters).
+        /// </summary>
+        public bool BreakOnHyphens { get; set; }
+
         /// <summary>
         /// Set whether the typographic sizes should be used rather than the Header sizes for line heights, or allow the font to dictate which is best.
         /// </summary>
