@@ -493,11 +493,14 @@ namespace Scryber.OpenType.TTF
         }
 
         protected const char NonBreakingSpaceChar = (char)160;
+        protected const char HyphenChar = '-';
 
         protected static bool IsBreakableSpace(char c)
         {
             if (c == NonBreakingSpaceChar)
                 return false;
+            else if (c == HyphenChar)
+                return true;
             else
                 return char.IsWhiteSpace(c);
         }

@@ -190,6 +190,8 @@ namespace Scryber.OpenType.TTF
         }
 
         private const char NonBreakingSpace = (char)160;
+        private const char HyphenChar = '-';
+
 
         public static bool IsBreakableCharacter(string chars, int offset, TypeMeasureOptions options)
         {
@@ -200,7 +202,7 @@ namespace Scryber.OpenType.TTF
         {
             if (c == NonBreakingSpace)
                 return false;
-            else if (c == '-')
+            else if (c == HyphenChar)
             {
                 if (options.BreakOnHyphens)
                     return true;
