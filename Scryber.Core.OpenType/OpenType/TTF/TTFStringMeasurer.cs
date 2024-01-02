@@ -92,8 +92,12 @@ namespace Scryber.OpenType.TTF
             this._fontfile = font;
             this._cMapEncoding = encoding;
         }
-
         public double MeasureChars(string chars, int startOffset, double emsize, double available, bool wordboundary, out int fitted)
+        {
+            return MeasureChars(chars, startOffset, emsize, available, wordboundary, wordboundary, out fitted);
+        }
+
+        public double MeasureChars(string chars, int startOffset, double emsize, double available, bool wordboundary, bool hyphenBoundary, out int fitted)
         {
             int totalUnits = (int)Math.Floor((available * this.FUnitsPerEm) / emsize);
 
@@ -107,10 +111,15 @@ namespace Scryber.OpenType.TTF
             {
                 char c = chars[i];
 
-                if(IsBreakableCharacter(c, this._options))
+                if(IsBreakableSpace(c))
                 {
                     lastWordLen = measured;
                     lastWordCount = count;
+                }
+                else if(hyphenBoundary && IsBreakableHyphen(c) && i < chars.Length-1)
+                {
+                    lastWordLen = measured + 1;
+                    lastWordCount = count + 1;
                 }
                 HMetric metric;
 
@@ -166,7 +175,7 @@ namespace Scryber.OpenType.TTF
 
             if (options.IgnoreStartingWhiteSpace)
             {
-                while (IsBreakableCharacter(chars, startOffset, this._options) && chars.Length > startOffset)
+                while (IsBreakableSpace(chars, startOffset) && chars.Length > startOffset)
                 {
                     startOffset++;
 
@@ -180,10 +189,10 @@ namespace Scryber.OpenType.TTF
 
             //If we have spacing, we cannot take advantage of caching, so fall back to the main font file measure
             if (options.WordSpacing.HasValue || options.CharacterSpacing.HasValue)
-                return _fontfile.MeasureString(this._cMapEncoding, chars, startOffset, emSize, maxWidth, options.WordSpacing, options.CharacterSpacing.HasValue ? options.CharacterSpacing.Value : TrueTypeFile.NoCharacterSpace, TrueTypeFile.NoHorizontalScale, false, options.BreakOnWordBoundaries, out fitted);
+                return _fontfile.MeasureString(this._cMapEncoding, chars, startOffset, emSize, maxWidth, options.WordSpacing, options.CharacterSpacing.HasValue ? options.CharacterSpacing.Value : TrueTypeFile.NoCharacterSpace, TrueTypeFile.NoHorizontalScale, false, options.BreakOnWordBoundaries, options.BreakOnHyphens, out fitted);
             else
             {
-                double required = this.MeasureChars(chars, startOffset, emSize, maxWidth, options.BreakOnWordBoundaries, out fitted);
+                double required = this.MeasureChars(chars, startOffset, emSize, maxWidth, options.BreakOnWordBoundaries, options.BreakOnHyphens, out fitted);
 
                 return new LineSize(required, lineh, fitted, startOffset, ((fitted + startOffset) < chars.Length) && options.BreakOnWordBoundaries);
             }
@@ -193,24 +202,30 @@ namespace Scryber.OpenType.TTF
         private const char HyphenChar = '-';
 
 
-        public static bool IsBreakableCharacter(string chars, int offset, TypeMeasureOptions options)
+        public static bool IsBreakableSpace(string chars, int offset)
         {
-            return IsBreakableCharacter(chars[offset], options);
+            return IsBreakableSpace(chars[offset]);
         }
 
-        public static bool IsBreakableCharacter(char c, TypeMeasureOptions options)
-        {
+        public static bool IsBreakableSpace(char c)
+        { 
             if (c == NonBreakingSpace)
                 return false;
-            else if (c == HyphenChar)
-            {
-                if (options.BreakOnHyphens)
-                    return true;
-                else
-                    return false;
-            }
             else
                 return char.IsWhiteSpace(c);
+        }
+
+        public static bool IsBreakableHyphen(string chars, int offset)
+        {
+            return IsBreakableHyphen(chars[offset]);
+        }
+
+        public static bool IsBreakableHyphen(char c)
+        {
+            if (c == HyphenChar)
+                return true;
+            else
+                return false;
         }
 
 

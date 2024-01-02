@@ -329,9 +329,10 @@ namespace Scryber.OpenType.TTF
         /// <param name="hscale">The horizontal scaling of all characters. Default 100</param>
         /// <param name="vertical">If true then this is vertical writing</param>
         /// <param name="wordboundary">If True the measuring will stop at a boundary to a word rather than character.</param>
+        /// <param name="hyphenBoundary">If True the measuring will stop at a boundary to a hyphen in preference to a word</param>
         /// <param name="charsfitted">Set to the number of characters that can be renered at this size within the width.</param>
         /// <returns></returns>
-        public LineSize MeasureString(CMapEncoding encoding, string s, int startOffset, double emsize, double availablePts, double? wordspacePts, double charspacePts, double hscale, bool vertical, bool wordboundary, out int charsfitted, FontUnitType useUnits = FontUnitType.UseFontPreference)
+        public LineSize MeasureString(CMapEncoding encoding, string s, int startOffset, double emsize, double availablePts, double? wordspacePts, double charspacePts, double hscale, bool vertical, bool wordboundary, bool hyphenBoundary, out int charsfitted, FontUnitType useUnits = FontUnitType.UseFontPreference)
         {
             HorizontalMetrics table = this.Directories["hmtx"].Table as HorizontalMetrics;
             CMAPTable cmap = this.Directories["cmap"].Table as CMAPTable;
@@ -372,6 +373,11 @@ namespace Scryber.OpenType.TTF
                 {
                     lastwordlen = len;
                     lastwordcount = charsfitted;
+                }
+                else if (hyphenBoundary && IsBreakableHyphen(c) && i < s.Length - 1)
+                {
+                    lastwordlen = len + 1;
+                    lastwordcount = charsfitted + 1;
                 }
 
                 int moffset = (int)mac.GetCharacterGlyphOffset(c);
@@ -457,6 +463,11 @@ namespace Scryber.OpenType.TTF
                     lastwordlen = len;
                     lastwordcount = charsfitted;
                 }
+                else if(wordboundary && IsBreakableHyphen(c) && i < s.Length -1)
+                {
+                    lastwordlen = len + 1;
+                    lastwordcount = charsfitted + 1;
+                }
 
                 int moffset = (int)mac.GetCharacterGlyphOffset(c);
                 //System.Diagnostics.Debug.WriteLine("Character '" + chars[i].ToString() + "' (" + ((byte)chars[i]).ToString() + ") has offset '" + moffset.ToString() + "' in mac encoding and '" + woffset + "' in windows encoding");
@@ -499,10 +510,16 @@ namespace Scryber.OpenType.TTF
         {
             if (c == NonBreakingSpaceChar)
                 return false;
-            else if (c == HyphenChar)
+             else
+                return char.IsWhiteSpace(c);
+        }
+
+        protected static bool IsBreakableHyphen(char c)
+        {
+            if (c == HyphenChar)
                 return true;
             else
-                return char.IsWhiteSpace(c);
+                return false;
         }
 
 

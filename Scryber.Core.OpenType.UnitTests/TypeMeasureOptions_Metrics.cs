@@ -692,7 +692,7 @@ namespace Scryber.OpenType.UnitTests
                 options.BreakOnHyphens = true;
                 size = metrics.MeasureLine(txt, 0, fontSize, smallWidth, options);
 
-                Assert.AreEqual(16, size.CharsFitted, "Can only fit 11 chars on smaller width with word break");
+                Assert.AreEqual(17, size.CharsFitted, "Can only fit 17 chars on smaller width with word break");
                 Assert.IsTrue(size.OnWordBoudary, "Breaking on word boundary should be true");
                 Assert.AreEqual(12.0, size.RequiredHeight, "Helvetica font preferences should use the font header size, rather than typographic.");
 
@@ -701,8 +701,8 @@ namespace Scryber.OpenType.UnitTests
 
                 
 
-                Assert.AreEqual(16, size.FirstCharacter, "The first character should be the space at index 11");
-                Assert.AreEqual(11, size.CharsFitted);
+                Assert.AreEqual(17, size.FirstCharacter, "The first character should be the space at index 11");
+                Assert.AreEqual(10, size.CharsFitted);
                 Assert.IsFalse(size.OnWordBoudary);
                 Assert.AreEqual(12.0, size.RequiredHeight, "Helvetica font preferences should use the font header size, rather than typographic.");
 

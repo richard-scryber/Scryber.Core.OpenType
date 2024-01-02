@@ -5,13 +5,13 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <RootNamespace>Scryber</RootNamespace>
-    <PackageVersion>6.0.0.7-beta</PackageVersion>
+    <PackageVersion>6.0.3.3-beta</PackageVersion>
     <Authors>richard@scryber.co.uk</Authors>
     <Description>The Open Type font file package needed to read otf, ttf, and ttc files.</Description>
     <Copyright>Scryber Collective Ltd 2020</Copyright>
     <Owners>Scryber</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/Scryber.Core.OpenType</PackageProjectUrl>
-    <PackageReleaseNotes>Release for the 6.0.7-beta of the core engine.
+    <PackageReleaseNotes>Release for the 6.0.3.3-beta of the core engine.
 
     Now supports the otf, ttf, and ttc file formats for font reading and measuring.
     Compatible with net standard 2.0 and net 6.0.
