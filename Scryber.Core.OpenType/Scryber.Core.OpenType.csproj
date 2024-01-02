@@ -5,18 +5,20 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <RootNamespace>Scryber</RootNamespace>
-    <PackageVersion>6.0.0.6-beta</PackageVersion>
+    <PackageVersion>6.0.0.7-beta</PackageVersion>
     <Authors>richard@scryber.co.uk</Authors>
     <Description>The Open Type font file package needed to read otf, ttf, and ttc files.</Description>
     <Copyright>Scryber Collective Ltd 2020</Copyright>
     <Owners>Scryber</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/Scryber.Core.OpenType</PackageProjectUrl>
-    <PackageReleaseNotes>Release for the 6.0.6-beta of the core engine.
+    <PackageReleaseNotes>Release for the 6.0.7-beta of the core engine.
 
     Now supports the otf, ttf, and ttc file formats for font reading and measuring.
     Compatible with net standard 2.0 and net 6.0.
 
     There is a change in usage to the Scryber.OpenType.TypefaceReader along with returning a LineSize struct, rather than a System.Drawing.SizeF struct.
+
+    Added support for measurement honoring the non-breaking space (char 160) and breaking preferentially on a hypen if it is flagged in the type measurement options.
 
     This is the base type for reading OpenType, TTF and TTC font files used in scryber.core, but is independent from any PDF creation requirements.
 
