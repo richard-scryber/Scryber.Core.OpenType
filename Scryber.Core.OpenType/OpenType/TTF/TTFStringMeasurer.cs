@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Scryber.OpenType.SubTables;
@@ -20,7 +21,19 @@ namespace Scryber.OpenType.TTF
         private CMapEncoding _cMapEncoding;
         private HorizontalHeader _hheader;
         private OS2Table _os2;
-        private Dictionary<char, HMetric> _lookup;
+
+        /// <summary>
+        /// Memoized glyph metrics, keyed by character.
+        /// </summary>
+        /// <remarks>
+        /// A single measurer instance is cached per font and shared by every caller, so this is
+        /// read and written concurrently when documents are rendered in parallel. It must stay a
+        /// concurrent collection: a plain Dictionary corrupts its own state when two threads
+        /// insert at once, which surfaces later as an unrelated-looking failure inside measurement.
+        /// The value is a pure function of the character, so a duplicate concurrent computation is
+        /// harmless and no locking is needed around the miss path.
+        /// </remarks>
+        private ConcurrentDictionary<char, HMetric> _lookup;
 
 
         /// <summary>
@@ -84,7 +97,7 @@ namespace Scryber.OpenType.TTF
             this._offsets = offsets;
             this._os2 = oS2;
             this._metrics = metrics;
-            this._lookup = new Dictionary<char, HMetric>();
+            this._lookup = new ConcurrentDictionary<char, HMetric>();
             this._options = options;
             this._fontUseTypo = (oS2.Version >= OS2TableVersion.OpenType15) && ((oS2.Selection & FontSelection.UseTypographicSizes) > 0);
             
@@ -131,7 +144,10 @@ namespace Scryber.OpenType.TTF
                         moffset = _metrics.Count - 1;
 
                     metric = _metrics[moffset];
-                    _lookup.Add(c, metric);
+
+                    //Indexer rather than Add: a concurrent miss for the same character computes
+                    //the same value, so last-writer-wins is correct and Add would throw.
+                    _lookup[c] = metric;
                 }
 
                 if (i == 0)
