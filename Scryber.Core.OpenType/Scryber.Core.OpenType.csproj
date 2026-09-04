@@ -5,22 +5,28 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <RootNamespace>Scryber</RootNamespace>
-    <PackageVersion>6.0.3.3-beta</PackageVersion>
+    <PackageVersion>9.7.4</PackageVersion>
+    <Version>9.7.4.0</Version>
+    <FileVersion>9.7.4.0</FileVersion>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <Authors>richard@scryber.co.uk</Authors>
     <Description>The Open Type font file package needed to read otf, ttf, and ttc files.</Description>
-    <Copyright>Scryber Collective Ltd 2020</Copyright>
+    <Copyright>Richard Hewitson 2026</Copyright>
     <Owners>Scryber</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/Scryber.Core.OpenType</PackageProjectUrl>
-    <PackageReleaseNotes>Release for the 6.0.3.3-beta of the core engine.
+    <PackageReleaseNotes>9.7.4
+Fixed a data race in TTFStringMeasurer's per-character glyph metric cache: a shared measurer written from multiple threads at once (concurrent document rendering) could corrupt the underlying Dictionary, surfacing as InvalidOperationException/ArgumentException/NullReferenceException out of MeasureChars. Cache is now a ConcurrentDictionary, written through the indexer.
+Versioning aligned with the Scryber.Core engine version from this release onward - the PackageVersion had drifted from what was actually last published (9.2.0) since 6.0.3.3-beta; the source itself was current, only the project file's version metadata had lagged.
 
-    Now supports the otf, ttf, and ttc file formats for font reading and measuring.
-    Compatible with net standard 2.0 and net 6.0.
+9.2.0
+Now supports the otf, ttf, and ttc file formats for font reading and measuring.
+Compatible with net standard 2.0 and net 6.0.
 
-    There is a change in usage to the Scryber.OpenType.TypefaceReader along with returning a LineSize struct, rather than a System.Drawing.SizeF struct.
+There is a change in usage to the Scryber.OpenType.TypefaceReader along with returning a LineSize struct, rather than a System.Drawing.SizeF struct.
 
-    Added support for measurement honoring the non-breaking space (char 160) and breaking preferentially on a hypen if it is flagged in the type measurement options.
+Added support for measurement honoring the non-breaking space (char 160) and breaking preferentially on a hypen if it is flagged in the type measurement options.
 
-    This is the base type for reading OpenType, TTF and TTC font files used in scryber.core, but is independent from any PDF creation requirements.
+This is the base type for reading OpenType, TTF and TTC font files used in scryber.core, but is independent from any PDF creation requirements.
 
 See the read me at https://github.com/richard-scryber/Scryber.Core.OpenType for more usage information.</PackageReleaseNotes>
     <Summary>The OpenType font reading (and writing) library used by Scryber.</Summary>
