@@ -170,7 +170,17 @@ namespace Scryber.OpenType.TTF
             file.EnsureReferenceMatched(reference);
 
 
-            byte[] data = CopyStreamData(reader.BaseStream, startOffset);
+            byte[] data;
+            if (startOffset > 0)
+            {
+                //A font in a collection (ttc or otc) - its table offsets are from the start of the collection file
+                //(and tables can be shared with the other fonts), so the data from its header to the end of the file
+                //is not a valid font program. Rebuild it as a single font with its own tables.
+                data = TTC.TTCollectionFile.ExtractTTFfromTTC(reader.BaseStream, (int)startOffset);
+            }
+            else
+                data = CopyStreamData(reader.BaseStream, startOffset);
+
             file.SetFileData(data, this.DataFormat);
 
             return file;
