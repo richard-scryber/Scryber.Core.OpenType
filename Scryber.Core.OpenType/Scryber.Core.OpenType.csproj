@@ -1,12 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;netstandard2.0;net8.0;net9.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;netstandard2.0;net8.0;net9.0;net10.0</TargetFrameworks>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <RootNamespace>Scryber</RootNamespace>
-    <PackageVersion>9.7.4</PackageVersion>
-    <Version>9.7.4.0</Version>
+    <PackageVersion>9.7.5</PackageVersion>
+    <Version>9.7.5.0</Version>
     <FileVersion>9.7.4.0</FileVersion>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <Authors>richard@scryber.co.uk</Authors>
@@ -14,7 +14,12 @@
     <Copyright>Richard Hewitson 2026</Copyright>
     <Owners>Scryber</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/Scryber.Core.OpenType</PackageProjectUrl>
-    <PackageReleaseNotes>9.7.4
+    <PackageReleaseNotes>9.7.5
+Fixed: the data of a font from a collection (.ttc or .otc) was the collection from the font header to the end of the file, with offsets from the start of the collection, so it was not a valid font program. A PDF viewer could not load the embedded font and drew another one. The font is now rebuilt on its own.
+New: targets net8.0, net9.0 and net10.0 as well as net6.0 and netstandard2.0.
+New: ResourceStreamLoader reads a font from an assembly resource (rsrc://Namespace.File.ext, AssemblyName).
+
+9.7.4
 Fixed a data race in TTFStringMeasurer's per-character glyph metric cache: a shared measurer written from multiple threads at once (concurrent document rendering) could corrupt the underlying Dictionary, surfacing as InvalidOperationException/ArgumentException/NullReferenceException out of MeasureChars. Cache is now a ConcurrentDictionary, written through the indexer.
 Versioning aligned with the Scryber.Core engine version from this release onward - the PackageVersion had drifted from what was actually last published (9.2.0) since 6.0.3.3-beta; the source itself was current, only the project file's version metadata had lagged.
 
