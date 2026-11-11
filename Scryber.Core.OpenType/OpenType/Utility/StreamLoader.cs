@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 using System.Net.Http;
+using System.Reflection;
 using http = System.Net.Http.HttpClient;
 
 
@@ -824,5 +825,48 @@ namespace Scryber.OpenType.Utility
         }
 
 
+    }
+
+
+    public class ResourceStreamLoader : StreamLoader
+    {
+        
+        public static readonly string ResourcePathPrefix = "rsrc://";
+
+        public ResourceStreamLoader() : base()
+        {
+        }
+
+        public override Stream GetStream(string path, bool ensureSeekable)
+        {
+            if(!path.StartsWith(ResourcePathPrefix))
+                throw new NotSupportedException("Only paths starting with rsrc:// are supported by this ");
+            
+            path = path.Substring(ResourcePathPrefix.Length);
+            
+            var parts = path.Split(',');
+            Assembly assembly;
+            string resourceName;
+
+            if (parts.Length > 1)
+                assembly = Assembly.Load(parts[1].Trim()); //second contains the name
+            else
+                assembly = Assembly.GetEntryAssembly();
+            
+            if(null == assembly)
+                throw new FileLoadException("Could not load the assembly (or the current executing assembly) for the font resource");
+            
+            var stream = assembly.GetManifestResourceStream(parts[0].Trim());
+            
+            if (null == stream)
+                throw new FileLoadException("The font resource with name '" + parts[0].Trim() + "' could not be found in the assembly '" + assembly.FullName + "'");
+
+            if (!stream.CanSeek)
+                throw new NotSupportedException("WTF - Resource streams are seekable, where have we got this from.");
+            
+            return stream;
+            
+        }
+        
     }
 }

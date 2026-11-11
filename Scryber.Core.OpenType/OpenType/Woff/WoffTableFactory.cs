@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-#if !NET6_0
+#if !NET6_0_OR_GREATER
 using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 #endif
 using Scryber.OpenType.TTF;
@@ -71,7 +71,7 @@ namespace Scryber.OpenType.Woff
             using (var streamIn = new MemoryStream(reader.Read((int)table.CompressedLength)))
             {
 
-#if NET6_0
+#if NET6_0_OR_GREATER
 
                 using (var compress = new System.IO.Compression.ZLibStream(streamIn, System.IO.Compression.CompressionMode.Decompress))
                 {

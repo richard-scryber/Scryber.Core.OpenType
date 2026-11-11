@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <UseAppHost>true</UseAppHost>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,9 +11,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="fonts\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="fonts\" />
   </ItemGroup>
   <ItemGroup>
     <None Update="fonts\GillSans.ttc">
@@ -52,5 +49,8 @@
     <None Update="fonts\Courier.ttc">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="fonts\OpenSans-Light.ttf" />
   </ItemGroup>
 </Project>

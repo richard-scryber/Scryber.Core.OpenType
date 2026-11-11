@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -25,6 +26,10 @@ namespace Scryber.Core.OpenType.Tests
             else if (Uri.IsWellFormedUriString(path, UriKind.Absolute))
             {
                 return await DoDownloadAsync(path);
+            }
+            else if ((path.Contains('/') || path.Contains('\\')) == false && path.Contains(','))
+            {
+                return await DoReadFile(path);
             }
             else
             {
