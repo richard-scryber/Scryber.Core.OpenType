@@ -23,10 +23,10 @@ The easiest way is to add the Nuget package [Scryber.Core.OpenType](https://www.
     > dotnet add package Scryber.Core.OpenType
 ```
 
-This will add the latest version (6.0.0-alpha at the time of writing) and supports the following frameworks
+This will add the latest version, which supports the following frameworks
 
 * .NET Standard 2.0
-* .NET 5.0
+* .NET 6.0, 8.0, 9.0 and 10.0
 
 
 
@@ -272,7 +272,7 @@ However it is fast.
 
         Console.WriteLine("Fitted " + size.CharsFitted + " in "
                                     + size.RequiredWidth
-                                    + (OnWordBoundary ? ", breaking on a word boundary" : ""));
+                                    + (size.OnWordBoudary ? ", breaking on a word boundary" : ""));
    }
 
 ```
@@ -281,7 +281,7 @@ The font metrics instance holds a reference to the font programme, but can also 
 A single instance can be held to measure any number of font sizes. If multiple fonts are used, they, and the data they contain will not be garbage collected if the measure is still referenced.
 
 
-# 3.5. OpenType Table access
+# 3.6. OpenType Table access
 
 If the ITypefaceFont implements the ``IOpenTypeFont`` interface the sub stables that make up the Open Type font format can be accessed. Some of these have dedicated sub table implementations
 in the ``Scryber.OpenType.SubTables`` namespace.
@@ -299,7 +299,7 @@ Use the  ``TryGetTable`` to access any decoded tables in the font.
         var file = new FileInfo("[path to font]"); //new Uri("[absolute or relative url]");
         var font = reader.GetFont(file, 0); //await reader.GetFontsAsync(url);
 
-        if(ofnt is IOpenTypeFont ot)
+        if(font is IOpenTypeFont ot)
         {
             List<string> names = new List<string>(ot.TableKeys);
 

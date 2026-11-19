@@ -44,6 +44,7 @@ See the read me at https://github.com/richard-scryber/Scryber.Core.OpenType for 
     <PackageId>Scryber.Core.OpenType</PackageId>
     <!--<PackageLicenseUrl>https://opensource.org/licenses/LGPL-3.0</PackageLicenseUrl>-->
     <PackageLicenseFile>License.txt</PackageLicenseFile>
+    <PackageReadmeFile>README.nuget.md</PackageReadmeFile>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
@@ -73,6 +74,7 @@ See the read me at https://github.com/richard-scryber/Scryber.Core.OpenType for 
   </ItemGroup>
   <ItemGroup>
       <None Include="License.txt" Pack="true" Visible="false" PackagePath="" />
+      <None Include="../README.nuget.md" Pack="true" PackagePath="\" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="SharpZipLib" Version="1.3.3" />
