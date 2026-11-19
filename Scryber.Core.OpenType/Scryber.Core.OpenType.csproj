@@ -5,16 +5,17 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <RootNamespace>Scryber</RootNamespace>
-    <PackageVersion>9.8.0</PackageVersion>
-    <Version>9.8.0.0</Version>
-    <FileVersion>9.8.0.0</FileVersion>
+    <PackageVersion>9.11.0-beta.1</PackageVersion>
+    <Version>9.11.0.0</Version>
+    <FileVersion>9.11.0.0</FileVersion>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <Authors>richard@scryber.co.uk</Authors>
     <Description>The Open Type font file package needed to read otf, ttf, and ttc files.</Description>
     <Copyright>Richard Hewitson 2026</Copyright>
     <Owners>Scryber</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/Scryber.Core.OpenType</PackageProjectUrl>
-    <PackageReleaseNotes>9.8.0
+    <PackageReleaseNotes>9.11.0-beta.1
+Version aligned with Scryber.Core 9.11.0-beta.1.
 New: FontSubsetter creates a subset of a TrueType font with only the outlines of the glyphs used (by glyph number, which are kept the same), to embed a smaller font in a document. Glyph 0 and the components of composite glyphs are kept, only the tables needed to draw the glyphs are written (no layout tables, post without glyph names, long loca), and the checksums are set. A CFF font, a collection, or a font whose licence does not allow subsetting (fsType 0x0100) is not subset, with the reason.
 
 9.7.5
