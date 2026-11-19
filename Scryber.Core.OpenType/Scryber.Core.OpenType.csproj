@@ -14,7 +14,10 @@
     <Copyright>Richard Hewitson 2026</Copyright>
     <Owners>Scryber</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/Scryber.Core.OpenType</PackageProjectUrl>
-    <PackageReleaseNotes>9.7.5
+    <PackageReleaseNotes>Next release (not yet versioned)
+New: FontSubsetter creates a subset of a TrueType font with only the outlines of the glyphs used (by glyph number, which are kept the same), to embed a smaller font in a document. Glyph 0 and the components of composite glyphs are kept, only the tables needed to draw the glyphs are written (no layout tables, post without glyph names, long loca), and the checksums are set. A CFF font, a collection, or a font whose licence does not allow subsetting (fsType 0x0100) is not subset, with the reason.
+
+9.7.5
 Fixed: the data of a font from a collection (.ttc or .otc) was the collection from the font header to the end of the file, with offsets from the start of the collection, so it was not a valid font program. A PDF viewer could not load the embedded font and drew another one. The font is now rebuilt on its own.
 New: targets net8.0, net9.0 and net10.0 as well as net6.0 and netstandard2.0.
 New: ResourceStreamLoader reads a font from an assembly resource (rsrc://Namespace.File.ext, AssemblyName).

@@ -213,7 +213,34 @@ Woff          | TTF or WOFF
 It may be that we will add more in the future, but it meets the needs of our usage at the moment.
 
 
-# 3.4 Measuring strings
+## 3.4 Subsetting a font
+
+``FontSubsetter.Subset`` creates a smaller TrueType font with only the outlines of the glyphs that are used, for embedding in a document.
+The glyph numbers are kept the same (the glyphs that are not used have no outline), so text that refers to glyphs by number is unchanged.
+Glyph 0 (.notdef) and the parts of composite glyphs (e.g. the letter and accent of an accented character) are always kept.
+
+A font with CFF outlines, a collection, or a font whose licence (OS/2 fsType 0x0100) does not allow subsetting is not subset -
+the result has the reason, and the whole font should be used instead.
+
+```csharp
+
+   //using System.IO;
+   //using System.Linq;
+
+   var data = font.GetFileData(DataFormat.TTF);
+   var glyphs = new int[] { 43, 72, 79, 82 }; //the glyph numbers used, e.g. from the cmap of the font
+
+   var result = FontSubsetter.Subset(data, glyphs);
+
+   if (result.Success)
+       File.WriteAllBytes("[new path].ttf", result.Data);
+   else
+       Console.WriteLine("Not subset: " + result.Reason);
+
+```
+
+
+# 3.5 Measuring strings
 
 The font metrics returned from the ``ITypefaceFont`` enables the measurement of strings of characters in a font programme.
 At the moment it is fairly basic, only supporting horizontal characters, word and character spacing, and word boundaries, nor it does not use the kerning tables.
